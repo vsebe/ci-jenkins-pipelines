@@ -413,7 +413,7 @@ class Build {
 
                 } else if (buildConfig.TARGET_OS == "mac") {
                     filter = "**/OpenJDK*_mac_*.tar.gz"
-                    certificate = "\"Developer ID Application: London Jamocha Community CIC\""
+                    certificate = ""
 
                     nodeFilter = "${nodeFilter}&&macos10.14"
                 }
