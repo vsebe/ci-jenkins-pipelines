@@ -1075,7 +1075,13 @@ class Build {
                             } else {
                                 context.println "[CHECKOUT] Checking out to the user's openjdk-build..."
                                 repoHandler.checkoutUserBuild()
-                                context.sh(script: "./${DEFAULTS_JSON['scriptDirectories']['buildfarm']}")
+                                if (env.JOB_NAME.contains("IBM")) {
+                                    context.sshagent(['83181e25-eea4-4f55-8b3e-e79615733226']) {
+                                        context.sh(script: "./${DEFAULTS_JSON['scriptDirectories']['buildfarm']}")
+                                    }
+                                } else {
+                                    context.sh(script: "./${DEFAULTS_JSON['scriptDirectories']['buildfarm']}")
+                                }
                                 context.println "[CHECKOUT] Reverting pre-build user openjdk-build checkout..."
                                 repoHandler.checkoutUserPipelines()
                             }
