@@ -450,6 +450,8 @@ class Build {
 
                     writeMetadata(versionInfo, false)
                     context.archiveArtifacts artifacts: "workspace/target/*"
+
+                    // TODO: Archive Artifactory
                 }
             }
         }
@@ -634,6 +636,8 @@ class Build {
                         currentBuild.result = 'FAILURE'
                     }
                 }
+
+                // TODO: Archive Artifactory
             }
         }
     }
@@ -940,6 +944,8 @@ class Build {
             throw new Exception("[ERROR] Build archive timeout (${buildTimeouts.BUILD_ARCHIVE_TIMEOUT} HOURS) has been reached. Exiting...")
         }
 
+        // TODO Archive Artifacotry ???
+
         // Setup params for downstream job & execute
         String shortJobName = env.JOB_NAME.split('/').last()
         String copyFileFilter = "${shortJobName}_${env.BUILD_NUMBER}_version.txt"
@@ -1118,6 +1124,7 @@ class Build {
                             context.println "[INFO] Archiving JSON Files..."
                             context.archiveArtifacts artifacts: "workspace/target/*.json"
                         } else {
+                            context.println "This is the main archive?"
                             context.archiveArtifacts artifacts: "workspace/target/*"
                         }
                     }

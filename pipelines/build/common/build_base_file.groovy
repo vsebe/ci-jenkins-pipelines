@@ -729,6 +729,8 @@ class Builder implements Serializable {
                                         } catch (FlowInterruptedException e) {
                                             throw new Exception("[ERROR] Archive artifact timeout (${pipelineTimeouts.ARCHIVE_ARTIFACTS_TIMEOUT} HOURS) for ${downstreamJobName}has been reached. Exiting...")
                                         }
+
+                                        // TODO: Archive Artifatcory ??
                                     }
                                 }
                                 context.println "[NODE SHIFT] OUT OF MASTER NODE!"
