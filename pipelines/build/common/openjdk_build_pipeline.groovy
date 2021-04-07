@@ -61,6 +61,9 @@ class Build {
     String vendorName = ""
     String buildSource = ""
     String crossCompileVersionPath = ""
+    String artifactsUrls = ""
+    String artifactoryCredential = ""
+    String artifactoryBaseUrl = ""
     Map variantVersion = [:]
 
     // Declare timeouts for each critical stage (unit is HOURS)
@@ -351,8 +354,10 @@ class Build {
                             context.build job: jobName,
                                     propagate: false,
                                     parameters: [
-                                            context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${env.BUILD_NUMBER}"),
-                                            context.string(name: 'UPSTREAM_JOB_NAME', value: "${env.JOB_NAME}"),
+                                            //context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${env.BUILD_NUMBER}"),
+                                            //context.string(name: 'UPSTREAM_JOB_NAME', value: "${env.JOB_NAME}"),
+                                            context.string(name: 'CUSTOMIZED_SDK_URL', value: artifactsUrls),
+                                            context.string(name: 'CUSTOMIZED_SDK_URL_CREDENTIAL_ID', value: artifactoryCredential),
                                             context.string(name: 'RELEASE_TAG', value: "${buildConfig.SCM_REF}"),
                                             context.string(name: 'JDK_REPO', value: jdkRepo),
                                             context.string(name: 'JDK_BRANCH', value: jdkBranch),
@@ -1128,6 +1133,46 @@ class Build {
                             context.archiveArtifacts artifacts: "workspace/target/*"
                         }
                     }
+
+                    //Archive to Artifactory
+                    context.timeout(time: buildTimeouts.BUILD_ARCHIVE_TIMEOUT, unit: "HOURS") {
+                        def artifactoryRepo = "sys-rt-generic-local"
+                        def artifactoryUploadDir = "${artifactoryRepo}/hyc-runtimes-jenkins.swg-devops.com/${context.JOB_NAME}/${context.BUILD_ID}/"
+                        def artifactPattern = "workspace/target/*"
+                        if (buildConfig.BUILD_ARGS.contains('--cross-compile')) {
+                            artifactPattern = "workspace/target/*.json"
+                        }
+                        def uploadSpec = [["pattern": artifactPattern,
+                                       "target": artifactoryUploadDir
+                                    ]]
+                        def uploadFiles = [files : uploadSpec]
+                        def uploadJSON = JsonOutput.toJson(uploadFiles)
+
+                        def server = context.Artifactory.server "na.artifactory.swg-devops"
+
+                        def buildInfo = context.Artifactory.newBuildInfo()
+                        buildInfo.retention maxBuilds: 30, maxDays: 60, deleteBuildArtifacts: true
+
+                        server.upload spec: uploadJSON, buildInfo: buildInfo
+                        server.publishBuildInfo buildInfo
+
+                        artifactoryBaseUrl = server.getUrl() + '/' + artifactoryRepo
+                        artifactoryCredential = server.getCredentialsId()
+
+                        if (buildInfo.getArtifacts().size() > 0) {
+                            for (def artifact in buildInfo.getArtifacts()) {
+                                if ((artifact.getRemotePath().contains(".tar.gz") || artifact.getRemotePath().contains(".zip")) && !artifact.getRemotePath().contains(".json")) {
+                                    def artifactUrl = artifactoryBaseUrl + '/' + artifact.getRemotePath()
+                                    def artifactName = artifactUrl.substring(artifactUrl.lastIndexOf("/") + 1);
+                                    artifactsUrls += " " + artifactUrl
+                                    context.currentBuild.description += "<br><a href=${artifactUrl}>${artifactName}</a>"
+                                }
+                            }
+                        } else {
+                            context.println "Appears nothing will be uploaded to Artifactory"
+                        }
+
+                    }
                 } catch (FlowInterruptedException e) {
                     // Set Github Commit Status
                     if (env.JOB_NAME.contains("pr-tester")) {
@@ -1422,7 +1467,7 @@ class Build {
                         throw new Exception("[ERROR] Sign job timeout (${buildTimeouts.SIGN_JOB_TIMEOUT} HOURS) has been reached OR the downstream sign job failed. Exiting...")
                     }
                 }
-                
+
                 // Run Smoke Tests and AQA Tests
                 if (enableTests) {
                     try {
