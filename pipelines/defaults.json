@@ -33,7 +33,6 @@
         "downstream"         : "pipelines/build/common/openjdk_build_pipeline.groovy"
     },
     "testDetails"            : {
-        "enableTests"        : true,
         "nightlyDefault"     : [
             "sanity.functional",
             "extended.functional",
@@ -52,7 +51,8 @@
         ],
         "disabled" : [
             "sanity.external"
-        ]
+        ],
+        "enableTests"        : true
     },
     "importLibraryScript"    : "pipelines/build/common/import_lib.groovy",
     "defaultsUrl"            : "https://raw.githubusercontent.com/AdamBrousseau/ci-jenkins-pipelines/ibm_os/pipelines/defaults.json"
