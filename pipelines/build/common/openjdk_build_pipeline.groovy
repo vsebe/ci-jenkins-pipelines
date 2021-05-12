@@ -406,13 +406,15 @@ class Build {
             context.stage("sign") {
                 def filter = ""
 
-                def nodeFilter = "eclipse-codesign"
+                def nodeFilter = "sw.tool.signing"
 
                 if (buildConfig.TARGET_OS == "windows") {
                     filter = "**/OpenJDK*_windows_*.zip"
+                    nodeFilter += "&&sw.os.windows"
 
                 } else if (buildConfig.TARGET_OS == "mac") {
                     filter = "**/OpenJDK*_mac_*.tar.gz"
+                    nodeFilter += "&&sw.os.osx"
                 }
 
                 def params = [
@@ -490,7 +492,7 @@ class Build {
     */
     private void buildLinuxInstaller(VersionInfo versionData) {
         def filter = "**/OpenJDK*_linux_*.tar.gz"
-        def nodeFilter = "${buildConfig.TARGET_OS}&&fpm"
+        def nodeFilter = "sw.os.linux&&ci.role.packaging&&sw.tool.signing"
 
         String releaseType = "Nightly"
         if (buildConfig.RELEASE) {
@@ -553,7 +555,7 @@ class Build {
                         context.string(name: 'JVM', value: "${buildConfig.VARIANT}"),
                         context.string(name: 'SIGNING_CERTIFICATE', value: "${certificate}"),
                         context.string(name: 'ARCH', value: "${INSTALLER_ARCH}"),
-                        ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "${buildConfig.TARGET_OS}&&wix"]
+                        ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "sw.os.windows&&ci.role.packaging&&sw.tool.signing"]
                 ]
         context.copyArtifacts(
                 projectName: "build-scripts/release/create_installer_windows",
