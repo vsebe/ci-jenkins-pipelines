@@ -95,7 +95,10 @@ class Config8 {
                 additionalNodeLabels: [
                         openj9:  'hw.arch.s390x && (sw.os.cent.7 || sw.os.rhel.7)'
                 ],
-                test                 : 'default'
+                test: [
+                        hotspot: ['sanity.openjdk'],
+                        openj9: 'default'
+                ]
         ],
 
         sparcv9Solaris: [
