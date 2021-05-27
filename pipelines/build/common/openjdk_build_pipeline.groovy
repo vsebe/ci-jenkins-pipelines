@@ -401,7 +401,7 @@ class Build {
     def sign(VersionInfo versionInfo) {
         // Sign and archive jobs if needed
         if (
-            buildConfig.TARGET_OS == "windows" || (buildConfig.TARGET_OS == "mac" && versionInfo.major == 8)
+            buildConfig.TARGET_OS == "windows" //|| (buildConfig.TARGET_OS == "mac" && versionInfo.major == 8)
         ) {
             context.stage("sign") {
                 def filter = ""
