@@ -461,7 +461,6 @@ class Build {
     */
     private void buildMacInstaller(VersionInfo versionData) {
         def filter = "**/OpenJDK*_mac_*.tar.gz"
-        def certificate = ""
 
         def nodeFilter = "${buildConfig.TARGET_OS}&&macos10.14&&xcode10"
 
@@ -474,7 +473,6 @@ class Build {
                         context.string(name: 'FILTER', value: "${filter}"),
                         context.string(name: 'FULL_VERSION', value: "${versionData.version}"),
                         context.string(name: 'MAJOR_VERSION', value: "${versionData.major}"),
-                        context.string(name: 'CERTIFICATE', value: "${certificate}"),
                         ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "${nodeFilter}"]
                 ]
 
@@ -521,7 +519,6 @@ class Build {
     */
     private void buildWindowsInstaller(VersionInfo versionData) {
         def filter = "**/OpenJDK*jdk_*_windows*.zip"
-        def certificate = "C:\\openjdk\\windows.p12"
 
         def buildNumber = versionData.build
 
@@ -553,7 +550,6 @@ class Build {
                         context.string(name: 'MSI_PRODUCT_VERSION', value: "${versionData.msi_product_version}"),
                         context.string(name: 'PRODUCT_CATEGORY', value: "jdk"),
                         context.string(name: 'JVM', value: "${buildConfig.VARIANT}"),
-                        context.string(name: 'SIGNING_CERTIFICATE', value: "${certificate}"),
                         context.string(name: 'ARCH', value: "${INSTALLER_ARCH}"),
                         ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "sw.os.windows&&ci.role.packaging&&sw.tool.signing"]
                 ]
@@ -585,7 +581,6 @@ class Build {
                             context.string(name: 'MSI_PRODUCT_VERSION', value: "${versionData.msi_product_version}"),
                             context.string(name: 'PRODUCT_CATEGORY', value: "jre"),
                             context.string(name: 'JVM', value: "${buildConfig.VARIANT}"),
-                            context.string(name: 'SIGNING_CERTIFICATE', value: "${certificate}"),
                             context.string(name: 'ARCH', value: "${INSTALLER_ARCH}"),
                             ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "${buildConfig.TARGET_OS}&&wix"]
                         ]
@@ -639,6 +634,62 @@ class Build {
                 // TODO: Archive Artifactory
             }
         }
+    }
+
+    def signInstaller(VersionInfo versionData) {
+        if (versionData == null || versionData.major == null) {
+            context.println "Failed to parse version number, possibly a nightly? Skipping installer steps"
+            return
+        }
+
+        context.node('master') {
+            context.stage("sign installer") {
+                if (buildConfig.TARGET_OS == "mac" || buildConfig.TARGET_OS == "windows") {
+                    try {
+                        signInstallerJob(versionData);
+                        context.sh 'for file in $(ls workspace/target/*.tar.gz workspace/target/*.pkg workspace/target/*.msi); do sha256sum "$file" > $file.sha256.txt ; done'
+                        writeMetadata(versionData, false)
+                        context.archiveArtifacts artifacts: "workspace/target/*"
+                    } catch (e) {
+                        context.println("Failed to build ${buildConfig.TARGET_OS} installer ${e}")
+                        currentBuild.result = 'FAILURE'
+                    }
+                }
+            }
+        }
+    }
+
+    private void signInstallerJob(VersionInfo versionData) {
+        def filter = ""
+
+        switch (buildConfig.TARGET_OS) {
+            case "mac": filter = "**/OpenJDK*_mac_*.pkg"; break
+            case "windows": filter = "**/OpenJDK*_windows_*.msi"; break
+            default: break
+        }
+
+        def nodeFilter = "eclipse-codesign"
+
+        // Execute sign installer job
+        def installerJob = context.build job: "build-scripts/release/sign_installer",
+                propagate: true,
+                parameters: [
+                        context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${env.BUILD_NUMBER}"),
+                        context.string(name: 'UPSTREAM_JOB_NAME', value: "${env.JOB_NAME}"),
+                        context.string(name: 'FILTER', value: "${filter}"),
+                        context.string(name: 'FULL_VERSION', value: "${versionData.version}"),
+                        context.string(name: 'OPERATING_SYSTEM', value: "${buildConfig.TARGET_OS}"),
+                        context.string(name: 'MAJOR_VERSION', value: "${versionData.major}"),
+                        ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "${nodeFilter}"]
+                ]
+
+        context.copyArtifacts(
+                projectName: "build-scripts/release/sign_installer",
+                selector: context.specific("${installerJob.getNumber()}"),
+                filter: 'workspace/target/*',
+                fingerprintArtifacts: true,
+                target: "workspace/target/",
+                flatten: true)
     }
 
 
@@ -996,7 +1047,7 @@ class Build {
     ) {
         return context.stage("build") {
             // Create the repo handler with the user's defaults to ensure a openjdk-build checkout is not null
-            def repoHandler = new RepoHandler(context, USER_REMOTE_CONFIGS)
+            def repoHandler = new RepoHandler(USER_REMOTE_CONFIGS)
             repoHandler.setUserDefaultsJson(context, DEFAULTS_JSON['defaultsUrl'])
             if (cleanWorkspace) {
                 try {
@@ -1033,9 +1084,10 @@ class Build {
             try {
                 context.timeout(time: buildTimeouts.NODE_CHECKOUT_TIMEOUT, unit: "HOURS") {
                     if (useAdoptShellScripts) {
-                        repoHandler.checkoutAdoptPipelines()
+                        repoHandler.checkoutAdoptPipelines(context)
                     } else {
-                        repoHandler.checkoutUserPipelines()
+                        repoHandler.setUserDefaultsJson(context, DEFAULTS_JSON)
+                        repoHandler.checkoutUserPipelines(context)
                     }
                     // Perform a git clean outside of checkout to avoid the Jenkins enforced 10 minute timeout
                     // https://github.com/AdoptOpenJDK/openjdk-infrastructure/issues/1553
@@ -1066,8 +1118,8 @@ class Build {
                                 updateGithubCommitStatus("PENDING", "Build Started")
                             }
                             if (useAdoptShellScripts) {
-                                context.println "[CHECKOUT] Checking out to AdoptOpenJDK/openjdk-build to use their shell scripts..."
-                                repoHandler.checkoutAdoptBuild()
+                                context.println "[CHECKOUT] Checking out to AdoptOpenJDK/openjdk-build..."
+                                repoHandler.checkoutAdoptBuild(context)
                                 context.sh(script: "./${ADOPT_DEFAULTS_JSON['scriptDirectories']['buildfarm']}")
                                 context.println "[CHECKOUT] Reverting pre-build AdoptOpenJDK/openjdk-build checkout..."
 
@@ -1075,11 +1127,14 @@ class Build {
                                 if (env.JOB_NAME.contains("pr-tester")) {
                                     context.checkout context.scm
                                 } else {
-                                    repoHandler.checkoutUserPipelines()
+                                    repoHandler.setUserDefaultsJson(context, DEFAULTS_JSON)
+                                    repoHandler.checkoutUserPipelines(context)
                                 }
                             } else {
                                 context.println "[CHECKOUT] Checking out to the user's openjdk-build..."
-                                repoHandler.checkoutUserBuild()
+
+                                repoHandler.setUserDefaultsJson(context, DEFAULTS_JSON)
+                                repoHandler.checkoutUserBuild(context)
                                 if (env.JOB_NAME.contains("IBM")) {
                                     context.sshagent(['83181e25-eea4-4f55-8b3e-e79615733226']) {
                                         context.sh(script: "./${DEFAULTS_JSON['scriptDirectories']['buildfarm']}")
@@ -1088,7 +1143,7 @@ class Build {
                                     context.sh(script: "./${DEFAULTS_JSON['scriptDirectories']['buildfarm']}")
                                 }
                                 context.println "[CHECKOUT] Reverting pre-build user openjdk-build checkout..."
-                                repoHandler.checkoutUserPipelines()
+                                repoHandler.checkoutUserPipelines(context)
                             }
                         }
                     } catch (FlowInterruptedException e) {
@@ -1378,8 +1433,13 @@ class Build {
                             if (buildConfig.DOCKER_FILE) {
                                 try {
                                     context.timeout(time: buildTimeouts.DOCKER_CHECKOUT_TIMEOUT, unit: "HOURS") {
-                                        def repoHandler = new RepoHandler(context, USER_REMOTE_CONFIGS)
-                                        repoHandler.checkoutAdoptPipelines()
+                                        def repoHandler = new RepoHandler(USER_REMOTE_CONFIGS)
+                                        repoHandler.setUserDefaultsJson(context, DEFAULTS_JSON)
+                                        if (useAdoptShellScripts) {
+                                            repoHandler.checkoutAdoptPipelines(context)
+                                        } else {
+                                            repoHandler.checkoutUserPipelines(context)
+                                        }
 
                                         // Perform a git clean outside of checkout to avoid the Jenkins enforced 10 minute timeout
                                         // https://github.com/AdoptOpenJDK/openjdk-infrastructure/issues/1553
@@ -1480,6 +1540,7 @@ class Build {
                     try {
                         // Installer job timeout managed by Jenkins job config
                         buildInstaller(versionInfo)
+                        signInstaller(versionInfo)
                     } catch (FlowInterruptedException e) {
                         throw new Exception("[ERROR] Installer job timeout (${buildTimeouts.INSTALLER_JOBS_TIMEOUT} HOURS) has been reached OR the downstream installer job failed. Exiting...")
                     }
