@@ -269,15 +269,18 @@ class Config11 {
                 os                   : 'linux',
                 arch                 : 'riscv64',
                 dockerImage          : [
-                        "openj9" : 'adoptopenjdk/centos6_build_image',
+                        "openj9"     : 'adoptopenjdk/centos6_build_image',
+                        "bisheng"    : 'adoptopenjdk/centos6_build_image'
                 ],
                 dockerNode         : 'sw.tool.docker && sw.config.uid1000',
                 dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
                 crossCompile         : [
-                        "openj9"     : 'x64'
+                        "openj9"     : 'x64',
+                        "bisheng"    : 'x64'
                 ],
                 buildArgs            : [
-                        "openj9"     : '--cross-compile'
+                        "openj9"     : '--cross-compile',
+                        "bisheng"    : '--cross-compile --branch risc-v'
                 ],
                 configureArgs        : [
                         "openj9"     : '--disable-ddr --openjdk-target=riscv64-unknown-linux-gnu --with-sysroot=/opt/fedora28_riscv_root'
