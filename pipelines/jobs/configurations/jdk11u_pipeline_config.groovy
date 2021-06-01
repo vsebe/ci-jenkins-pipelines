@@ -36,7 +36,7 @@ class Config11 {
                 os                  : 'linux',
                 arch                : 'x64',
                 additionalNodeLabels : 'ci.project.openj9 && hw.arch.x86 && sw.os.linux',
-                dockerImage         : 'adoptopenjdk/centos6_build_image',
+                dockerImage         : 'adoptopenjdk/centos6_build_image@sha256:19cdb5284da031aef7c73cb52ee7018502d65d0ca21cebc45d9652eec3926458',
                 dockerFile: [
                         openj9  : 'pipelines/build/dockerFiles/cuda.dockerfile'
                 ],
@@ -57,7 +57,7 @@ class Config11 {
                 os                  : 'linux',
                 arch                : 'x64',
                 additionalNodeLabels : 'ci.project.openj9 && hw.arch.x86 && sw.os.linux',
-                dockerImage         : 'adoptopenjdk/centos6_build_image',
+                dockerImage         : 'adoptopenjdk/centos6_build_image@sha256:19cdb5284da031aef7c73cb52ee7018502d65d0ca21cebc45d9652eec3926458',
                 dockerFile: [
                         openj9  : 'pipelines/build/dockerFiles/cuda.dockerfile'
                 ],
