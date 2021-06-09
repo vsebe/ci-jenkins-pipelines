@@ -644,7 +644,7 @@ class Build {
 
         context.node('master') {
             context.stage("sign installer") {
-                if (buildConfig.TARGET_OS == "mac" || buildConfig.TARGET_OS == "windows") {
+                if (buildConfig.TARGET_OS == "windows") {
                     try {
                         signInstallerJob(versionData);
                         context.sh 'for file in $(ls workspace/target/*.tar.gz workspace/target/*.pkg workspace/target/*.msi); do sha256sum "$file" > $file.sha256.txt ; done'
