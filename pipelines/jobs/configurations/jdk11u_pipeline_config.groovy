@@ -269,7 +269,7 @@ class Config11 {
                 os                   : 'linux',
                 arch                 : 'riscv64',
                 dockerImage          : [
-                        "openj9"     : 'adoptopenjdk/centos6_build_image',
+                        "openj9"     : 'adoptopenjdk/centos6_build_image@sha256:19cdb5284da031aef7c73cb52ee7018502d65d0ca21cebc45d9652eec3926458',
                         "bisheng"    : 'adoptopenjdk/centos6_build_image'
                 ],
                 dockerNode         : 'sw.tool.docker && sw.config.uid1000',
