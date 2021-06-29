@@ -524,7 +524,12 @@ class Build {
     We run two jobs if we have a JRE (see https://github.com/AdoptOpenJDK/openjdk-build/issues/1751).
     */
     private void buildWindowsInstaller(VersionInfo versionData) {
-        def filter = "**/OpenJDK*jdk_*_windows*.zip"
+        def filter = "**/Semeru-jdk_*_windows*.zip"
+        def sdkPrefix = "Semeru"
+        if (buildConfig.ADDITIONAL_FILE_NAME_TAG == "IBM") {
+            filter = "**/ibm-java-jdk_*_windows*.zip"
+            sdkPrefix = "ibm-java"
+        }
 
         def buildNumber = versionData.build
 
@@ -557,6 +562,7 @@ class Build {
                         context.string(name: 'PRODUCT_CATEGORY', value: "jdk"),
                         context.string(name: 'JVM', value: "${buildConfig.VARIANT}"),
                         context.string(name: 'ARCH', value: "${INSTALLER_ARCH}"),
+                        context.string(name: 'SDK_PREFIX', value: "${sdkPrefix}"),
                         ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "sw.os.windows&&ci.role.packaging&&sw.tool.signing"]
                 ]
         context.copyArtifacts(
