@@ -482,6 +482,7 @@ class Build {
                         context.string(name: 'FILTER', value: "${filter}"),
                         context.string(name: 'FULL_VERSION', value: "${versionData.version}"),
                         context.string(name: 'MAJOR_VERSION', value: "${versionData.major}"),
+                        context.string(name: 'JVM', value: "${buildConfig.VARIANT}"),
                         ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "${nodeFilter}"]
                 ]
 
