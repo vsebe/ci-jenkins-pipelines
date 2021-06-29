@@ -466,7 +466,10 @@ class Build {
     Run the Mac installer downstream job.
     */
     private void buildMacInstaller(VersionInfo versionData) {
-        def filter = "**/OpenJDK*_mac_*.tar.gz"
+        def filter = "**/Semeru-jdk_*_mac_*.tar.gz"
+        if (buildConfig.ADDITIONAL_FILE_NAME_TAG == "IBM") {
+            filter = "**/ibm-java-jdk_*_mac*.zip"
+        }
 
         def nodeFilter = "${buildConfig.TARGET_OS}&&macos10.14&&xcode10"
 
