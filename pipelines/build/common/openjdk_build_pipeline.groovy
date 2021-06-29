@@ -1023,6 +1023,9 @@ class Build {
 
         if (additionalFileNameTag) {
             fileName = "${fileName}_${additionalFileNameTag}"
+            if (additionalFileNameTag == "IBM") {
+                fileName = "ibm-java-jdk_${architecture}_${os}"
+            }
         }
 
         if (overrideFileNameVersion) {
