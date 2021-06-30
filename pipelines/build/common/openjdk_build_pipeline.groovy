@@ -415,11 +415,17 @@ class Build {
                 def nodeFilter = "sw.tool.signing"
 
                 if (buildConfig.TARGET_OS == "windows") {
-                    filter = "**/OpenJDK*_windows_*.zip"
+                    def filter = "**/Semeru-jdk_*_windows_*.tar.gz"
+                    if (buildConfig.ADDITIONAL_FILE_NAME_TAG == "IBM") {
+                        filter = "**/ibm-java-jdk_*_windows*.zip"
+                    }
                     nodeFilter += "&&sw.os.windows"
 
                 } else if (buildConfig.TARGET_OS == "mac") {
-                    filter = "**/OpenJDK*_mac_*.tar.gz"
+                    def filter = "**/Semeru-jdk_*_mac_*.tar.gz"
+                    if (buildConfig.ADDITIONAL_FILE_NAME_TAG == "IBM") {
+                        filter = "**/ibm-java-jdk_*_mac*.zip"
+                    }
                     nodeFilter += "&&sw.os.osx"
                 }
 
