@@ -410,22 +410,19 @@ class Build {
             buildConfig.TARGET_OS == "windows" //|| (buildConfig.TARGET_OS == "mac" && versionInfo.major == 8)
         ) {
             context.stage("sign") {
-                def filter = ""
+                def filter = "**/Semeru-jdk_*_"
+                if (buildConfig.ADDITIONAL_FILE_NAME_TAG == "IBM") {
+                    filter = "**/ibm-java-jdk_*_"
+                }
 
                 def nodeFilter = "sw.tool.signing"
 
                 if (buildConfig.TARGET_OS == "windows") {
-                    def filter = "**/Semeru-jdk_*_windows_*.zip"
-                    if (buildConfig.ADDITIONAL_FILE_NAME_TAG == "IBM") {
-                        filter = "**/ibm-java-jdk_*_windows*.zip"
-                    }
+                    filter += "windows_*.zip"
                     nodeFilter += "&&sw.os.windows"
 
                 } else if (buildConfig.TARGET_OS == "mac") {
-                    def filter = "**/Semeru-jdk_*_mac_*.tar.gz"
-                    if (buildConfig.ADDITIONAL_FILE_NAME_TAG == "IBM") {
-                        filter = "**/ibm-java-jdk_*_mac*.tar.gz"
-                    }
+                    filter += "mac_*.tar.gz"
                     nodeFilter += "&&sw.os.osx"
                 }
 
@@ -682,11 +679,14 @@ class Build {
     }
 
     private void signInstallerJob(VersionInfo versionData) {
-        def filter = ""
+        def filter = "**/Semeru-jdk_*_"
+        if (buildConfig.ADDITIONAL_FILE_NAME_TAG == "IBM") {
+            filter = "**/ibm-java-jdk_*_"
+        }
 
         switch (buildConfig.TARGET_OS) {
-            case "mac": filter = "**/OpenJDK*_mac_*.pkg"; break
-            case "windows": filter = "**/OpenJDK*_windows_*.msi"; break
+            case "mac": filter += "mac_*.pkg"; break
+            case "windows": filter += "windows_*.msi"; break
             default: break
         }
 
