@@ -415,7 +415,7 @@ class Build {
                 def nodeFilter = "sw.tool.signing"
 
                 if (buildConfig.TARGET_OS == "windows") {
-                    def filter = "**/Semeru-jdk_*_windows_*.tar.gz"
+                    def filter = "**/Semeru-jdk_*_windows_*.zip"
                     if (buildConfig.ADDITIONAL_FILE_NAME_TAG == "IBM") {
                         filter = "**/ibm-java-jdk_*_windows*.zip"
                     }
@@ -424,7 +424,7 @@ class Build {
                 } else if (buildConfig.TARGET_OS == "mac") {
                     def filter = "**/Semeru-jdk_*_mac_*.tar.gz"
                     if (buildConfig.ADDITIONAL_FILE_NAME_TAG == "IBM") {
-                        filter = "**/ibm-java-jdk_*_mac*.zip"
+                        filter = "**/ibm-java-jdk_*_mac*.tar.gz"
                     }
                     nodeFilter += "&&sw.os.osx"
                 }
@@ -474,7 +474,7 @@ class Build {
     private void buildMacInstaller(VersionInfo versionData) {
         def filter = "**/Semeru-jdk_*_mac_*.tar.gz"
         if (buildConfig.ADDITIONAL_FILE_NAME_TAG == "IBM") {
-            filter = "**/ibm-java-jdk_*_mac*.zip"
+            filter = "**/ibm-java-jdk_*_mac*.tar.gz"
         }
 
         def nodeFilter = "${buildConfig.TARGET_OS}&&macos10.14&&xcode10"
