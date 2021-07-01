@@ -633,7 +633,13 @@ class Build {
                 switch (buildConfig.TARGET_OS) {
                     case "mac": context.sh 'rm -f workspace/target/*.pkg workspace/target/*.pkg.json workspace/target/*.pkg.sha256.txt'; buildMacInstaller(versionData); break
                     //case "linux": buildLinuxInstaller(versionData); break
-                    case "windows": buildWindowsInstaller(versionData); break
+                    case "windows":
+                        if (buildConfig.ADDITIONAL_FILE_NAME_TAG == "IBM") {
+                            buildWindowsInstaller(versionData)
+                        } else {
+                            echo "Skip msi package for IBM Java"
+                        }
+                    break
                     default: break
                 }
 
