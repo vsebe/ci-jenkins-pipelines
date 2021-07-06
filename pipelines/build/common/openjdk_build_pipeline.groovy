@@ -1068,7 +1068,7 @@ class Build {
         } else {
             def timestamp = new Date().format("yyyy-MM-dd-HH-mm", TimeZone.getTimeZone("UTC"))
 
-            fileName = "${fileName}_${timestamp}"
+            fileName = "${fileName}_${javaToBuild}_${timestamp}"
         }
 
 
