@@ -349,9 +349,15 @@ class Regeneration implements Serializable {
         String estimatedKey = stringArch + stringOs.capitalize()
 
         if (configuration.containsKey("additionalFileNameTag")) {
-            estimatedKey = estimatedKey + "XL"
+            String stringAdditionalFileNameTag = configuration.additionalFileNameTag as String
+            if (stringAdditionalFileNameTag.contains('XL')) {
+                estimatedKey = estimatedKey + "XL"
+            } else {
+                estimatedKey += stringAdditionalFileNameTag
+            }
         }
 
+        
         if (excludedBuilds.containsKey(estimatedKey)) {
 
             if (excludedBuilds[estimatedKey].contains(variant)) {
