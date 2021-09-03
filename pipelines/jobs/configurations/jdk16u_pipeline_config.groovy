@@ -15,7 +15,7 @@ class Config16 {
                 additionalNodeLabels : 'ci.project.openj9 && hw.arch.x86 && sw.os.linux',
                 dockerImage: [
                         hotspot     : 'adoptopenjdk/centos6_build_image',
-                        openj9      : 'adoptopenjdk/centos7_build_image@sha256:de97e2dd5655e73ddd47f32b3676dae0865aaeb735770b1b5e7fdf0c9bf92fef'
+                        openj9      : 'adoptopenjdk/centos7_build_image'
                 ],
                 dockerFile: [
                         openj9  : 'pipelines/build/dockerFiles/cuda.dockerfile'
@@ -87,7 +87,7 @@ class Config16 {
         aarch64Linux    : [
                 os                  : 'linux',
                 arch                : 'aarch64',
-                dockerImage         : 'adoptopenjdk/centos7_build_image@sha256:e8ab3ee5aab3f78f88a39bacadbd4c9e87c7e2ff8fb7a9f7917427568ccf9ddd',
+                dockerImage         : 'adoptopenjdk/centos7_build_image',
                 dockerNode         : 'sw.tool.docker',
                 dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
                 test                : 'default',

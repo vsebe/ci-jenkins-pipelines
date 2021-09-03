@@ -168,7 +168,7 @@ class Config17 {
         aarch64Linux    : [
                 os                  : 'linux',
                 arch                : 'aarch64',
-                dockerImage         : 'adoptopenjdk/centos7_build_image@sha256:e8ab3ee5aab3f78f88a39bacadbd4c9e87c7e2ff8fb7a9f7917427568ccf9ddd',
+                dockerImage         : 'adoptopenjdk/centos7_build_image',
                 dockerNode         : 'sw.tool.docker',
                 dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
                 test                : 'default',

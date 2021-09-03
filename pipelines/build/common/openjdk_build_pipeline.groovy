@@ -568,7 +568,7 @@ class Build {
         def filter = "**/OpenJDK*jdk_*_windows*.zip"
 
         if (buildConfig.VARIANT == "openj9") {
-            filter = "**/ibm-semeru*-jdk_*_windows*.zip"
+            filter = "**/ibm-semeru*-j*_*_windows*.zip"
         }
 
         def buildNumber = versionData.build
