@@ -6,7 +6,7 @@ class Config17 {
                 additionalNodeLabels: 'ci.project.openj9 && hw.arch.x86 && sw.os.osx.10_14',
                 test                : 'default',
                 cleanWorkspaceAfterBuild: true,
-                configureArgs       : '--enable-dtrace'
+                configureArgs       : '--enable-dtrace --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
         ],
 
         x64MacXL    : [
@@ -37,7 +37,7 @@ class Config17 {
                         openj9      : '!(sw.os.cent.6||sw.os.rhel.6)'
                 ],
                 configureArgs       : [
-                        "openj9"      : '--enable-dtrace --enable-jitserver',
+                        "openj9"      : '--enable-dtrace --enable-jitserver --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues',
                         "hotspot"     : '--enable-dtrace'
                 ]
         ],
@@ -69,6 +69,7 @@ class Config17 {
                 arch                : 'x64',
                 additionalNodeLabels: 'ci.project.openj9 && hw.arch.x86 && sw.os.windows',
                 cleanWorkspaceAfterBuild: true,
+                configureArgs: '--with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-jdk-rc-name="IBM Semeru Runtime"',
                 test                : 'default'
         ],
 
@@ -114,7 +115,7 @@ class Config17 {
                 ],
                 test                : 'default',
                 configureArgs : [
-                    openj9 : '--disable-ccache'
+                        openj9: '--disable-ccache --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
                 ],
                 cleanWorkspaceAfterBuild: true
         ],
@@ -128,7 +129,7 @@ class Config17 {
                 additionalNodeLabels: [
                         openj9:  'hw.arch.s390x && (sw.os.cent.7 || sw.os.rhel.7)'
                 ],
-                configureArgs : '--enable-dtrace'
+                configureArgs       : '--enable-dtrace --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
         ],
 
         s390xLinuxXL  : [
@@ -150,7 +151,7 @@ class Config17 {
                 ],
                 configureArgs       : [
                         "hotspot"     : '--enable-dtrace',
-                        "openj9"      : '--enable-dtrace --enable-jitserver'
+                        "openj9"      : '--enable-dtrace --enable-jitserver --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
                 ]
 
         ],
@@ -167,7 +168,7 @@ class Config17 {
         aarch64Linux    : [
                 os                  : 'linux',
                 arch                : 'aarch64',
-                dockerImage         : 'adoptopenjdk/centos7_build_image',
+                dockerImage         : 'adoptopenjdk/centos7_build_image@sha256:e8ab3ee5aab3f78f88a39bacadbd4c9e87c7e2ff8fb7a9f7917427568ccf9ddd',
                 dockerNode         : 'sw.tool.docker',
                 dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
                 test                : 'default',
@@ -175,8 +176,7 @@ class Config17 {
                         openj9:  'hw.arch.aarch64 && sw.os.linux'
                 ],
                 test                : 'default',
-                cleanWorkspaceAfterBuild: true,
-                configureArgs       : '--enable-dtrace'
+                configureArgs       : '--enable-dtrace --with-version-pre=ea --without-version-opt --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
         ],
 
         aarch64LinuxXL    : [

@@ -652,6 +652,7 @@ class Builder implements Serializable {
     def packageSourceBinaries(variant, tag, linuxTargets, installerUrl, installerBranch) { 
         context.stage("package") {
             def downstreamJobName = 'build-scripts/release/package_binaries'
+            context.echo "build name: ${downstreamJobName} for ${linuxTargets}"
 
             def downstreamJob = context.build job: downstreamJobName,
                     parameters: [
@@ -763,6 +764,9 @@ class Builder implements Serializable {
                         context.stage(configuration.key) {
                             context.echo "Created job " + downstreamJobName
 
+                            //TODO: remove parameters
+                            context.echo "with parameters: ${config.toBuildParams()}"
+
                             // execute build
                             def downstreamJob = context.build job: downstreamJobName, propagate: false, parameters: config.toBuildParams()
 
@@ -802,7 +806,8 @@ class Builder implements Serializable {
                                         }
 
                                         // Checksum
-                                        context.sh 'for file in $(ls target/*/*/*/*.tar.gz target/*/*/*/*.zip); do sha256sum "$file" > $file.sha256.txt ; done'
+                                        def extension = (config.TARGET_OS == "windows") ? "zip" : "tar.gz"
+                                        context.sh "cd target/${config.TARGET_OS}/${config.ARCHITECTURE}/${config.VARIANT}/ && for file in \$(ls *.${extension}); do sha256sum \"\$file\" > \$file.sha256.txt ; done"
 
                                         // Archive in Jenkins
                                         try {
@@ -835,8 +840,24 @@ class Builder implements Serializable {
                 def installerBranch = (DEFAULTS_JSON['repository']['installer_branch']) ?: ''
 
                 try {
-                    context.timeout(time: pipelineTimeouts.PUBLISH_ARTIFACTS_TIMEOUT, unit: "HOURS") {
-                        packageSourceBinaries(variant, tag, linuxTargets.unique(), installerRepo, installerBranch)
+                    if (variant.equals("openj9") && (tag && !tag.endsWith('XL'))) {
+                        // launch build for targets with ADDITIONAL_FILE_NAME_TAG (aka tag)
+                        context.timeout(time: pipelineTimeouts.PUBLISH_ARTIFACTS_TIMEOUT, unit: "HOURS") {
+                            packageSourceBinaries(variant, tag, linuxTargets.findAll { it.contains(tag) }, installerRepo, installerBranch)
+                        }
+
+                        linuxTargets.eachWithIndex { value, i ->
+                            if (value.contains(tag)) {
+                                linuxTargets.remove(i)
+                            }
+                        }
+                    }
+
+                    if (!linuxTargets.isEmpty()) {
+                        // launch build from targets without ADDITIONAL_FILE_NAME_TAG (aka tag)
+                        context.timeout(time: pipelineTimeouts.PUBLISH_ARTIFACTS_TIMEOUT, unit: "HOURS") {
+                            packageSourceBinaries(variant, '', linuxTargets, installerRepo, installerBranch)
+                        }
                     }
                 }catch (FlowInterruptedException e) {
                     throw new Exception("[ERROR] Package source RPM timeout (${pipelineTimeouts.PUBLISH_ARTIFACTS_TIMEOUT} HOURS) has been reached OR the downstream package job failed. Exiting...")

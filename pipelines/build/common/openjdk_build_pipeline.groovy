@@ -387,8 +387,17 @@ class Build {
     The regex would match both OpenJDK Runtime Environment and Java(TM) SE Runtime Environment.
     */
     VersionInfo parseVersionOutput(String consoleOut) {
+        context.println("Attempt to parse version output...")
         context.println(consoleOut)
-        Matcher matcher = (consoleOut =~ /(?ms)^.*Runtime Environment[^\n]*\(build (?<version>[^)]*)\).*$/)
+
+        def pattern = "Runtime Environment"
+
+        if (buildConfig.VARIANT == "openj9") {
+            pattern = "IBM Semeru Runtime" + ((buildConfig.ADDITIONAL_FILE_NAME_TAG == "IBM") ? "Certified" : "Open") + "Edition"
+        }
+
+        Matcher matcher = (consoleOut =~ /(?ms)^.*${pattern}[^\n]*\(build (?<version>[^)]*)\).*$/)
+
         if (matcher.matches()) {
             context.println("matched")
             String versionOutput = matcher.group('version')
@@ -396,6 +405,8 @@ class Build {
             context.println(versionOutput)
 
             return new VersionInfo(context).parse(versionOutput, buildConfig.ADOPT_BUILD_NUMBER)
+        } else {
+            context.println("Failed to parse version output")
         }
         return null
     }
@@ -406,24 +417,43 @@ class Build {
     */
     def sign(VersionInfo versionInfo) {
         // Sign and archive jobs if needed
-        if (
-            buildConfig.TARGET_OS == "windows" //|| (buildConfig.TARGET_OS == "mac" && versionInfo.major == 8)
-        ) {
+
+        def targets = ["windows"]
+
+        // Note: mac binaries for openj9 variant are signed by 3rd party
+        if (buildConfig.VARIANT != "openj9") {
+            targets.add("mac")
+        }
+
+        if (targets.contains(buildConfig.TARGET_OS)) {
             context.stage("sign") {
-                def filter = "**/Semeru-jdk_*_"
-                if (buildConfig.ADDITIONAL_FILE_NAME_TAG == "IBM") {
-                    filter = "**/ibm-java-jdk_*_"
-                }
+                def filter = ""
 
-                def nodeFilter = "sw.tool.signing"
+                def nodeFilter = "eclipse-codesign"
 
-                if (buildConfig.TARGET_OS == "windows") {
-                    filter += "windows_*.zip"
-                    nodeFilter += "&&sw.os.windows"
+                def signTool = "eclipse"
 
-                } else if (buildConfig.TARGET_OS == "mac") {
-                    filter += "mac_*.tar.gz"
-                    nodeFilter += "&&sw.os.osx"
+                if (buildConfig.VARIANT == "openj9") {
+                    nodeFilter = "sw.tool.signing"
+
+                    if (buildConfig.TARGET_OS == "windows") {
+                        filter = "**/ibm-semeru*-j*_windows_*.zip"
+                        nodeFilter += "&&sw.os.windows"
+
+                    } else if (buildConfig.TARGET_OS == "mac") {
+                        filter = "**/ibm-semeru*-j*_mac_*.tar.gz"
+                        nodeFilter += "&&sw.os.osx"
+                    }
+
+                    signTool = "ucl"
+
+                } else {
+                    if (buildConfig.TARGET_OS == "windows") {
+                        filter = "**/OpenJDK*_windows_*.zip"
+
+                    } else if (buildConfig.TARGET_OS == "mac") {
+                        filter = "**/OpenJDK*_mac_*.tar.gz"
+                    }
                 }
 
                 def params = [
@@ -431,7 +461,7 @@ class Build {
                         context.string(name: 'UPSTREAM_JOB_NAME', value: "${env.JOB_NAME}"),
                         context.string(name: 'OPERATING_SYSTEM', value: "${buildConfig.TARGET_OS}"),
                         context.string(name: 'VERSION', value: "${versionInfo.major}"),
-                        context.string(name: 'SIGN_TOOL', value: "eclipse"),
+                        context.string(name: 'SIGN_TOOL', value: "${signTool}"),
                         context.string(name: 'FILTER', value: "${filter}"),
                         ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "${nodeFilter}"],
                 ]
@@ -453,8 +483,7 @@ class Build {
                             target: "workspace/target/",
                             flatten: true)
 
-
-                    context.sh 'for file in $(ls workspace/target/*.tar.gz workspace/target/*.zip); do sha256sum "$file" > $file.sha256.txt ; done'
+                    context.sh 'cd workspace/target/ && for file in $(ls *.tar.gz *.zip); sha256sum "$file" > $fname.sha256.txt ; done'
 
                     writeMetadata(versionInfo, false)
                     context.archiveArtifacts artifacts: "workspace/target/*"
@@ -469,9 +498,10 @@ class Build {
     Run the Mac installer downstream job.
     */
     private void buildMacInstaller(VersionInfo versionData) {
-        def filter = "**/Semeru-jdk_*_mac_*.tar.gz"
-        if (buildConfig.ADDITIONAL_FILE_NAME_TAG == "IBM") {
-            filter = "**/ibm-java-jdk_*_mac*.tar.gz"
+        def filter = "**/OpenJDK*_mac_*.tar.gz"
+
+        if (buildConfig.VARIANT == "openj9") {
+            filter = "**/ibm-semeru*-j*_mac_*.tar.gz"
         }
 
         def nodeFilter = "${buildConfig.TARGET_OS}&&macos10.14&&xcode10"
@@ -485,7 +515,6 @@ class Build {
                         context.string(name: 'FILTER', value: "${filter}"),
                         context.string(name: 'FULL_VERSION', value: "${versionData.version}"),
                         context.string(name: 'MAJOR_VERSION', value: "${versionData.major}"),
-                        context.string(name: 'JVM', value: "${buildConfig.VARIANT}"),
                         ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "${nodeFilter}"]
                 ]
 
@@ -503,7 +532,12 @@ class Build {
     */
     private void buildLinuxInstaller(VersionInfo versionData) {
         def filter = "**/OpenJDK*_linux_*.tar.gz"
-        def nodeFilter = "sw.os.linux&&ci.role.packaging&&sw.tool.signing"
+        def nodeFilter = "${buildConfig.TARGET_OS}&&fpm"
+
+        if (buildConfig.VARIANT == "openj9") {
+            filter = "**/ibm-semeru*-j*_linux_*.tar.gz"
+            nodeFilter = "sw.os.linux&&ci.role.packaging&&sw.tool.signing"
+        }
 
         String releaseType = "Nightly"
         if (buildConfig.RELEASE) {
@@ -531,11 +565,10 @@ class Build {
     We run two jobs if we have a JRE (see https://github.com/AdoptOpenJDK/openjdk-build/issues/1751).
     */
     private void buildWindowsInstaller(VersionInfo versionData) {
-        def filter = "**/Semeru-jdk_*_windows*.zip"
-        def sdkPrefix = "Semeru"
-        if (buildConfig.ADDITIONAL_FILE_NAME_TAG == "IBM") {
-            filter = "**/ibm-java-jdk_*_windows*.zip"
-            sdkPrefix = "ibm-java"
+        def filter = "**/OpenJDK*jdk_*_windows*.zip"
+
+        if (buildConfig.VARIANT == "openj9") {
+            filter = "**/ibm-semeru*-jdk_*_windows*.zip"
         }
 
         def buildNumber = versionData.build
@@ -569,7 +602,6 @@ class Build {
                         context.string(name: 'PRODUCT_CATEGORY', value: "jdk"),
                         context.string(name: 'JVM', value: "${buildConfig.VARIANT}"),
                         context.string(name: 'ARCH', value: "${INSTALLER_ARCH}"),
-                        context.string(name: 'SDK_PREFIX', value: "${sdkPrefix}"),
                         ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "sw.os.windows&&ci.role.packaging&&sw.tool.signing"]
                 ]
         context.copyArtifacts(
@@ -632,14 +664,8 @@ class Build {
             context.stage("installer") {
                 switch (buildConfig.TARGET_OS) {
                     case "mac": context.sh 'rm -f workspace/target/*.pkg workspace/target/*.pkg.json workspace/target/*.pkg.sha256.txt'; buildMacInstaller(versionData); break
-                    //case "linux": buildLinuxInstaller(versionData); break
-                    case "windows":
-                        if (buildConfig.ADDITIONAL_FILE_NAME_TAG == "IBM") {
-                            buildWindowsInstaller(versionData)
-                        } else {
-                            echo "Skip msi package for IBM Java"
-                        }
-                    break
+                    //case "linux": buildLinuxInstaller(versionData); break  // Use the new rpm method
+                    case "windows": buildWindowsInstaller(versionData); break
                     default: break
                 }
 
@@ -647,7 +673,7 @@ class Build {
                 // (Linux installer job produces no artifacts, it just uploads rpm/deb to the repositories)
                 if (buildConfig.TARGET_OS == "mac" || buildConfig.TARGET_OS == "windows") {
                     try {
-                        context.sh 'for file in $(ls workspace/target/*.tar.gz workspace/target/*.pkg workspace/target/*.msi); do sha256sum "$file" > $file.sha256.txt ; done'
+                        context.sh 'cd workspace/target/ && for file in $(ls *.tar.gz *.pkg *.msi); sha256sum "$file" > $file.sha256.txt ; done'
                         writeMetadata(versionData, false)
                         context.archiveArtifacts artifacts: "workspace/target/*"
                     } catch (e) {
@@ -672,7 +698,7 @@ class Build {
                 if (buildConfig.TARGET_OS == "windows") {
                     try {
                         signInstallerJob(versionData);
-                        context.sh 'for file in $(ls workspace/target/*.tar.gz workspace/target/*.pkg workspace/target/*.msi); do sha256sum "$file" > $file.sha256.txt ; done'
+                        context.sh 'cd workspace/target/ && for file in $(ls *.tar.gz *.pkg *.msi); sha256sum "$file" > $file.sha256.txt ; done'
                         writeMetadata(versionData, false)
                         context.archiveArtifacts artifacts: "workspace/target/*"
                     } catch (e) {
@@ -685,14 +711,11 @@ class Build {
     }
 
     private void signInstallerJob(VersionInfo versionData) {
-        def filter = "**/Semeru-jdk_*_"
-        if (buildConfig.ADDITIONAL_FILE_NAME_TAG == "IBM") {
-            filter = "**/ibm-java-jdk_*_"
-        }
+        def filter = ""
 
         switch (buildConfig.TARGET_OS) {
-            case "mac": filter += "mac_*.pkg"; break
-            case "windows": filter += "windows_*.msi"; break
+            case "mac": filter = (buildConfig.VARIANT == "openj9") ? "**/ibm-semeru-*_mac_*.pkg" : "**/OpenJDK*_mac_*.pkg"; break
+            case "windows": filter = (buildConfig.VARIANT == "openj9") ? "**/ibm-semeru-*_windows_*.msi" : "**/OpenJDK*_windows_*.msi"; break
             default: break
         }
 
@@ -814,7 +837,7 @@ class Build {
                 context.println "INFO: Attempting to read workspace/target/metadata/variant_version/major.txt..."
                 try {
                     j9Major = context.readFile(j9MajorPath)
-                    context.println "SUCCESS: major.txt found"
+                    context.println "SUCCESS: major.txt found with value '${j9Major}'"
                 } catch (NoSuchFileException e) {
                     throw new Exception("ERROR: ${j9MajorPath} was not found. Exiting...")
                 }
@@ -822,7 +845,7 @@ class Build {
                 context.println "INFO: Attempting to read workspace/target/metadata/variant_version/minor.txt..."
                 try {
                     j9Minor = context.readFile(j9MinorPath)
-                    context.println "SUCCESS: minor.txt found"
+                    context.println "SUCCESS: minor.txt found  with value '${j9Minor}'"
                 } catch (NoSuchFileException e) {
                     throw new Exception("ERROR: ${j9MinorPath} was not found. Exiting...")
                 }
@@ -830,7 +853,7 @@ class Build {
                 context.println "INFO: Attempting to read workspace/target/metadata/variant_version/security.txt..."
                 try {
                     j9Security = context.readFile(j9SecurityPath)
-                    context.println "SUCCESS: security.txt found"
+                    context.println "SUCCESS: security.txt found with value '${j9Security}'"
                 } catch (NoSuchFileException e) {
                     throw new Exception("ERROR: ${j9SecurityPath} was not found. Exiting...")
                 }
@@ -838,7 +861,7 @@ class Build {
                 context.println "INFO: Attempting to read workspace/target/metadata/variant_version/tags.txt..."
                 try {
                     j9Tags = context.readFile(j9TagsPath)
-                    context.println "SUCCESS: tags.txt found"
+                    context.println "SUCCESS: tags.txt found with value '${j9Tags}'"
                 } catch (NoSuchFileException e) {
                     throw new Exception("ERROR: ${j9TagsPath} was not found. Exiting...")
                 }
@@ -1041,13 +1064,10 @@ class Build {
 
         javaToBuild = javaToBuild.toUpperCase()
 
-        def fileName = "Semeru-jdk_${architecture}_${os}"
+        def fileName = "Open${javaToBuild}-jdk_${architecture}_${os}_${variant}"
 
-        if (additionalFileNameTag) {
-            fileName = "${fileName}_${additionalFileNameTag}"
-            if (additionalFileNameTag == "IBM") {
-                fileName = "ibm-java-jdk_${architecture}_${os}"
-            }
+        if (variant == "openj9") {
+             fileName = "ibm-semeru-" + ((additionalFileNameTag == "IBM") ? "certified" : "open") + "-jdk_${architecture}_${os}"
         }
 
         if (overrideFileNameVersion) {
@@ -1065,10 +1085,26 @@ class Build {
                     .replace("-b", "b")
 
             fileName = "${fileName}_${nameTag}"
+        } else if ((buildConfig.RELEASE) && (additionalFileNameTag == "IBM")) {
+            // extract vendor version string from buildConfig.CONFIGURE_ARGS
+            //  e.g. "CONFIGURE_ARGS": "--with-vendor-version-string=\"11.0.12.0\""
+
+            def configureArgs = buildConfig.CONFIGURE_ARGS
+            def startIndex = configureArgs.indexOf('--with-vendor-version-string=\"') + 30
+            def vendorVersion = configureArgs.substring(startIndex, configureArgs.indexOf('\"', startIndex))
+
+            context.println "vendorVersion:$vendorVersion"
+
+            fileName = "${fileName}_${vendorVersion}"
+
         } else {
             def timestamp = new Date().format("yyyy-MM-dd-HH-mm", TimeZone.getTimeZone("UTC"))
 
-            fileName = "${fileName}_${javaToBuild}_${timestamp}"
+            if(variant == "openj9") {
+                fileName = "${fileName}_${javaToBuild}_${timestamp}"
+            } else {
+                fileName = "${fileName}_${timestamp}"
+            }
         }
 
 
@@ -1641,7 +1677,11 @@ class Build {
                     try {
                         // Installer job timeout managed by Jenkins job config
                         buildInstaller(versionInfo)
-                        signInstaller(versionInfo)
+                        // sing installers for all variants except openj9
+                        // openj9 variant builds sign msi during the creation and pkg is 3rd party signed atm.
+                        if (buildConfig.VARIANT != "openj9") {
+                            signInstaller(versionInfo)
+                        }
                     } catch (FlowInterruptedException e) {
                         throw new Exception("[ERROR] Installer job timeout (${buildTimeouts.INSTALLER_JOBS_TIMEOUT} HOURS) has been reached OR the downstream installer job failed. Exiting...")
                     }
