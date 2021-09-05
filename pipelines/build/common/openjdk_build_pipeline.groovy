@@ -393,7 +393,7 @@ class Build {
         def pattern = "Runtime Environment"
 
         if (buildConfig.VARIANT == "openj9") {
-            pattern = "IBM Semeru Runtime" + ((buildConfig.ADDITIONAL_FILE_NAME_TAG == "IBM") ? "Certified" : "Open") + "Edition"
+            pattern = "IBM Semeru Runtime " + ((buildConfig.ADDITIONAL_FILE_NAME_TAG == "IBM") ? "Certified" : "Open") + " Edition"
         }
 
         Matcher matcher = (consoleOut =~ /(?ms)^.*${pattern}[^\n]*\(build (?<version>[^)]*)\).*$/)
