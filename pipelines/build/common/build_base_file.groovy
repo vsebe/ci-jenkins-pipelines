@@ -654,12 +654,35 @@ class Builder implements Serializable {
             def downstreamJobName = 'build-scripts/release/package_binaries'
             context.echo "build name: ${downstreamJobName} for ${linuxTargets}"
 
+            def version = ''
+            def variantVersion = ''
+            def variantTags = ''
+
+            if (publishName && publishName.contains(variant)) {
+                // expected publishName:  jdk[-]<version>_<variant>-<variant_version>[-<variant_tag>]
+                //e.g. 
+                //  JDK8:  jdk8u192-b12_openj9-0.12.1
+                //  JDK11: jdk-11.0.2+9_openj9-0.12.1-m1
+                //  JDK17: jdk-17+35_openj9-0.28.0-m1
+
+                def tokens = publishName.minus('jdk').minus("_${variant}").tokenize('-')
+                version = tokens[0]
+                variantVersion = tokens[1]
+
+                if (tokens.size() > 2) {
+                    variantTags = tokens[2]
+                }
+            }
+
             def downstreamJob = context.build job: downstreamJobName,
                     parameters: [
                         ['$class': 'BooleanParameterValue', name: 'RELEASE', value: release],
                         context.string(name: 'JDK_VERSION', value: "${getJavaVersionNumber()}"),
                         context.string(name: 'PRODUCT', value: (tag ?: '')),
                         context.string(name: 'VARIANT', value: variant),
+                        context.string(name: 'VARIANT_VERSION', value: variantVersion),
+                        context.string(name: 'VARIANT_TAG', value: variantTags),
+                        context.string(name: 'VERSION', value: version),
                         context.string(name: 'ARCHITECTURE', value: linuxTargets.join(',')),
                         context.string(name: 'BINARIES_SOURCE', value: 'upstreamJob'),
                         context.string(name: 'UPSTREAM_JOB_NAME', value: env.JOB_NAME),
@@ -728,7 +751,10 @@ class Builder implements Serializable {
             }
 
             def jobs = [:]
-            def linuxTargets = []
+
+            // cache targets for the RPM downstream build
+            def linuxTargets = [] //linux targets without additionalFileNameTag
+            def taggedLinuxTargets = [] //custom targets, targets with additionalFileNameTag
 
             // Special case for JDK head where the jobs are called jdk-os-arch-variant
             if (javaToBuild == "jdk${getHeadVersionNumber()}") {
@@ -797,8 +823,15 @@ class Builder implements Serializable {
                                                 )
 
                                                 // cache Linux platform
-                                                if (configuration.key.toLowerCase().contains('linux')) {
-                                                    linuxTargets.add(config.ARCHITECTURE)
+                                                if (config.TARGET_OS.equals('linux')) {
+                                                    if (config.VARIANT.equals('openj9') && (config.ADDITIONAL_FILE_NAME_TAG && !config.ADDITIONAL_FILE_NAME_TAG.endsWith('XL'))) {
+                                                        // cache custom target
+                                                        // work-around for openj9 variant that uses additionalFileNameTag/ADDITIONAL_FILE_NAME_TAG
+                                                        // to distinguish between Semeru Open targets and Semeru Certified targets
+                                                        taggedLinuxTargets.add(config.ARCHITECTURE)
+                                                    } else {
+                                                        linuxTargets.add(config.ARCHITECTURE)
+                                                    }
                                                 }
                                             }
                                         } catch (FlowInterruptedException e) {
@@ -832,31 +865,28 @@ class Builder implements Serializable {
             }
             context.parallel jobs
 
-            if (enableInstallers && !linuxTargets.isEmpty()) {
+            if (enableInstallers && (!linuxTargets.isEmpty() || !taggedLinuxTargets.isEmpty())) {
                 //build RedHat source RPM package for Linux platforms
+                //launch two downstream builds when current build also contains custom targets
                 def variant = jobConfigurations.collect({ it.value.VARIANT }).unique().get(0)
-                def tag = jobConfigurations.collect({ it.value.ADDITIONAL_FILE_NAME_TAG }).unique().get(0)
                 def installerRepo = (DEFAULTS_JSON['repository']['installer_url']) ?: ''
                 def installerBranch = (DEFAULTS_JSON['repository']['installer_branch']) ?: ''
 
                 try {
-                    if (variant.equals("openj9") && (tag && !tag.endsWith('XL'))) {
+                    // check if there are any custom targets, if so launch build for them
+                    if (!taggedLinuxTargets.isEmpty()) {
+                        def tag = jobConfigurations.collect({ it.value.ADDITIONAL_FILE_NAME_TAG }).unique().find{ it != null }
+
                         // launch build for targets with ADDITIONAL_FILE_NAME_TAG (aka tag)
                         context.timeout(time: pipelineTimeouts.PUBLISH_ARTIFACTS_TIMEOUT, unit: "HOURS") {
-                            packageSourceBinaries(variant, tag, linuxTargets.findAll { it.contains(tag) }, installerRepo, installerBranch)
-                        }
-
-                        linuxTargets.eachWithIndex { value, i ->
-                            if (value.contains(tag)) {
-                                linuxTargets.remove(i)
-                            }
+                            packageSourceBinaries(variant, tag, taggedLinuxTargets, installerRepo, installerBranch)
                         }
                     }
 
                     if (!linuxTargets.isEmpty()) {
-                        // launch build from targets without ADDITIONAL_FILE_NAME_TAG (aka tag)
+                        // launch build for targets without ADDITIONAL_FILE_NAME_TAG (aka tag)
                         context.timeout(time: pipelineTimeouts.PUBLISH_ARTIFACTS_TIMEOUT, unit: "HOURS") {
-                            packageSourceBinaries(variant, '', linuxTargets, installerRepo, installerBranch)
+                            packageSourceBinaries(variant, null, linuxTargets.unique(), installerRepo, installerBranch)
                         }
                     }
                 }catch (FlowInterruptedException e) {
