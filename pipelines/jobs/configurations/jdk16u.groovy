@@ -32,4 +32,6 @@ weekly_release_scmReferences=[
         "openj9"         : ""
 ]
 
+disableJob = true
+
 return this
