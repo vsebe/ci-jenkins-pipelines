@@ -419,9 +419,10 @@ class Build {
         // Sign and archive jobs if needed
 
         def targets = ["windows"]
-
-        // Note: mac binaries for openj9 variant are signed by 3rd party
-        if (buildConfig.VARIANT != "openj9") {
+        if (buildConfig.VARIANT.equals("openj9")) {
+            // Note: mac binaries for openj9 variant are signed by 3rd party, skip platform
+            targets.addAll(["aix", "linux"])
+        } else {
             targets.add("mac")
         }
 
@@ -434,19 +435,17 @@ class Build {
                 def signTool = "eclipse"
 
                 if (buildConfig.VARIANT == "openj9") {
+                    filter = "**/ibm-semeru*-j*_${buildConfig.TARGET_OS}_*.tar.gz"
                     nodeFilter = "sw.tool.signing"
-
-                    if (buildConfig.TARGET_OS == "windows") {
-                        filter = "**/ibm-semeru*-j*_windows_*.zip"
-                        nodeFilter += "&&sw.os.windows"
-
-                    } else if (buildConfig.TARGET_OS == "mac") {
-                        filter = "**/ibm-semeru*-j*_mac_*.tar.gz"
-                        nodeFilter += "&&sw.os.osx"
-                    }
-
                     signTool = "ucl"
 
+                    if (buildConfig.TARGET_OS == "windows") {
+                        nodeFilter += "&&sw.os.windows"
+                    } else if (buildConfig.TARGET_OS == "mac") {
+                        nodeFilter += "&&sw.os.osx"
+                    } else if (["aix", "linux"].contains(buildConfig.TARGET_OS)) {
+                        nodeFilter += "&&sw.os.linux"
+                    }
                 } else {
                     if (buildConfig.TARGET_OS == "windows") {
                         filter = "**/OpenJDK*_windows_*.zip"
