@@ -490,6 +490,8 @@ class Build {
                     // TODO: Archive Artifactory
                 }
             }
+        } else {
+            context.echo "Skip signing for unsupported OS: ${buildConfig.TARGET_OS}"
         }
     }
 
