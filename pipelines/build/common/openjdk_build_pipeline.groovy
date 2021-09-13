@@ -441,6 +441,7 @@ class Build {
 
                     if (buildConfig.TARGET_OS == "windows") {
                         nodeFilter += "&&sw.os.windows"
+                        filter = "**/ibm-semeru*-j*_${buildConfig.TARGET_OS}_*.zip"
                     } else if (buildConfig.TARGET_OS == "mac") {
                         nodeFilter += "&&sw.os.osx"
                     } else if (["aix", "linux"].contains(buildConfig.TARGET_OS)) {
