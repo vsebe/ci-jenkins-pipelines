@@ -25,7 +25,7 @@ targetConfigurations = [
         ]
 ]
 
-// Weeknights at H9:00pm
+// Weeknights at 10:30pm
 triggerSchedule_nightly="30 22 * * 1-4"
 // H9:00am Sat
 triggerSchedule_weekly="30 22 * * 5"

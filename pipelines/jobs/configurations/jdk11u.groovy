@@ -15,7 +15,7 @@ targetConfigurations = [
         "s390xLinuxIBM"    : [ "openj9" ]
 ]
 
-// Weeknights at H9:00pm
+// Weeknights at 9:00pm
 triggerSchedule_nightly="0 21 * * 1-4"
 // H9:00am Sat
 triggerSchedule_weekly="0 21 * * 5"
