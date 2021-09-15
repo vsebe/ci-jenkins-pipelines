@@ -47,7 +47,7 @@ class Config18 {
                 os                  : 'windows',
                 arch                : 'x64',
                 additionalNodeLabels: 'ci.project.openj9 && hw.arch.x86 && sw.os.windows',
-                test                : 'default'
+                test                : 'default',
                 cleanWorkspaceAfterBuild: true,
                 configureArgs       : [
                         openj9      :'--with-vendor-name="IBM Corporation" --with-vendor-version-string="18.0.0.0" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-jdk-rc-name="IBM Semeru Runtime"'
