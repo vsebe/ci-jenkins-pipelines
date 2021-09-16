@@ -570,7 +570,7 @@ class Build {
         def filter = "**/OpenJDK*jdk_*_windows*.zip"
 
         if (buildConfig.VARIANT == "openj9") {
-            filter = "**/ibm-semeru*-j*_*_windows*.zip"
+            filter = "**/ibm-semeru*-jdk_*_windows*.zip"
         }
 
         def buildNumber = versionData.build
@@ -620,12 +620,15 @@ class Build {
             if (file.contains("-jre")) {
 
                 context.println("We have a JRE. Running another installer for it...")
+                if (buildConfig.VARIANT == "openj9") {
+                    filter = "**/ibm-semeru*-jre_*_windows*.zip"
+                }
                 def jreinstallerJob = context.build job: "build-scripts/release/create_installer_windows",
                         propagate: true,
                         parameters: [
                             context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${env.BUILD_NUMBER}"),
                             context.string(name: 'UPSTREAM_JOB_NAME', value: "${env.JOB_NAME}"),
-                            context.string(name: 'FILTER', value: "**/OpenJDK*jre_*_windows*.zip"),
+                            context.string(name: 'FILTER', value: "${filter}"),
                             context.string(name: 'PRODUCT_MAJOR_VERSION', value: "${versionData.major}"),
                             context.string(name: 'PRODUCT_MINOR_VERSION', value: "${versionData.minor}"),
                             context.string(name: 'PRODUCT_MAINTENANCE_VERSION', value: "${versionData.security}"),
@@ -635,7 +638,7 @@ class Build {
                             context.string(name: 'PRODUCT_CATEGORY', value: "jre"),
                             context.string(name: 'JVM', value: "${buildConfig.VARIANT}"),
                             context.string(name: 'ARCH', value: "${INSTALLER_ARCH}"),
-                            ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "${buildConfig.TARGET_OS}&&wix"]
+                            ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "sw.os.windows&&ci.role.packaging&&sw.tool.signing"]
                         ]
 
                 context.copyArtifacts(
