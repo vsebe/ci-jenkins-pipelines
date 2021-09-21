@@ -56,7 +56,7 @@
         "disabled" : [
             "sanity.external"
         ],
-        "enableTestDynamicParallel" : true,
+        "enableTestDynamicParallel" : false,
         "defaultDynamicParas": {
             "testLists"      : ["extended.openjdk"],
             "numMachines"    : "3"
