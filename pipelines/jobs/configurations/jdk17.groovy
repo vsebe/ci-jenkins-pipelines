@@ -19,7 +19,7 @@ targetConfigurations = [
         ],
         "aarch64Linux": [
                 "openj9"
-        ]
+        ],
         "x64MacIBM": [
                 "openj9"
         ],
@@ -37,7 +37,7 @@ targetConfigurations = [
         ],
         "s390xLinuxIBM": [
                 "openj9"
-        ]
+        ],
         "aarch64LinuxIBM": [
                 "openj9"
         ]

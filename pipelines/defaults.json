@@ -35,6 +35,7 @@
         "downstream"         : "pipelines/build/common/openjdk_build_pipeline.groovy"
     },
     "testDetails"            : {
+        "enableTests"        : true,
         "nightlyDefault"     : [
             "sanity.functional",
             "extended.functional",
@@ -55,7 +56,11 @@
         "disabled" : [
             "sanity.external"
         ],
-        "enableTests"        : true
+        "enableTestDynamicParallel" : true,
+        "defaultDynamicParas": {
+            "testLists"      : ["extended.openjdk"],
+            "numMachines"    : "3"
+         }
     },
     "importLibraryScript"    : "pipelines/build/common/import_lib.groovy",
     "defaultsUrl"            : "https://raw.githubusercontent.com/ibmruntimes/ci-jenkins-pipelines/ibm/pipelines/defaults.json"

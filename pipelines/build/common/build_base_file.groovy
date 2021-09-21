@@ -39,6 +39,7 @@ class Builder implements Serializable {
     String activeNodeTimeout
     Map<String, List<String>> dockerExcludes
     boolean enableTests
+    boolean enableTestDynamicParallel
     boolean enableInstallers
     boolean enableSigner
     boolean publish
@@ -115,10 +116,12 @@ class Builder implements Serializable {
         }
 
         def testList = getTestList(platformConfig, variant)
+        def dynamicList = getDynamicParams(platformConfig, variant).get("testLists")
+        def numMachines = getDynamicParams(platformConfig, variant).get("numMachines")
 
         def platformCleanWorkspaceAfterBuild = getCleanWorkspaceAfterBuild(platformConfig)
 
-        // Always clean on mac due to https://github.com/AdoptOpenJDK/openjdk-build/issues/1980
+        // Always clean on mac due to https://github.com/adoptium/temurin-build/issues/1980
         def cleanWorkspace = cleanWorkspaceBeforeBuild
         if (platformConfig.os == "mac") {
             cleanWorkspace = true
@@ -136,6 +139,8 @@ class Builder implements Serializable {
             TARGET_OS: platformConfig.os as String,
             VARIANT: variant,
             TEST_LIST: testList,
+            DYNAMIC_LIST: dynamicList,
+            NUM_MACHINES: numMachines,
             SCM_REF: scmReference,
             BUILD_ARGS: buildArgs,
             NODE_LABEL: "${additionalNodeLabels}",
@@ -158,6 +163,7 @@ class Builder implements Serializable {
             PUBLISH_NAME: publishName,
             ADOPT_BUILD_NUMBER: adoptBuildNumber,
             ENABLE_TESTS: enableTests,
+            ENABLE_TESTDYNAMICPARALLEL: enableTestDynamicParallel,
             ENABLE_INSTALLERS: enableInstallers,
             ENABLE_SIGNER: enableSigner,
             CLEAN_WORKSPACE: cleanWorkspace,
@@ -256,7 +262,30 @@ class Builder implements Serializable {
 
         return testList
     }
-
+    /*
+    Get the list of tests to dynamically run  parallel builds from the build configurations.
+    This function parses and applies this to the individual build config.
+    */
+    Map<String, ?> getDynamicParams(Map<String, ?> configuration, String variant) {
+        List<String> testLists = DEFAULTS_JSON["testDetails"]["defaultDynamicParas"]["testLists"]
+        String numMachines = DEFAULTS_JSON["testDetails"]["defaultDynamicParas"]["numMachines"]
+        if (configuration.containsKey("testDynamic")) {
+            if (configuration.get("testDynamic")) {
+                if(configuration.get("testDynamic").containsKey(variant)) {
+                    testLists = configuration.get("testDynamic").get(variant).get("testLists")
+                    numMachines = configuration.get("testDynamic").get(variant).get("numMachines")
+                } else {
+                    testLists = configuration.get("testDynamic").get("testLists")
+                    numMachines = configuration.get("testDynamic").get("numMachines")
+                }
+           } else {
+                testLists = []
+                numMachines = ""
+            }
+        }
+        
+        return ["testLists": testLists, "numMachines": numMachines]
+    }
     /*
     Get the cleanWorkspaceAfterBuild override for this platform configuration
     */
@@ -282,10 +311,6 @@ class Builder implements Serializable {
         String stringArch = configuration.arch as String
         String stringOs = configuration.os as String
         String estimatedKey = stringArch + stringOs.capitalize()
-
-        if (configuration.containsKey("additionalFileNameTag")) {
-            estimatedKey = estimatedKey + "XL"
-        }
 
         if (dockerExcludes.containsKey(estimatedKey)) {
 
@@ -414,13 +439,13 @@ class Builder implements Serializable {
     */
     def getPlatformSpecificConfigPath(Map<String, ?> configuration) {
         def splitUserUrl = ((String)DEFAULTS_JSON['repository']['build_url']).minus(".git").split('/')
-        // e.g. https://github.com/AdoptOpenJDK/openjdk-build.git will produce AdoptOpenJDK/openjdk-build
+        // e.g. https://github.com/adoptium/temurin-build.git will produce adoptium/temurin-build
         String userOrgRepo = "${splitUserUrl[splitUserUrl.size() - 2]}/${splitUserUrl[splitUserUrl.size() - 1]}"
 
-        // e.g. AdoptOpenJDK/openjdk-build/master/build-farm/platform-specific-configurations
+        // e.g. adoptium/temurin-build/master/build-farm/platform-specific-configurations
         def platformSpecificConfigPath = "${userOrgRepo}/${DEFAULTS_JSON['repository']['build_branch']}/${DEFAULTS_JSON['configDirectories']['platform']}"
         if (configuration.containsKey("platformSpecificConfigPath")) {
-            // e.g. AdoptOpenJDK/openjdk-build/master/build-farm/platform-specific-configurations.linux.sh
+            // e.g. adoptium/temurin-build/master/build-farm/platform-specific-configurations.linux.sh
             platformSpecificConfigPath = "${userOrgRepo}/${DEFAULTS_JSON['repository']['build_branch']}/${configuration.platformSpecificConfigPath}"
         }
         return platformSpecificConfigPath
@@ -921,6 +946,7 @@ return {
     String activeNodeTimeout,
     String dockerExcludes,
     String enableTests,
+    String enableTestDynamicParallel,
     String enableInstallers,
     String enableSigner,
     String releaseType,
@@ -975,6 +1001,7 @@ return {
             activeNodeTimeout: activeNodeTimeout,
             dockerExcludes: buildsExcludeDocker,
             enableTests: Boolean.parseBoolean(enableTests),
+            enableTestDynamicParallel: Boolean.parseBoolean(enableTestDynamicParallel),
             enableInstallers: Boolean.parseBoolean(enableInstallers),
             enableSigner: Boolean.parseBoolean(enableSigner),
             publish: publish,

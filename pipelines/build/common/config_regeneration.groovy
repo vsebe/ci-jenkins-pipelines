@@ -231,14 +231,14 @@ class Regeneration implements Serializable {
     */
     def getPlatformSpecificConfigPath(Map<String, ?> configuration) {
         def splitUserUrl = ((String)DEFAULTS_JSON['repository']['build_url']).minus(".git").split('/')
-        // e.g. https://github.com/AdoptOpenJDK/openjdk-build.git will produce AdoptOpenJDK/openjdk-build
+        // e.g. https://github.com/adoptium/temurin-build.git will produce adoptium/temurin-build
         String userOrgRepo = "${splitUserUrl[splitUserUrl.size() - 2]}/${splitUserUrl[splitUserUrl.size() - 1]}"
 
-        // e.g. AdoptOpenJDK/openjdk-build/master/build-farm/platform-specific-configurations
+        // e.g. adoptium/temurin-build/master/build-farm/platform-specific-configurations
         def platformSpecificConfigPath = "${userOrgRepo}/${DEFAULTS_JSON['repository']['build_branch']}/${DEFAULTS_JSON['configDirectories']['platform']}"
 
         if (configuration.containsKey("platformSpecificConfigPath")) {
-            // e.g. AdoptOpenJDK/openjdk-build/master/build-farm/platform-specific-configurations.linux.sh
+            // e.g. adoptium/temurin-build/master/build-farm/platform-specific-configurations.linux.sh
             platformSpecificConfigPath = "${userOrgRepo}/${DEFAULTS_JSON['repository']['build_branch']}/${configuration.platformSpecificConfigPath}"
         }
         return platformSpecificConfigPath
@@ -332,7 +332,15 @@ class Regeneration implements Serializable {
         testList.unique()
         return testList
     }
-
+    /*
+    * Get the list of tests to dynamically run  parallel builds from the build configurations. Used as a placeholder since the pipelines overwrite this
+    * @param configuration
+    */
+    Map<String, ?> getDynamicParams() {
+        List<String> testLists = DEFAULTS_JSON["testDetails"]["defaultDynamicParas"]["testLists"]
+        String numMachines = DEFAULTS_JSON["testDetails"]["defaultDynamicParas"]["numMachines"]
+        return ["testLists": testLists, "numMachines": numMachines]
+    }
     /*
     * Checks if the platform/arch/variant is in the EXCLUDES_LIST Parameter.
     * @param configuration
@@ -350,14 +358,9 @@ class Regeneration implements Serializable {
 
         if (configuration.containsKey("additionalFileNameTag")) {
             String stringAdditionalFileNameTag = configuration.additionalFileNameTag as String
-            if (stringAdditionalFileNameTag.contains('XL')) {
-                estimatedKey = estimatedKey + "XL"
-            } else {
-                estimatedKey += stringAdditionalFileNameTag
-            }
+            estimatedKey += stringAdditionalFileNameTag
         }
 
-        
         if (excludedBuilds.containsKey(estimatedKey)) {
 
             if (excludedBuilds[estimatedKey].contains(variant)) {
@@ -406,12 +409,18 @@ class Regeneration implements Serializable {
 
             def testList = getTestList(platformConfig)
 
-            return new IndividualBuildConfig( // final build config
+            def dynamicList = getDynamicParams().get("testLists")
+
+            def numMachines = getDynamicParams().get("numMachines")
+
+           return new IndividualBuildConfig( // final build config
                 JAVA_TO_BUILD: javaToBuild,
                 ARCHITECTURE: platformConfig.arch as String,
                 TARGET_OS: platformConfig.os as String,
                 VARIANT: variant,
                 TEST_LIST: testList,
+                DYNAMIC_LIST: dynamicList,
+                NUM_MACHINES: numMachines,
                 SCM_REF: "",
                 BUILD_ARGS: buildArgs,
                 NODE_LABEL: "${additionalNodeLabels}",
@@ -434,6 +443,7 @@ class Regeneration implements Serializable {
                 PUBLISH_NAME: "",
                 ADOPT_BUILD_NUMBER: "",
                 ENABLE_TESTS: DEFAULTS_JSON['testDetails']['enableTests'] as Boolean,
+                ENABLE_TESTDYNAMICPARALLEL: DEFAULTS_JSON['testDetails']['enableTestDynamicParallel'] as Boolean,
                 ENABLE_INSTALLERS: true,
                 ENABLE_SIGNER: true,
                 CLEAN_WORKSPACE: true,
@@ -463,6 +473,7 @@ class Regeneration implements Serializable {
         Map<String, ?> params = config.toMap().clone() as Map
         params.put("JOB_NAME", jobName)
         params.put("JOB_FOLDER", jobFolder)
+        params.put("VARIANT", config.VARIANT)
         params.put("SCRIPT_PATH", scriptPath)
 
         params.put("GIT_URL", gitRemoteConfigs['url'])
@@ -576,7 +587,7 @@ class Regeneration implements Serializable {
             context.stage("Check $javaVersion pipeline status") {
 
                 if (jobRootDir.contains("pr-tester")) {
-                    // No need to check if we're going to overwrite anything for the PR tester since concurrency isn't enabled -> https://github.com/AdoptOpenJDK/openjdk-build/pull/2155
+                    // No need to check if we're going to overwrite anything for the PR tester since concurrency isn't enabled -> https://github.com/adoptium/temurin-build/pull/2155
                     context.println "[SUCCESS] Don't need to check if the pr-tester is running as concurrency is disabled. Running regeneration job..."
                 } else {
                     // Get all pipelines

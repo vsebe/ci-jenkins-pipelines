@@ -40,7 +40,8 @@ class Config18 {
                 os                  : 'alpine-linux',
                 arch                : 'x64',
                 dockerImage         : 'adoptopenjdk/alpine3_build_image',
-                test                : 'default'
+                test                : 'default',
+                configureArgs       : '--enable-headless-only=yes'
         ],
 
         x64Windows: [
@@ -91,7 +92,6 @@ class Config18 {
                 cleanWorkspaceAfterBuild: true
         ],
 
-
         s390xLinux    : [
                 os                  : 'linux',
                 arch                : 's390x',
@@ -115,7 +115,6 @@ class Config18 {
                         hotspot     : '--enable-dtrace',
                         openj9      : '--enable-dtrace --enable-jitserver --with-vendor-name="IBM Corporation" --with-vendor-version-string="18.0.0.0" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
                 ]
-
         ],
 
         aarch64Linux    : [

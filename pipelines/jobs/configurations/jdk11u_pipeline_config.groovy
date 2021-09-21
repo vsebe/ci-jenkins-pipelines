@@ -11,15 +11,6 @@ class Config11 {
             ]
         ],
 
-        x64MacXL    : [
-            os                   : 'mac',
-            arch                 : 'x64',
-            additionalNodeLabels: 'macos10.14',
-            test                 : 'default',
-            additionalFileNameTag: "macosXL",
-            configureArgs        : '--with-noncompressedrefs --enable-dtrace=auto'
-        ],
-
         x64MacIBM    : [
             os                  : 'mac',
             arch                : 'x64',
@@ -100,15 +91,6 @@ class Config11 {
                     "openj9"      : '--with-vendor-name="International Business Machines Corporation" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-jdk-rc-name="IBM Semeru Runtime"'
             ],
             additionalFileNameTag: "IBM"
-        ],
-
-        x64WindowsXL    : [
-            os                   : 'windows',
-            arch                 : 'x64',
-            additionalNodeLabels : 'win2012&&vs2017',
-            test                 : 'default',
-            additionalFileNameTag: "windowsXL",
-            configureArgs        : '--with-noncompressedrefs'
         ],
 
         x32Windows: [
@@ -228,43 +210,10 @@ class Config11 {
                     "corretto" : '--enable-dtrace=auto',
                     "dragonwell" : "--enable-dtrace=auto --with-extra-cflags=\"-march=armv8.2-a+crypto\" --with-extra-cxxflags=\"-march=armv8.2-a+crypto\"",
                     "bisheng" : '--enable-dtrace=auto --with-extra-cflags=-fstack-protector-strong --with-extra-cxxflags=-fstack-protector-strong --with-jvm-variants=server'
-            ]
+            ],
+            testDynamic        : false
         ],
 
-        x64LinuxXL    : [
-            os                   : 'linux',
-            dockerImage          : 'adoptopenjdk/centos6_build_image',
-            dockerFile: [
-                    openj9  : 'pipelines/build/dockerFiles/cuda.dockerfile'
-            ],
-            arch                 : 'x64',
-            test                 : "default",
-            additionalFileNameTag: "linuxXL",
-            configureArgs        : '--with-noncompressedrefs --enable-jitserver --enable-dtrace=auto'
-        ],
-        s390xLinuxXL    : [
-            os                   : 'linux',
-            arch                 : 's390x',
-            test                 : 'default',
-            additionalFileNameTag: "linuxXL",
-            configureArgs        : '--with-noncompressedrefs --enable-dtrace=auto'
-        ],
-        ppc64leLinuxXL    : [
-            os                   : 'linux',
-            arch                 : 'ppc64le',
-            additionalNodeLabels : 'centos7',
-            test                 : 'default',
-            additionalFileNameTag: "linuxXL",
-            configureArgs        : '--with-noncompressedrefs --enable-dtrace=auto --enable-jitserver'
-        ],
-        aarch64LinuxXL    : [
-            os                   : 'linux',
-            dockerImage          : 'adoptopenjdk/centos7_build_image',
-            arch                 : 'aarch64',
-            test                 : 'default',
-            additionalFileNameTag: "linuxXL",
-            configureArgs        : '--with-noncompressedrefs --enable-dtrace=auto'
-        ],
         riscv64Linux      :  [
             os                   : 'linux',
             arch                 : 'riscv64',

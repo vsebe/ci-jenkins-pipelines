@@ -138,7 +138,7 @@ class Build {
 
     /*
     Calculates which test job we should execute for each requested test type.
-    The test jobs all follow the same name naming pattern that is defined in the openjdk-tests repository.
+    The test jobs all follow the same name naming pattern that is defined in the aqa-tests repository.
     E.g. Test_openjdk11_hs_sanity.system_ppc64_aix
     */
      def getSmokeTestJobParams() {
@@ -176,13 +176,6 @@ class Build {
             default: variant = "hs"
         }
         def jobName = "Test_openjdk${jobParams['JDK_VERSIONS']}_${variant}_${testType}_${jobParams['ARCH_OS_LIST']}"
-        if (buildConfig.ADDITIONAL_FILE_NAME_TAG) {
-            switch (buildConfig.ADDITIONAL_FILE_NAME_TAG) {
-                case ~/.*XL.*/: 
-                    jobName += "_xl";
-                    break
-            }
-        }
         jobParams.put('TEST_JOB_NAME', jobName)
         return jobParams
     }
@@ -198,13 +191,6 @@ class Build {
             arch = "x86-64"
         }
         def arch_os = "${arch}_${buildConfig.TARGET_OS}"
-        if (buildConfig.ADDITIONAL_FILE_NAME_TAG) {
-            switch (buildConfig.ADDITIONAL_FILE_NAME_TAG) {
-                case ~/.*XL.*/: 
-                    arch_os += "_xl";
-                    break
-            }
-        }
         jobParams.put('ARCH_OS_LIST', arch_os)
         jobParams.put('LIGHT_WEIGHT_CHECKOUT', true)
         return jobParams
@@ -261,7 +247,7 @@ class Build {
             }
             suffix = "ibmruntimes/openj9-openjdk-${openj9JavaToBuild}"
         } else if (buildConfig.VARIANT == "hotspot") {
-            suffix = "adoptopenjdk/openjdk-${buildConfig.JAVA_TO_BUILD}"
+            suffix = "adoptium/${buildConfig.JAVA_TO_BUILD}"
         } else if (buildConfig.VARIANT == "dragonwell") {
             suffix = "alibaba/dragonwell${javaNumber}"
         } else if (buildConfig.VARIANT == "bisheng") {
@@ -292,7 +278,7 @@ class Build {
                 def JobHelper = context.library(identifier: 'openjdk-jenkins-helper@master').JobHelper
                 if (!JobHelper.jobIsRunnable(jobName as String)) {
                     context.node('master') {
-                        context.sh('curl -Os https://raw.githubusercontent.com/AdoptOpenJDK/openjdk-tests/master/buildenv/jenkins/testJobTemplate')
+                        context.sh('curl -Os https://raw.githubusercontent.com/adoptium/aqa-tests/master/buildenv/jenkins/testJobTemplate')
                         def templatePath = 'testJobTemplate'
                         context.println "Smoke test job doesn't exist, create test job: ${jobName}"
                         context.jobDsl targets: templatePath, ignoreExisting: false, additionalParameters: jobParams
@@ -321,15 +307,15 @@ class Build {
     */
     def runAQATests() {
         def testStages = [:]
-        List testList = []
         def jdkBranch = getJDKBranch()
         def jdkRepo = getJDKRepo()
         def openj9Branch = (buildConfig.SCM_REF && buildConfig.VARIANT == "openj9") ? buildConfig.SCM_REF : "master"
 
         def additionalTestLabel = buildConfig.ADDITIONAL_TEST_LABEL
 
-        testList = buildConfig.TEST_LIST
-
+        List testList = buildConfig.TEST_LIST
+        List dynamicList = buildConfig.DYNAMIC_LIST
+        String numMachines = buildConfig.NUM_MACHINES
         testList.each { testType ->
 
             // For each requested test, i.e 'sanity.openjdk', 'sanity.system', 'sanity.perf', 'sanity.external', call test job
@@ -344,13 +330,17 @@ class Build {
                         }
 
                         def jobParams = getAQATestJobParams(testType)
+                        def parallel = 'None'
+                        if (dynamicList.contains(testType)) {
+                            parallel = 'Dynamic'
+                        }
                         def jobName = jobParams.TEST_JOB_NAME
                         def JobHelper = context.library(identifier: 'openjdk-jenkins-helper@master').JobHelper
 
                         // Create test job if job doesn't exist or is not runnable
                         if (!JobHelper.jobIsRunnable(jobName as String)) {
                             context.node('master') {
-                                context.sh('curl -Os https://raw.githubusercontent.com/AdoptOpenJDK/openjdk-tests/master/buildenv/jenkins/testJobTemplate')
+                                context.sh('curl -Os https://raw.githubusercontent.com/adoptium/aqa-tests/master/buildenv/jenkins/testJobTemplate')
                                 def templatePath = 'testJobTemplate'
                                 context.println "Test job doesn't exist, create test job: ${jobName}"
                                 context.jobDsl targets: templatePath, ignoreExisting: false, additionalParameters: jobParams
@@ -370,6 +360,8 @@ class Build {
                                             context.string(name: 'OPENJ9_BRANCH', value: openj9Branch),
                                             context.string(name: 'LABEL_ADDITION', value: additionalTestLabel),
                                             context.string(name: 'KEEP_REPORTDIR', value: "${keep_test_reportdir}"),
+                                            context.string(name: 'PARALLEL', value: parallel),
+                                            context.string(name: 'NUM_MACHINES', value: numMachines),
                                             context.string(name: 'ACTIVE_NODE_TIMEOUT', value: "${buildConfig.ACTIVE_NODE_TIMEOUT}")]
                         }
                     }
@@ -564,7 +556,7 @@ class Build {
 
     /*
     Run the Windows installer downstream jobs.
-    We run two jobs if we have a JRE (see https://github.com/AdoptOpenJDK/openjdk-build/issues/1751).
+    We run two jobs if we have a JRE (see https://github.com/adoptium/temurin-build/issues/1751).
     */
     private void buildWindowsInstaller(VersionInfo versionData) {
         def filter = "**/OpenJDK*jdk_*_windows*.zip"
@@ -977,7 +969,7 @@ class Build {
         /*
         example data:
             {
-                "vendor": "AdoptOpenJDK",
+                "vendor": "Eclipse Foundation",
                 "os": "mac",
                 "arch": "x64",
                 "variant": "openj9",
@@ -1230,7 +1222,7 @@ class Build {
                         repoHandler.checkoutUserPipelines(context)
                     }
                     // Perform a git clean outside of checkout to avoid the Jenkins enforced 10 minute timeout
-                    // https://github.com/AdoptOpenJDK/openjdk-infrastructure/issues/1553
+                    // https://github.com/adoptium/infrastucture/issues/1553
                     context.sh(script: "git clean -fdx")
                 }
             } catch (FlowInterruptedException e) {
@@ -1244,9 +1236,9 @@ class Build {
 
                 // Add in the adopt platform config path so it can be used if the user doesn't have one
                 def splitAdoptUrl = ((String)ADOPT_DEFAULTS_JSON['repository']['build_url']).minus(".git").split('/')
-                // e.g. https://github.com/AdoptOpenJDK/openjdk-build.git will produce AdoptOpenJDK/openjdk-build
+                // e.g. https://github.com/adoptium/temurin-build.git will produce adoptium/temurin-build
                 String userOrgRepo = "${splitAdoptUrl[splitAdoptUrl.size() - 2]}/${splitAdoptUrl[splitAdoptUrl.size() - 1]}"
-                // e.g. AdoptOpenJDK/openjdk-build/master/build-farm/platform-specific-configurations
+                // e.g. adoptium/temurin-build/master/build-farm/platform-specific-configurations
                 envVars.add("ADOPT_PLATFORM_CONFIG_LOCATION=${userOrgRepo}/${ADOPT_DEFAULTS_JSON['repository']['build_branch']}/${ADOPT_DEFAULTS_JSON['configDirectories']['platform']}" as String)
 
                 // Execute build
@@ -1258,11 +1250,78 @@ class Build {
                                 updateGithubCommitStatus("PENDING", "Build Started")
                             }
                             if (useAdoptShellScripts) {
-                                context.println "[CHECKOUT] Checking out to AdoptOpenJDK/openjdk-build..."
+                                context.println "[CHECKOUT] Checking out to adoptium/temurin-build..."
                                 repoHandler.checkoutAdoptBuild(context)
-                                context.sh(script: "./${ADOPT_DEFAULTS_JSON['scriptDirectories']['buildfarm']}")
-                                context.println "[CHECKOUT] Reverting pre-build AdoptOpenJDK/openjdk-build checkout..."
+                                if (buildConfig.TARGET_OS == "mac" && buildConfig.JAVA_TO_BUILD != "jdk8u") {
+                                    context.withEnv(["BUILD_ARGS=--make-exploded-image"]) {
+                                        context.println "Building an exploded image for signing"
+                                        context.sh(script: "./${ADOPT_DEFAULTS_JSON['scriptDirectories']['buildfarm']}")
+                                    }
+                                    def macos_base_path_arch = "x86_64"
+                                    if (buildConfig.ARCHITECTURE == "aarch64") {
+                                        macos_base_path_arch = "aarch64"
+                                    }
+                                    def macos_base_path="workspace/build/src/build/macosx-${macos_base_path_arch}-server-release"
+                                    if (buildConfig.JAVA_TO_BUILD == "jdk11u") {
+                                        macos_base_path="workspace/build/src/build/macosx-${macos_base_path_arch}-normal-server-release"
+                                    }
+                                    context.stash name: 'jmods',
+                                        includes: "${macos_base_path}/hotspot/variant-server/**/*," +
+                                            "${macos_base_path}/support/modules_cmds/**/*," +
+                                            "${macos_base_path}/support/modules_libs/**/*," +
+                                            // JDK 16 + jpackage needs to be signed as well
+                                            "${macos_base_path}/jdk/modules/jdk.jpackage/jdk/jpackage/internal/resources/jpackageapplauncher" 
 
+                                    context.node('eclipse-codesign') {
+                                        context.sh "rm -rf ${macos_base_path}/* || true"
+
+                                        repoHandler.checkoutAdoptBuild(context)
+
+                                        // Copy pre assembled binary ready for JMODs to be codesigned
+                                        context.unstash 'jmods'
+                                        context.withEnv(["macos_base_path=${macos_base_path}"]) {
+                                            context.sh '''
+                                                #!/bin/bash
+                                                set -eu
+                                                echo "Signing JMOD files"
+                                                TMP_DIR="${macos_base_path}/"
+                                                ENTITLEMENTS="$WORKSPACE/entitlements.plist"
+                                                FILES=$(find "${TMP_DIR}" -perm +111 -type f -o -name '*.dylib'  -type f || find "${TMP_DIR}" -perm /111 -type f -o -name '*.dylib'  -type f)
+                                                for f in $FILES
+                                                do
+                                                    echo "Signing $f using Eclipse Foundation codesign service"
+                                                    dir=$(dirname "$f")
+                                                    file=$(basename "$f")
+                                                    mv "$f" "${dir}/unsigned_${file}"
+                                                    curl -o "$f" -F file="@${dir}/unsigned_${file}" -F entitlements="@$ENTITLEMENTS" https://cbi.eclipse.org/macos/codesign/sign
+                                                    chmod --reference="${dir}/unsigned_${file}" "$f"
+                                                    rm -rf "${dir}/unsigned_${file}"
+                                                done
+                                            '''
+                                        }
+                                        context.stash name: 'signed_jmods', includes: "${macos_base_path}/**/*"
+                                    }
+                                    
+                                    // Remove jmod directories to be replaced with the stash saved above
+                                    context.sh "rm -rf ${macos_base_path}/hotspot/variant-server || true"
+                                    context.sh "rm -rf ${macos_base_path}/support/modules_cmds || true"
+                                    context.sh "rm -rf ${macos_base_path}/support/modules_libs || true"
+                                    // JDK 16 + jpackage needs to be signed as well
+                                    if (buildConfig.JAVA_TO_BUILD != "jdk11u") {
+                                        context.sh "rm -rf ${macos_base_path}/jdk/modules/jdk.jpackage/jdk/jpackage/internal/resources/jpackageapplauncher || true"
+                                    }
+
+                                    // Restore signed JMODs
+                                    context.unstash 'signed_jmods'
+
+                                    context.withEnv(["BUILD_ARGS=--assemble-exploded-image"]) {
+                                        context.println "Assembling the exploded image"
+                                        context.sh(script: "./${ADOPT_DEFAULTS_JSON['scriptDirectories']['buildfarm']}")
+                                    }
+                                } else {
+                                    context.sh(script: "./${ADOPT_DEFAULTS_JSON['scriptDirectories']['buildfarm']}")
+                                }
+                                context.println "[CHECKOUT] Reverting pre-build adoptium/temurin-build checkout..."
                                 // Special case for the pr tester as checking out to the user's pipelines doesn't play nicely
                                 if (env.JOB_NAME.contains("pr-tester")) {
                                     context.checkout context.scm
@@ -1584,7 +1643,7 @@ class Build {
                                         }
 
                                         // Perform a git clean outside of checkout to avoid the Jenkins enforced 10 minute timeout
-                                        // https://github.com/AdoptOpenJDK/openjdk-infrastructure/issues/1553
+                                        // https://github.com/adoptium/infrastucture/issues/1553
                                         context.sh(script: "git clean -fdx")
                                     }
                                 } catch (FlowInterruptedException e) {
@@ -1625,7 +1684,7 @@ class Build {
                             // This is to avoid windows path length issues.
                             context.echo("checking ${buildConfig.TARGET_OS}")
                             if (buildConfig.TARGET_OS == "windows") {
-                                // See https://github.com/AdoptOpenJDK/openjdk-infrastructure/issues/1284#issuecomment-621909378 for justification of the below path
+                                // See https://github.com/adoptium/infrastucture/issues/1284#issuecomment-621909378 for justification of the below path
                                 def workspace = "C:/workspace/openjdk-build/"
                                 if (env.CYGWIN_WORKSPACE) {
                                     workspace = env.CYGWIN_WORKSPACE

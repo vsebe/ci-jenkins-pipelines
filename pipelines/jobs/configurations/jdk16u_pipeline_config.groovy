@@ -33,12 +33,20 @@ class Config16 {
                 ]
         ],
 
+        x64AlpineLinux  : [
+                os                  : 'alpine-linux',
+                arch                : 'x64',
+                dockerImage         : 'adoptopenjdk/alpine3_build_image',
+                test                : 'default',
+                configureArgs       : '--enable-headless-only=yes'
+        ],
+
         x64Windows: [
                 os                  : 'windows',
                 arch                : 'x64',
                 additionalNodeLabels: 'ci.project.openj9 && hw.arch.x86 && sw.os.windows',
                 cleanWorkspaceAfterBuild: true,
-                configureArgs: '--with-vendor-name="International Business Machines Corporation" --with-vendor-version-string="16.0.2.0" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-jdk-rc-name="IBM Semeru Runtime"',
+                configureArgs       : '--with-vendor-name="International Business Machines Corporation" --with-vendor-version-string="16.0.2.0" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-jdk-rc-name="IBM Semeru Runtime"',
                 test                : 'default'
         ],
 
@@ -50,12 +58,11 @@ class Config16 {
                         openj9:  'hw.arch.ppc64 && sw.os.aix.7_1'
                 ],
                 test                : 'default',
-                configureArgs: [
+                configureArgs       : [
                         openj9: '--disable-ccache --with-vendor-name="International Business Machines Corporation" --with-vendor-version-string="16.0.2.0" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
                 ],
                 cleanWorkspaceAfterBuild: true
         ],
-
 
         s390xLinux    : [
                 os                  : 'linux',
@@ -81,7 +88,6 @@ class Config16 {
                         "hotspot"     : '--enable-dtrace',
                         "openj9"      : '--enable-dtrace --enable-jitserver --with-vendor-name="International Business Machines Corporation" --with-vendor-version-string="16.0.2.0" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
                 ]
-
         ],
 
         aarch64Linux    : [

@@ -13,15 +13,6 @@ class Config8 {
                 test                 : 'default'
         ],
 
-        x64MacXL      : [
-                os                   : 'mac',
-                arch                 : 'x64',
-                additionalNodeLabels : 'macos10.14',
-                test                 : 'default',
-                additionalFileNameTag: "macosXL",
-                configureArgs        : '--with-noncompressedrefs'
-        ],
-
         x64Linux      : [
                 os                  : 'linux',
                 arch                : 'x64',
@@ -39,7 +30,6 @@ class Config8 {
                         "dragonwell"  : '--enable-unlimited-crypto --with-jvm-variants=server  --with-zlib=system',
                 ]
         ],
-
         x64Windows    : [
                 os                  : 'windows',
                 arch                : 'x64',
@@ -51,15 +41,6 @@ class Config8 {
                 ],
                 configureArgs      : '--with-vendor-name="International Business Machines Corporation" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues',
                 test                 : 'default'
-        ],
-
-        x64WindowsXL    : [
-                os                   : 'windows',
-                arch                 : 'x64',
-                additionalNodeLabels : 'win2012',
-                test                 : 'default',
-                additionalFileNameTag: "windowsXL",
-                configureArgs        : '--with-noncompressedrefs'
         ],
 
         x32Windows    : [
@@ -108,13 +89,13 @@ class Config8 {
         sparcv9Solaris: [
                 os  : 'solaris',
                 arch: 'sparcv9',
-                test: false
+                test: 'default'
         ],
 
         x64Solaris    : [
                 os                  : 'solaris',
                 arch                : 'x64',
-                test                : false
+                test                : 'default'
         ],
 
         ppc64leLinux  : [
@@ -151,34 +132,8 @@ class Config8 {
                 ],
                 configureArgs      : '--with-milestone=ea --with-vendor-name="International Business Machines Corporation" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues',
                 cleanWorkspaceAfterBuild: true,
-                test                 : 'default'
-        ],
-
-        x64LinuxXL       : [
-                os                   : 'linux',
-                dockerImage          : 'adoptopenjdk/centos6_build_image',
-                dockerFile: [
-                        openj9  : 'pipelines/build/dockerFiles/cuda.dockerfile'
-                ],
-                arch                 : 'x64',
-                additionalFileNameTag: "linuxXL",
-                configureArgs        : '--with-noncompressedrefs --enable-jitserver',
-                test                 : 'default'
-        ],
-        s390xLinuxXL       : [
-                os                   : 'linux',
-                arch                 : 's390x',
-                additionalFileNameTag: "linuxXL",
                 test                 : 'default',
-                configureArgs        : '--with-noncompressedrefs'
-        ],
-        ppc64leLinuxXL       : [
-                os                   : 'linux',
-                arch                 : 'ppc64le',
-                additionalNodeLabels : 'centos7',
-                additionalFileNameTag: "linuxXL",
-                test                 : 'default',
-                configureArgs        : '--with-noncompressedrefs --enable-jitserver'
+                testDynamic          : false
         ],
   ]
 

@@ -9,15 +9,6 @@ class Config17 {
                 configureArgs       : '--enable-dtrace --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
         ],
 
-        x64MacXL    : [
-                os                   : 'mac',
-                arch                 : 'x64',
-                additionalNodeLabels : 'macos10.14',
-                test                 : 'default',
-                additionalFileNameTag: "macosXL",
-                configureArgs        : '--with-noncompressedrefs --enable-dtrace'
-        ],
-
         x64MacIBM    : [
                 os                  : 'mac',
                 arch                : 'x64',
@@ -55,26 +46,12 @@ class Config17 {
                 ]
         ],
 
-        x64LinuxXL  : [
-                os                   : 'linux',
-                arch                 : 'x64',
-                dockerImage          : 'adoptopenjdk/centos7_build_image',
-                dockerFile: [
-                        openj9  : 'pipelines/build/dockerFiles/cuda.dockerfile'
-                ],
-                test                 : 'default',
-                additionalTestLabels: [
-                        openj9      : '!(centos6||rhel6)'
-                ],
-                additionalFileNameTag: "linuxXL",
-                configureArgs        : '--with-noncompressedrefs --enable-dtrace --enable-jitserver'
-        ],
-
         x64AlpineLinux  : [
                 os                  : 'alpine-linux',
                 arch                : 'x64',
                 dockerImage         : 'adoptopenjdk/alpine3_build_image',
-                test                : 'default'
+                test                : 'default',
+                configureArgs       : '--enable-headless-only=yes'
         ],
 
         x64LinuxIBM  : [
@@ -105,15 +82,6 @@ class Config17 {
                 cleanWorkspaceAfterBuild: true,
                 configureArgs: '--with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-jdk-rc-name="IBM Semeru Runtime"',
                 test                : 'default'
-        ],
-
-        x64WindowsXL: [
-                os                   : 'windows',
-                arch                 : 'x64',
-                additionalNodeLabels : 'win2012&&vs2017',
-                test                 : 'default',
-                additionalFileNameTag: "windowsXL",
-                configureArgs        : '--with-noncompressedrefs'
         ],
 
         x64WindowsIBM: [
@@ -207,14 +175,6 @@ class Config17 {
                 buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk"
         ],
 
-        s390xLinuxXL  : [
-                os                   : 'linux',
-                arch                 : 's390x',
-                test                 : 'default',
-                additionalFileNameTag: "linuxXL",
-                configureArgs        : '--with-noncompressedrefs --enable-dtrace'
-        ],
-
         ppc64leLinux    : [
                 os                  : 'linux',
                 arch                : 'ppc64le',
@@ -228,16 +188,6 @@ class Config17 {
                         "hotspot"     : '--enable-dtrace',
                         "openj9"      : '--enable-dtrace --enable-jitserver --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
                 ]
-
-        ],
-
-        ppc64leLinuxXL    : [
-                os                   : 'linux',
-                arch                 : 'ppc64le',
-                additionalNodeLabels : 'centos7',
-                test                 : 'default',
-                additionalFileNameTag: "linuxXL",
-                configureArgs        : '--with-noncompressedrefs --disable-ccache --enable-dtrace'
         ],
 
         ppc64leLinuxIBM    : [
@@ -265,7 +215,7 @@ class Config17 {
                 additionalNodeLabels: [
                         openj9:  'hw.arch.aarch64 && sw.os.linux'
                 ],
-                test                : 'default',
+                testDynamic         : false,
                 configureArgs       : '--enable-dtrace --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Certified Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
                 additionalFileNameTag: "IBM",
                 buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk"
@@ -281,17 +231,8 @@ class Config17 {
                 additionalNodeLabels: [
                         openj9:  'hw.arch.aarch64 && sw.os.linux'
                 ],
-                test                : 'default',
+                testDynamic         : false,
                 configureArgs       : '--enable-dtrace --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
-        ],
-
-        aarch64LinuxXL    : [
-                os                   : 'linux',
-                dockerImage          : 'adoptopenjdk/centos7_build_image',
-                arch                 : 'aarch64',
-                test                 : 'default',
-                additionalFileNameTag: "linuxXL",
-                configureArgs        : '--with-noncompressedrefs --enable-dtrace'
         ],
 
         aarch64Mac: [
@@ -306,7 +247,16 @@ class Config17 {
                 arch                : 'arm',
                 test                : 'default',
                 configureArgs       : '--enable-dtrace'
+        ],
+
+        riscv64Linux      :  [
+                os                   : 'linux',
+                arch                 : 'riscv64',
+                configureArgs        : '--enable-dtrace --with-native-debug-symbols=none',
+                buildArgs            : '-r https://github.com/openjdk/jdk-sandbox -b riscv-port-branch --custom-cacerts false --disable-adopt-branch-safety',
+                test                 : 'default'
         ]
+
   ]
 
 }
