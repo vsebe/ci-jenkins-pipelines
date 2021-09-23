@@ -723,12 +723,14 @@ class Builder implements Serializable {
                 //  JDK11: jdk-11.0.2+9_openj9-0.12.1-m1
                 //  JDK17: jdk-17+35_openj9-0.28.0-m1
 
-                def tokens = publishName.minus('jdk').minus("_${variant}").tokenize('-')
+                def tokens = publishName.minus('jdk-').minus('jdk').tokenize("_")
                 version = tokens[0]
-                variantVersion = tokens[1]
 
-                if (tokens.size() > 2) {
-                    variantTags = tokens[2]
+                def variantTokens = tokens[1].tokenize('-')
+                variantVersion = variantTokens[1]
+
+                if (variantTokens.size() > 2) {
+                    variantTags = variantTokens[2]
                 }
             }
 
