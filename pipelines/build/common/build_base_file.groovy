@@ -290,29 +290,31 @@ class Builder implements Serializable {
             testDynamicMap = DEFAULTS_JSON["testDetails"]["defaultDynamicParas"]
         }
 
-        if (testDynamicMap.containsKey("testLists")) {
-            testLists.addAll(testDynamicMap.get("testLists"))
-        }
+        if (testDynamicMap) {
+            if (testDynamicMap.containsKey("testLists")) {
+                testLists.addAll(testDynamicMap.get("testLists"))
+            }
 
-        if (testDynamicMap.containsKey("numMachines")) {
-            // populate the list of number of machines per tests
-            if (List.class.isInstance(testDynamicMap.get("numMachines"))) {
-                // the size of the numMachines List should match the testLists size
-                // otherwize throw an error
-                // e.g. 
-                // testLists    = ['extended.openjdk', 'extended.jck', 'special.jck']
-                // numMachines  = ['3',                '2',            '5']
+            if (testDynamicMap.containsKey("numMachines")) {
+                // populate the list of number of machines per tests
+                if (List.class.isInstance(testDynamicMap.get("numMachines"))) {
+                    // the size of the numMachines List should match the testLists size
+                    // otherwize throw an error
+                    // e.g. 
+                    // testLists    = ['extended.openjdk', 'extended.jck', 'special.jck']
+                    // numMachines  = ['3',                '2',            '5']
 
-                numMachines.addAll(testDynamicMap.get("numMachines"))
+                    numMachines.addAll(testDynamicMap.get("numMachines"))
 
-                if (numMachines.size() < testLists.size()) {
-                    throw new Exception("Configuration error for dynamic testing: missmatch between dymanic parallel test targets testListing: ${testListing} and numMachines: ${numMachines}")
-                }
-            } else {
-                if (!testLists.isEmpty()) {
-                    // work-around for numMachines as a String
-                    // populate the List<String> number of machines with duplicates
-                    numMachines.addAll(Collections.nCopies(testLists.size(), "${testDynamicMap.get('numMachines')}"))
+                    if (numMachines.size() < testLists.size()) {
+                        throw new Exception("Configuration error for dynamic testing: missmatch between dymanic parallel test targets testListing: ${testListing} and numMachines: ${numMachines}")
+                    }
+                } else {
+                    if (!testLists.isEmpty()) {
+                        // work-around for numMachines as a String
+                        // populate the List<String> number of machines with duplicates
+                        numMachines.addAll(Collections.nCopies(testLists.size(), "${testDynamicMap.get('numMachines')}"))
+                    }
                 }
             }
         }
