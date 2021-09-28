@@ -13,7 +13,7 @@ class Config17 {
                 os                  : 'mac',
                 arch                : 'x64',
                 additionalNodeLabels : 'ci.project.openj9 && hw.arch.x86 && sw.os.osx.10_14',
-                test                : false,
+                test                : 'default',
                 cleanWorkspaceAfterBuild: true,
                 configureArgs       : [
                         "openj9"      : '--enable-dtrace --with-vendor-name="IBM Corporation" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Certified Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
@@ -64,7 +64,7 @@ class Config17 {
                 ],
                 dockerNode          : 'sw.tool.docker && sw.config.uid1000',
                 dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
-                test                : false,
+                test                : 'default',
                 additionalTestLabels: [
                         openj9      : '!(centos6||rhel6)'
                 ],
@@ -93,7 +93,7 @@ class Config17 {
                 buildArgs : [
                         openj9 : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk"
                 ],
-                test                : false,
+                test                : 'default',
                 configureArgs       : [
                         "openj9"      : '--with-vendor-name="IBM Corporation" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Certified Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-jdk-rc-name="IBM Semeru Runtime"'
                 ],
@@ -144,7 +144,7 @@ class Config17 {
                 additionalNodeLabels: [
                         openj9:  'hw.arch.ppc64 && sw.os.aix.7_1'
                 ],
-                test                : false,
+                test                : 'default',
                 configureArgs       : [
                         "openj9"      : '--disable-ccache --with-vendor-name="IBM Corporation" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Certified Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
                 ],
@@ -166,7 +166,7 @@ class Config17 {
         s390xLinuxIBM    : [
                 os                  : 'linux',
                 arch                : 's390x',
-                test                : false,
+                test                : 'default',
                 additionalNodeLabels: [
                         openj9:  'hw.arch.s390x && (sw.os.cent.7 || sw.os.rhel.7)'
                 ],
@@ -194,7 +194,7 @@ class Config17 {
                 os                  : 'linux',
                 arch                : 'ppc64le',
                 additionalNodeLabels : 'centos7',
-                test                : false,
+                test                : 'default',
                 additionalNodeLabels: [
                         openj9:  'hw.arch.ppc64le && (sw.os.cent.7 || sw.os.rhel.7)'
                 ],
@@ -211,7 +211,7 @@ class Config17 {
                 dockerImage         : 'adoptopenjdk/centos7_build_image',
                 dockerNode         : 'sw.tool.docker',
                 dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
-                test                : false,
+                test                : 'default',
                 additionalNodeLabels: [
                         openj9:  'hw.arch.aarch64 && sw.os.linux'
                 ],

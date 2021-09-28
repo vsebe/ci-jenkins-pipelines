@@ -141,12 +141,27 @@ node('master') {
       def response = JobHelper.getAvailableReleases(this)
       int headVersion = (int) response.getAt("tip_version")
 
+      def javaVersions = (params.JAVA_VERSION) ? params.JAVA_VERSION.trim().replaceAll("\\s","").tokenize(',') : []
+      echo "javaVersions = ${javaVersions}"
+
       (8..headVersion+1).each({javaVersion ->
 
         if (retiredVersions.contains(javaVersion)) {
           println "[INFO] $javaVersion is a retired version that isn't currently built. Skipping generation..."
           return
         }
+
+        // allow selective regeneration
+        // if javaVersions is an empty list, generate all pipelines
+        // otherwize generate only pipelines for given JAVA_VERSION
+        if (!javaVersions.isEmpty() && !javaVersions.contains("${javaVersion}".trim())) {
+            // skip
+            println "[INFO] Skipping generation for ${javaVersion} (not in user's selection)..."
+            return
+        }
+
+        def suffix = (params.JOB_NAME_SUFFIX) ?: ''
+        def jobName = "openjdk${javaVersion}-pipeline${suffix}"
 
         def config = [
           TEST                : false,
@@ -155,7 +170,7 @@ node('master') {
           BUILD_FOLDER        : jobRoot,
           CHECKOUT_CREDENTIALS: checkoutCreds,
           JAVA_VERSION        : javaVersion,
-          JOB_NAME            : "openjdk${javaVersion}-pipeline",
+          JOB_NAME            : jobName,
           SCRIPT              : "${scriptFolderPath}/openjdk_pipeline.groovy",
           disableJob          : false,
           pipelineSchedule    : "0 0 31 2 0", // 31st Feb, so will never run,
@@ -188,7 +203,21 @@ node('master') {
           }
         }
 
-        config.put("targetConfigurations", target.targetConfigurations)
+        // map of targetConfigurations to exclude from builds
+        def excludes = (params.EXCLUDES_LIST) ?: ''
+        def buildTargetConfigurations = [:]
+
+        if (excludes) {
+            // remove excluded targets from targetConfigurations
+            def excludedTargetConfigurations = new JsonSlurper().parseText(excludes) as Map
+
+            println "[INFO] Excluding targetConfigurations: ${excludedTargetConfigurations} "
+            buildTargetConfigurations.putAll(target.targetConfigurations.minus(excludedTargetConfigurations))
+        } else {
+            buildTargetConfigurations.putAll(target.targetConfigurations)
+        }
+
+        config.put("targetConfigurations", buildTargetConfigurations)
 
         // hack as jenkins groovy does not seem to allow us to check if disableJob exists
         try {
@@ -205,7 +234,7 @@ node('master') {
           config.put("adoptScripts", true)
         }
 
-        config.put("enableTests", DEFAULTS_JSON['testDetails']['enableTests'] as Boolean)
+        config.put("enableTests", (params.containsKey('ENABLE_TESTS')) ? params.ENABLE_TESTS : DEFAULTS_JSON['testDetails']['enableTests'] as Boolean)
         config.put("enableTestDynamicParallel", DEFAULTS_JSON['testDetails']['enableTestDynamicParallel'] as Boolean)
 
         println "[INFO] JDK${javaVersion}: nightly pipelineSchedule = ${config.pipelineSchedule}"
@@ -231,7 +260,7 @@ node('master') {
         generatedPipelines.add(config["JOB_NAME"])
 
         // Create weekly release pipeline
-        config.JOB_NAME = "weekly-openjdk${javaVersion}-pipeline"
+        config.JOB_NAME = "weekly-${jobName}"
         config.SCRIPT = (params.WEEKLY_SCRIPT_PATH) ?: DEFAULTS_JSON['scriptDirectories']['weekly']
         if (!fileExists(config.SCRIPT)) {
           println "[WARNING] ${config.SCRIPT} does not exist in your chosen repository. Updating it to use Adopt's instead"

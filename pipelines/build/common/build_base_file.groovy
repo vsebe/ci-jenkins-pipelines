@@ -848,6 +848,17 @@ class Builder implements Serializable {
                 javaToBuild = "jdk"
             }
 
+            def userRemoteConfigs = ''
+
+            if (!useAdoptShellScripts) {
+                def userRemoteConfigsMap = [
+                    "branch": DEFAULTS_JSON['repository']['pipeline_branch'],
+                    "remotes": ["url": DEFAULTS_JSON['repository']['pipeline_url']]
+                ]
+
+                userRemoteConfigs = JsonOutput.prettyPrint(JsonOutput.toJson(userRemoteConfigsMap))
+            }
+
             context.echo "Java: ${javaToBuild}"
             context.echo "OS: ${targetConfigurations}"
             context.echo "Enable tests: ${enableTests}"
@@ -859,6 +870,7 @@ class Builder implements Serializable {
             context.echo "Tag/Branch name: ${scmReference}"
             context.echo "Keep test reportdir: ${keepTestReportDir}"
             context.echo "Keep release logs: ${keepReleaseLogs}"
+
 
             jobConfigurations.each { configuration ->
                 jobs[configuration.key] = {
@@ -877,11 +889,23 @@ class Builder implements Serializable {
                         context.stage(configuration.key) {
                             context.echo "Created job " + downstreamJobName
 
+                            // set downstream job parameters
+                            // add BUILD_CONFIGURATION
+                            def downstreamJobParams = config.toBuildParams()
+
+                            // add other parameters
+                            // pass user set values from the upstream job to the downstream job 
+                            // it allows customization without job regeneration (for developer builds)
+                            downstreamJobParams.add(['$class': 'TextParameterValue', name: 'USER_REMOTE_CONFIGS', value: userRemoteConfigs])
+                            downstreamJobParams.add(['$class': 'TextParameterValue', name: 'DEFAULTS_JSON', value: JsonOutput.prettyPrint(JsonOutput.toJson(DEFAULTS_JSON))])
+                            downstreamJobParams.add(context.string(name: 'SCM_REPO', value: (env.SCM_REPO) ?: DEFAULTS_JSON['repository']['pipeline_url']))
+                            downstreamJobParams.add(context.string(name: 'SCM_BRANCH', value: (env.SCM_BRANCH) ?: DEFAULTS_JSON['repository']['pipeline_branch']))
+
                             //TODO: remove parameters
-                            context.echo "with parameters: ${config.toBuildParams()}"
+                            context.echo "with parameters: ${downstreamJobParams}"
 
                             // execute build
-                            def downstreamJob = context.build job: downstreamJobName, propagate: false, parameters: config.toBuildParams()
+                            def downstreamJob = context.build job: downstreamJobName, propagate: false, parameters: downstreamJobParams
 
                             if (downstreamJob.getResult() == 'SUCCESS') {
                                 // copy artifacts from build
