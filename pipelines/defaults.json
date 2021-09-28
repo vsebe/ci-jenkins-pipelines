@@ -56,10 +56,10 @@
         "disabled" : [
             "sanity.external"
         ],
-        "enableTestDynamicParallel" : false,
+        "enableTestDynamicParallel" : true,
         "defaultDynamicParas": {
-            "testLists"      : ["extended.openjdk"],
-            "numMachines"    : "3"
+            "testLists"      : ["sanity.functional", "extended.functional", "sanity.system", "extended.system", "special.system", "sanity.jck", "extended.jck"],
+            "numMachines"    : ["3", "3", "3", "3", "5", "4", "8"]
         }
     },
     "importLibraryScript"    : "pipelines/build/common/import_lib.groovy",
