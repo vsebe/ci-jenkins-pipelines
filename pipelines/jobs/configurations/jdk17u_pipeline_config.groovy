@@ -16,7 +16,7 @@ class Config17 {
                 test                : false,
                 cleanWorkspaceAfterBuild: true,
                 configureArgs       : [
-                        "openj9"      : '--enable-dtrace=auto  --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Certified Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
+                        "openj9"      : '--enable-dtrace --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Certified Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
                 ],
                 additionalFileNameTag: "IBM",
                 buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk"
@@ -69,7 +69,7 @@ class Config17 {
                         openj9      : '!(centos6||rhel6)'
                 ],
                 configureArgs       : [
-                        "openj9"      : '--enable-jitserver --enable-dtrace=auto --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Certified Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
+                        "openj9"      : '--enable-jitserver --enable-dtrace --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Certified Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
                 ],
                 additionalFileNameTag: "IBM",
                 buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk"
