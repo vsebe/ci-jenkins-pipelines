@@ -488,7 +488,8 @@ class Build {
                             target: "workspace/target/",
                             flatten: true)
 
-                    context.sh 'cd workspace/target/ && for file in $(ls *.tar.gz *.zip); do sha256sum "$file" > $fname.sha256.txt ; done'
+                    def extension = (buildConfig.TARGET_OS == "windows") ? "zip" : "tar.gz"
+                    context.sh "cd workspace/target/ && for file in \$(ls *.${extension}); do sha256sum \"\$file\" > \"\$file.sha256.txt\" ; done"
 
                     writeMetadata(versionInfo, false)
                     context.archiveArtifacts artifacts: "workspace/target/*"
@@ -542,29 +543,99 @@ class Build {
         def nodeFilter = "${buildConfig.TARGET_OS}&&fpm"
 
         if (buildConfig.VARIANT == "openj9") {
-            filter = "**/ibm-semeru*-j*_linux_*.tar.gz"
-            nodeFilter = "sw.os.linux&&ci.role.packaging&&sw.tool.signing"
+            filter = "**/*-j*_${buildConfig.ARCHITECTURE}_${buildConfig.TARGET_OS}_*.tar.gz"
+            nodeFilter = "sw.os.${buildConfig.TARGET_OS}&&ci.role.packaging&&sw.tool.rpm"
+
+            def enableSigner = Boolean.valueOf(buildConfig.ENABLE_SIGNER)
+            if (buildConfig.TARGET_OS == "aix") {
+                // sign tool not available on AIX nodes
+                enableSigner = false
+            }
+
+            def version = ''
+            def variantVersion = ''
+            def variantTags = ''
+
+            if (buildConfig.PUBLISH_NAME && PUBLISH_NAME.contains(buildConfig.VARIANT)) {
+                // expected publishName:  jdk[-]<version>_<variant>-<variant_version>[-<variant_tag>]
+                //e.g.
+                //  JDK8:  jdk8u192-b12_openj9-0.12.1
+                //  JDK11: jdk-11.0.2+9_openj9-0.12.1-m1
+                //  JDK17: jdk-17+35_openj9-0.28.0-m1
+
+                def tokens = publishName.minus('jdk-').minus('jdk').tokenize("_")
+                version = tokens[0]
+
+                def variantTokens = tokens[1].tokenize('-')
+                variantVersion = variantTokens[1]
+
+                if (variantTokens.size() > 2) {
+                    variantTags = variantTokens[2]
+                }
+            }
+
+            // launch job to build the RPM package distribution
+            def installerJobName = 'build-scripts/release/package_binaries'
+
+            try {
+                def installerJob = context.build job: installerJobName,
+                    propagate: true,
+                    parameters: [
+                            ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "${nodeFilter}"],
+                            ['$class': 'BooleanParameterValue', name: 'RELEASE', value: buildConfig.RELEASE],
+                            ['$class': 'BooleanParameterValue', name: 'ENABLE_SIGNER', value: enableSigner],
+                            context.string(name: 'JDK_VERSION', value: "${versionData.major}"),
+                            context.string(name: 'PACKAGE_TYPE', value: 'rpm'),
+                            context.string(name: 'PRODUCT', value: (buildConfig.ADDITIONAL_FILE_NAME_TAG ?: '')),
+                            context.string(name: 'VARIANT', value: buildConfig.VARIANT),
+                            context.string(name: 'VARIANT_VERSION', value: variantVersion),
+                            context.string(name: 'VARIANT_TAG', value: variantTags),
+                            context.string(name: 'VERSION', value: version),
+                            context.string(name: 'OS', value: buildConfig.TARGET_OS),
+                            context.string(name: 'ARCHITECTURE', value: buildConfig.ARCHITECTURE),
+                            context.string(name: 'BINARIES_SOURCE', value: 'upstreamJob'),
+                            context.string(name: 'UPSTREAM_JOB_NAME', value: env.JOB_NAME),
+                            context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${currentBuild.getNumber()}"),
+                            context.string(name: 'SCM_REPO', value: (DEFAULTS_JSON['repository']['installer_url'] ?: '')),
+                            context.string(name: 'SCM_BRANCH', value: (DEFAULTS_JSON['repository']['installer_branch'] ?: ''))
+                    ]
+
+                context.copyArtifacts(
+                        projectName: installerJobName,
+                        selector: context.specific("${installerJob.getNumber()}"),
+                        filter: '**/*',
+                        target: "workspace/target/",
+                        flatten: true,
+                        fingerprintArtifacts: true
+                )
+
+                context.archiveArtifacts artifacts: "workspace/target/*.rpm, workspace/target/*.rpm.sha256.txt"
+
+            }  catch (e) {
+                context.println("Failed to build ${buildConfig.TARGET_OS} installer ${e}")
+                currentBuild.result = 'FAILURE'
+            }
+
+        } else {
+            String releaseType = "Nightly"
+            if (buildConfig.RELEASE) {
+                releaseType = "Release"
+            }
+
+            // Execute installer job
+            context.build job: "build-scripts/release/create_installer_linux",
+                propagate: true,
+                parameters: [
+                        context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${env.BUILD_NUMBER}"),
+                        context.string(name: 'UPSTREAM_JOB_NAME', value: "${env.JOB_NAME}"),
+                        context.string(name: 'FILTER', value: "${filter}"),
+                        context.string(name: 'RELEASE_TYPE', value: "${releaseType}"),
+                        context.string(name: 'VERSION', value: "${versionData.version}"),
+                        context.string(name: 'MAJOR_VERSION', value: "${versionData.major}"),
+                        context.string(name: 'ARCHITECTURE', value: "${buildConfig.ARCHITECTURE}"),
+                        ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "${nodeFilter}"]
+                ]
         }
-
-        String releaseType = "Nightly"
-        if (buildConfig.RELEASE) {
-            releaseType = "Release"
-        }
-
-        // Execute installer job
-        context.build job: "build-scripts/release/create_installer_linux",
-            propagate: true,
-            parameters: [
-                    context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${env.BUILD_NUMBER}"),
-                    context.string(name: 'UPSTREAM_JOB_NAME', value: "${env.JOB_NAME}"),
-                    context.string(name: 'FILTER', value: "${filter}"),
-                    context.string(name: 'RELEASE_TYPE', value: "${releaseType}"),
-                    context.string(name: 'VERSION', value: "${versionData.version}"),
-                    context.string(name: 'MAJOR_VERSION', value: "${versionData.major}"),
-                    context.string(name: 'ARCHITECTURE', value: "${buildConfig.ARCHITECTURE}"),
-                    ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "${nodeFilter}"]
-            ]
-
     }
 
     /*
@@ -673,17 +744,28 @@ class Build {
         context.node('master') {
             context.stage("installer") {
                 switch (buildConfig.TARGET_OS) {
-                    case "mac": context.sh 'rm -f workspace/target/*.pkg workspace/target/*.pkg.json workspace/target/*.pkg.sha256.txt'; buildMacInstaller(versionData); break
-                    //case "linux": buildLinuxInstaller(versionData); break  // Use the new rpm method
-                    case "windows": buildWindowsInstaller(versionData); break
-                    default: break
+                    case "aix":
+                        buildLinuxInstaller(versionData)
+                        break
+                    case "mac":
+                        context.sh 'rm -f workspace/target/*.pkg workspace/target/*.pkg.json workspace/target/*.pkg.sha256.txt'
+                        buildMacInstaller(versionData)
+                        break
+                    case "linux":
+                        buildLinuxInstaller(versionData)
+                        break
+                    case "windows":
+                        buildWindowsInstaller(versionData)
+                        break
+                    default:
+                        break
                 }
 
                 // Archive the Mac and Windows pkg/msi
                 // (Linux installer job produces no artifacts, it just uploads rpm/deb to the repositories)
                 if (buildConfig.TARGET_OS == "mac" || buildConfig.TARGET_OS == "windows") {
                     try {
-                        context.sh 'cd workspace/target/ && for file in $(ls *.tar.gz *.pkg *.msi); do sha256sum "$file" > $file.sha256.txt ; done'
+                        context.sh 'cd workspace/target/ && for file in $(ls *.tar.gz *.pkg *.msi); do sha256sum "$file" > "$file".sha256.txt ; done'
                         writeMetadata(versionData, false)
                         context.archiveArtifacts artifacts: "workspace/target/*"
                     } catch (e) {
@@ -705,16 +787,20 @@ class Build {
 
         context.node('master') {
             context.stage("sign installer") {
-                if (buildConfig.TARGET_OS == "windows") {
-                    try {
+                try {
+                    if (buildConfig.TARGET_OS == "windows") {
                         signInstallerJob(versionData);
                         context.sh 'cd workspace/target/ && for file in $(ls *.tar.gz *.pkg *.msi); do sha256sum "$file" > $file.sha256.txt ; done'
                         writeMetadata(versionData, false)
                         context.archiveArtifacts artifacts: "workspace/target/*"
-                    } catch (e) {
-                        context.println("Failed to build ${buildConfig.TARGET_OS} installer ${e}")
-                        currentBuild.result = 'FAILURE'
+
+                    } else if (buildConfig.TARGET_OS == "aix") {
+                        signInstallerJob(versionData);
+                        context.archiveArtifacts artifacts: "workspace/target/*.rpm, workspace/target/*.rpm.sha256.txt"
                     }
+                } catch (e) {
+                    context.println("Failed to build ${buildConfig.TARGET_OS} installer ${e}")
+                    currentBuild.result = 'FAILURE'
                 }
             }
         }
@@ -724,35 +810,69 @@ class Build {
         def filter = ""
 
         switch (buildConfig.TARGET_OS) {
-            case "mac": filter = (buildConfig.VARIANT == "openj9") ? "**/ibm-semeru-*_mac_*.pkg" : "**/OpenJDK*_mac_*.pkg"; break
-            case "windows": filter = (buildConfig.VARIANT == "openj9") ? "**/ibm-semeru-*_windows_*.msi" : "**/OpenJDK*_windows_*.msi"; break
+            case "aix": filter = "**/*.rpm"; break
+            case "mac": filter = "**/*_mac_*.pkg"; break
+            case "windows": filter = "**/*_windows_*.msi"; break
             default: break
         }
 
         def nodeFilter = "eclipse-codesign"
 
         // Execute sign installer job
-        def installerJob = context.build job: "build-scripts/release/sign_installer",
+
+        if (buildConfig.TARGET_OS == "aix") {
+            nodeFilter = 'ci.role.packaging&&sw.tool.rpm&&sw.tool.signing'
+
+            def signRpmJob = context.build job: 'build-scripts/release/sign_rpm',
                 propagate: true,
                 parameters: [
-                        context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${env.BUILD_NUMBER}"),
-                        context.string(name: 'UPSTREAM_JOB_NAME', value: "${env.JOB_NAME}"),
+                        ['$class': 'BooleanParameterValue', name: 'ENABLE_SIGNER', value:  true],
+                        ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "${nodeFilter}"],
+                        context.string(name: 'JDK_VERSION', value: "${versionData.major}"),
+                        context.string(name: 'OS', value: buildConfig.TARGET_OS),
+                        context.string(name: 'ARCHITECTURE', value: buildConfig.ARCHITECTURE),
+                        context.string(name: 'PRODUCT', value: (buildConfig.ADDITIONAL_FILE_NAME_TAG ?: '')),
                         context.string(name: 'FILTER', value: "${filter}"),
-                        context.string(name: 'FULL_VERSION', value: "${versionData.version}"),
-                        context.string(name: 'OPERATING_SYSTEM', value: "${buildConfig.TARGET_OS}"),
-                        context.string(name: 'MAJOR_VERSION', value: "${versionData.major}"),
-                        ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "${nodeFilter}"]
+                        context.string(name: 'BINARIES_SOURCE', value: 'upstreamJob'),
+                        context.string(name: 'UPSTREAM_JOB_NAME', value: env.JOB_NAME),
+                        context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${currentBuild.getNumber()}"),
+                        context.string(name: 'SCM_REPO', value: (DEFAULTS_JSON['repository']['installer_url'] ?: '')),
+                        context.string(name: 'SCM_BRANCH', value: (DEFAULTS_JSON['repository']['installer_branch'] ?: ''))
                 ]
 
-        context.copyArtifacts(
-                projectName: "build-scripts/release/sign_installer",
-                selector: context.specific("${installerJob.getNumber()}"),
-                filter: 'workspace/target/*',
-                fingerprintArtifacts: true,
-                target: "workspace/target/",
-                flatten: true)
-    }
+            // clean up unsigned files
+            context.sh 'cd workspace/target/ && rm -f *.rpm *.rpm.sha256.txt'
 
+            context.copyArtifacts(
+                    projectName: 'build-scripts/release/sign_rpm',
+                    selector: context.specific("${signRpmJob.getNumber()}"),
+                    filter: '**/*',
+                    target: "workspace/target/",
+                    flatten: true,
+                    fingerprintArtifacts: true
+            )
+
+        } else {
+            def installerJob = context.build job: "build-scripts/release/sign_installer",
+                    propagate: true,
+                    parameters: [
+                            context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${env.BUILD_NUMBER}"),
+                            context.string(name: 'UPSTREAM_JOB_NAME', value: "${env.JOB_NAME}"),
+                            context.string(name: 'FILTER', value: "${filter}"),
+                            context.string(name: 'FULL_VERSION', value: "${versionData.version}"),
+                            context.string(name: 'OPERATING_SYSTEM', value: "${buildConfig.TARGET_OS}"),
+                            context.string(name: 'MAJOR_VERSION', value: "${versionData.major}"),
+                            ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "${nodeFilter}"]
+                    ]
+            context.copyArtifacts(
+                    projectName: "build-scripts/release/sign_installer",
+                    selector: context.specific("${installerJob.getNumber()}"),
+                    filter: 'workspace/target/*',
+                    fingerprintArtifacts: true,
+                    target: "workspace/target/",
+                    flatten: true)
+        }
+    }
 
     /*
     Lists and returns any compressed archived contents of the top directory of the build node
@@ -1758,7 +1878,7 @@ class Build {
                         buildInstaller(versionInfo)
                         // sing installers for all variants except openj9
                         // openj9 variant builds sign msi during the creation and pkg is 3rd party signed atm.
-                        if (buildConfig.VARIANT != "openj9") {
+                        if ((buildConfig.VARIANT != "openj9") || ((buildConfig.VARIANT == "openj9") && (buildConfig.TARGET_OS == "aix"))){
                             signInstaller(versionInfo)
                         }
                     } catch (FlowInterruptedException e) {
