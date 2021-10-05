@@ -6,7 +6,7 @@ class Config17 {
                 additionalNodeLabels: 'ci.project.openj9 && hw.arch.x86 && sw.os.osx.10_14',
                 test                : 'default',
                 cleanWorkspaceAfterBuild: true,
-                configureArgs       : '--enable-dtrace --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
+                configureArgs       : '--enable-dtrace --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
         ],
 
         x64MacIBM    : [
@@ -16,7 +16,7 @@ class Config17 {
                 test                : false,
                 cleanWorkspaceAfterBuild: true,
                 configureArgs       : [
-                        "openj9"      : '--enable-dtrace --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Certified Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
+                        "openj9"      : '--enable-dtrace --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Certified Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
                 ],
                 additionalFileNameTag: "IBM",
                 buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk"
@@ -41,7 +41,7 @@ class Config17 {
                         openj9      : '!(sw.os.cent.6||sw.os.rhel.6)'
                 ],
                 configureArgs       : [
-                        "openj9"      : '--enable-dtrace --enable-jitserver --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues',
+                        "openj9"      : '--enable-dtrace --enable-jitserver --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues',
                         "hotspot"     : '--enable-dtrace'
                 ]
         ],
@@ -69,7 +69,7 @@ class Config17 {
                         openj9      : '!(centos6||rhel6)'
                 ],
                 configureArgs       : [
-                        "openj9"      : '--enable-jitserver --enable-dtrace --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Certified Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
+                        "openj9"      : '--enable-jitserver --enable-dtrace --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Certified Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
                 ],
                 additionalFileNameTag: "IBM",
                 buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk"
@@ -80,7 +80,7 @@ class Config17 {
                 arch                : 'x64',
                 additionalNodeLabels: 'ci.project.openj9 && hw.arch.x86 && sw.os.windows',
                 cleanWorkspaceAfterBuild: true,
-                configureArgs: '--with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-jdk-rc-name="IBM Semeru Runtime"',
+                configureArgs: '--with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-jdk-rc-name="IBM Semeru Runtime"',
                 test                : 'default'
         ],
 
@@ -95,7 +95,7 @@ class Config17 {
                 ],
                 test                : false,
                 configureArgs       : [
-                        "openj9"      : '--with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Certified Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-jdk-rc-name="IBM Semeru Runtime"'
+                        "openj9"      : '--with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Certified Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-jdk-rc-name="IBM Semeru Runtime"'
                 ],
                 additionalFileNameTag: "IBM"
         ],
@@ -133,7 +133,7 @@ class Config17 {
                 ],
                 test                : 'default',
                 configureArgs : [
-                        openj9: '--disable-ccache --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
+                        openj9: '--disable-ccache --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
                 ],
                 cleanWorkspaceAfterBuild: true
         ],
@@ -146,7 +146,7 @@ class Config17 {
                 ],
                 test                : false,
                 configureArgs       : [
-                        "openj9"      : '--disable-ccache --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Certified Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
+                        "openj9"      : '--disable-ccache --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Certified Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
                 ],
                 additionalFileNameTag: "IBM",
                 buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk"
@@ -160,7 +160,7 @@ class Config17 {
                 additionalNodeLabels: [
                         openj9:  'hw.arch.s390x && (sw.os.cent.7 || sw.os.rhel.7)'
                 ],
-                configureArgs       : '--enable-dtrace --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
+                configureArgs       : '--enable-dtrace --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
         ],
 
         s390xLinuxIBM    : [
@@ -170,7 +170,7 @@ class Config17 {
                 additionalNodeLabels: [
                         openj9:  'hw.arch.s390x && (sw.os.cent.7 || sw.os.rhel.7)'
                 ],
-                configureArgs       : '--enable-dtrace --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Certified Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues',
+                configureArgs       : '--enable-dtrace --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Certified Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues',
                 additionalFileNameTag: "IBM",
                 buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk"
         ],
@@ -186,7 +186,7 @@ class Config17 {
                 ],
                 configureArgs       : [
                         "hotspot"     : '--enable-dtrace',
-                        "openj9"      : '--enable-dtrace --enable-jitserver --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
+                        "openj9"      : '--enable-dtrace --enable-jitserver --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
                 ]
         ],
 
@@ -199,7 +199,7 @@ class Config17 {
                         openj9:  'hw.arch.ppc64le && (sw.os.cent.7 || sw.os.rhel.7)'
                 ],
                 configureArgs       : [
-                        "openj9"      : '--enable-dtrace --enable-jitserver --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Certified Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
+                        "openj9"      : '--enable-dtrace --enable-jitserver --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Certified Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
                 ],
                 additionalFileNameTag: "IBM",
                 buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk"
@@ -217,7 +217,7 @@ class Config17 {
                 ],
                 testDynamic         : false,
                 configureArgs       : [
-                        openj9      : '--enable-dtrace --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Certified Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
+                        openj9      : '--enable-dtrace --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Certified Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
                 ],
                 additionalFileNameTag: "IBM",
                 buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk"
@@ -234,7 +234,7 @@ class Config17 {
                         openj9:  'hw.arch.aarch64 && sw.os.linux'
                 ],
                 testDynamic         : false,
-                configureArgs       : '--enable-dtrace --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
+                configureArgs       : '--enable-dtrace --with-vendor-name="IBM Corporation" --with-vendor-version-string="17.0.0.0-m1" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
         ],
 
         aarch64Mac: [
