@@ -793,6 +793,30 @@ class Builder implements Serializable {
     }
 
     /*
+     Launch downstream build that checks if the tarballs, executables and installers are signed.
+     */
+    def verifySignatures() {
+        context.stage("verify") {
+            def downstreamJobName = 'build-scripts/release/check_sign_build'
+
+            def downstreamJob = context.build job: downstreamJobName,
+                parameters: [
+                    ['$class': 'BooleanParameterValue', name: 'ENABLE_INSTALLERS', value: enableInstallers],
+                    context.string(name: 'JDK_VERSION', value: "${getJavaVersionNumber()}"),
+                    context.string(name: 'UPSTREAM_JOB_NAME', value: env.JOB_NAME),
+                    context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${currentBuild.getNumber()}"),
+                    context.string(name: 'SCM_REPO', value: (DEFAULTS_JSON['repository']['installer_url'] ?: '')),
+                    context.string(name: 'SCM_BRANCH', value: (DEFAULTS_JSON['repository']['installer_branch'] ?: ''))
+                ]
+
+            if ((downstreamJob.getResult() != 'SUCCESS') && propagateFailures) {
+                context.error("Build failed due to downstream failure of ${downstreamJobName}")
+                currentBuild.result = "FAILURE"
+            }
+        }
+    }
+
+    /*
     Main function. This is what is executed remotely via the openjdkxx-pipeline and pr tester jobs
     */
     @SuppressWarnings("unused")
@@ -956,6 +980,15 @@ class Builder implements Serializable {
                 }
             }
 
+            if (enableSigner) {
+                try {
+                    context.timeout(time: pipelineTimeouts.PUBLISH_ARTIFACTS_TIMEOUT, unit: "HOURS") {
+                        verifySignatures()
+                    }
+                }catch (FlowInterruptedException e) {
+                    throw new Exception("[ERROR] Code sign verification timeout (${pipelineTimeouts.PUBLISH_ARTIFACTS_TIMEOUT} HOURS) has been reached OR the downstream job failed. Exiting...")
+                }
+            }
             // publish to github if needed
             // Dont publish release automatically
             if (publish && !release) {
