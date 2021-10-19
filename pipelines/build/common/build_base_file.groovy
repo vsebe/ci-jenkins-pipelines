@@ -740,6 +740,7 @@ class Builder implements Serializable {
                     parameters: [
                         ['$class': 'BooleanParameterValue', name: 'RELEASE', value: release],
                         context.string(name: 'JDK_VERSION', value: "${getJavaVersionNumber()}"),
+                        context.string(name: 'PACKAGE_TYPE', value: 'srpm'),
                         context.string(name: 'PRODUCT', value: (tag ?: '')),
                         context.string(name: 'VARIANT', value: variant),
                         context.string(name: 'VARIANT_VERSION', value: variantVersion),
