@@ -208,6 +208,10 @@ node('master') {
         config.put("enableTests", DEFAULTS_JSON['testDetails']['enableTests'] as Boolean)
         config.put("enableTestDynamicParallel", DEFAULTS_JSON['testDetails']['enableTestDynamicParallel'] as Boolean)
 
+        config.put("enableInstallers", (params.containsKey('ENABLE_INSTALLERS')) ? params.ENABLE_INSTALLERS : DEFAULTS_JSON['enableInstallers'] as Boolean)
+        config.put("enableSigner", (params.containsKey('ENABLE_SIGNER')) ? params.ENABLE_SIGNER : DEFAULTS_JSON['enableSigner'] as Boolean)
+        config.put("verifySigner", (params.containsKey('VERIFY_SIGNER')) ? params.ENABLE_SIGNER : DEFAULTS_JSON['enableSigner'] as Boolean)
+
         println "[INFO] JDK${javaVersion}: nightly pipelineSchedule = ${config.pipelineSchedule}"
 
         config.put("defaultsJson", DEFAULTS_JSON)

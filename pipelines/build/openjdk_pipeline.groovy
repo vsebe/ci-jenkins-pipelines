@@ -120,6 +120,7 @@ if (scmVars != null || configureBuild != null || buildConfigurations != null) {
         enableTestDynamicParallel,
         enableInstallers,
         enableSigner,
+        verifySigner,
         releaseType,
         scmReference,
         overridePublishName,
