@@ -42,6 +42,8 @@ class Builder implements Serializable {
     boolean enableTestDynamicParallel
     boolean enableInstallers
     boolean enableSigner
+    boolean enableSourceRpm
+    boolean verifySigner
     boolean publish
     boolean release
     String releaseType
@@ -710,7 +712,7 @@ class Builder implements Serializable {
     Create SRPM for Linux platforms
     */
     def packageSourceBinaries(variant, tag, linuxTargets, installerUrl, installerBranch) { 
-        context.stage("package") {
+        context.stage("Source RPM") {
             def downstreamJobName = 'build-scripts/release/package_binaries'
             context.echo "build name: ${downstreamJobName} for ${linuxTargets}"
 
@@ -799,11 +801,17 @@ class Builder implements Serializable {
     def verifySignatures() {
         context.stage("verify") {
             def downstreamJobName = 'build-scripts/release/check_sign_build'
+            def osList = jobConfigurations.collect({ it.value.TARGET_OS }).unique()
+            def archList = jobConfigurations.collect({ it.value.ARCHITECTURE }).unique()
+
+            context.echo "build name ${downstreamJobName} for OS: ${osList} and ARCH: ${archList}"
 
             def downstreamJob = context.build job: downstreamJobName,
                 parameters: [
                     ['$class': 'BooleanParameterValue', name: 'ENABLE_INSTALLERS', value: enableInstallers],
                     context.string(name: 'JDK_VERSION', value: "${getJavaVersionNumber()}"),
+                    context.string(name: 'OS', value: osList.join(',')),
+                    context.string(name: 'ARCH', value: archList.join(',')),
                     context.string(name: 'UPSTREAM_JOB_NAME', value: env.JOB_NAME),
                     context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${currentBuild.getNumber()}"),
                     context.string(name: 'SCM_REPO', value: (DEFAULTS_JSON['repository']['installer_url'] ?: '')),
@@ -864,6 +872,8 @@ class Builder implements Serializable {
             context.echo "Enable tests: ${enableTests}"
             context.echo "Enable Installers: ${enableInstallers}"
             context.echo "Enable Signer: ${enableSigner}"
+            context.echo "Enable Source RPM: ${enableSourceRpm}"
+            context.echo "Verify Signer: ${verifySigner}"
             context.echo "Use Adopt's Scripts: ${useAdoptShellScripts}"
             context.echo "Publish: ${publish}"
             context.echo "Release: ${release}"
@@ -976,7 +986,7 @@ class Builder implements Serializable {
             }
             context.parallel jobs
 
-            if (enableInstallers && (!linuxTargets.isEmpty() || !taggedLinuxTargets.isEmpty())) {
+            if (enableSourceRpm && (!linuxTargets.isEmpty() || !taggedLinuxTargets.isEmpty())) {
                 //build RedHat source RPM package for Linux platforms
                 //launch two downstream builds when current build also contains custom targets
                 def variant = jobConfigurations.collect({ it.value.VARIANT }).unique().get(0)
@@ -1005,15 +1015,20 @@ class Builder implements Serializable {
                 }
             }
 
-            if (enableSigner) {
-                try {
-                    context.timeout(time: pipelineTimeouts.PUBLISH_ARTIFACTS_TIMEOUT, unit: "HOURS") {
-                        verifySignatures()
+            if (verifySigner) {
+                if (enableSigner) {
+                    try {
+                        context.timeout(time: pipelineTimeouts.PUBLISH_ARTIFACTS_TIMEOUT, unit: "HOURS") {
+                            verifySignatures()
+                        }
+                    }catch (FlowInterruptedException e) {
+                        throw new Exception("[ERROR] Code sign verification timeout (${pipelineTimeouts.PUBLISH_ARTIFACTS_TIMEOUT} HOURS) has been reached OR the downstream job failed. Exiting...")
                     }
-                }catch (FlowInterruptedException e) {
-                    throw new Exception("[ERROR] Code sign verification timeout (${pipelineTimeouts.PUBLISH_ARTIFACTS_TIMEOUT} HOURS) has been reached OR the downstream job failed. Exiting...")
+                } else {
+                    context.println "Not verifying release signature!"
                 }
             }
+
             // publish to github if needed
             // Dont publish release automatically
             if (publish && !release) {
@@ -1044,6 +1059,8 @@ return {
     String enableTestDynamicParallel,
     String enableInstallers,
     String enableSigner,
+    String enableSourceRpm,
+    String verifySigner,
     String releaseType,
     String scmReference,
     String overridePublishName,
@@ -1099,6 +1116,8 @@ return {
             enableTestDynamicParallel: Boolean.parseBoolean(enableTestDynamicParallel),
             enableInstallers: Boolean.parseBoolean(enableInstallers),
             enableSigner: Boolean.parseBoolean(enableSigner),
+            enableSourceRpm: Boolean.parseBoolean(enableSourceRpm),
+            verifySigner: Boolean.parseBoolean(verifySigner),
             publish: publish,
             release: release,
             releaseType: releaseType,
