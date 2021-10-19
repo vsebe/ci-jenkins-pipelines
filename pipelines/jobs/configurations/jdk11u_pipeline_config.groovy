@@ -210,8 +210,7 @@ class Config11 {
                     "corretto" : '--enable-dtrace=auto',
                     "dragonwell" : "--enable-dtrace=auto --with-extra-cflags=\"-march=armv8.2-a+crypto\" --with-extra-cxxflags=\"-march=armv8.2-a+crypto\"",
                     "bisheng" : '--enable-dtrace=auto --with-extra-cflags=-fstack-protector-strong --with-extra-cxxflags=-fstack-protector-strong --with-jvm-variants=server'
-            ],
-            testDynamic        : false
+            ]
         ],
 
         riscv64Linux      :  [

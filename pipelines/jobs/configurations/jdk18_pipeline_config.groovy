@@ -130,8 +130,7 @@ class Config18 {
                 configureArgs       : [
                         hotspot     : '--enable-dtrace',
                         openj9      : '--enable-dtrace --with-version-pre=ea --without-version-opt --with-vendor-name="IBM Corporation" --with-vendor-version-string="18.0.0.0" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
-                ],
-                testDynamic         : false
+                ]
         ],
 
         aarch64Mac: [
