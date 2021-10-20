@@ -557,14 +557,14 @@ class Build {
             def variantVersion = ''
             def variantTags = ''
 
-            if (buildConfig.PUBLISH_NAME && PUBLISH_NAME.contains(buildConfig.VARIANT)) {
+            if (buildConfig.PUBLISH_NAME && buildConfig.PUBLISH_NAME.contains(buildConfig.VARIANT)) {
                 // expected publishName:  jdk[-]<version>_<variant>-<variant_version>[-<variant_tag>]
                 //e.g.
                 //  JDK8:  jdk8u192-b12_openj9-0.12.1
                 //  JDK11: jdk-11.0.2+9_openj9-0.12.1-m1
                 //  JDK17: jdk-17+35_openj9-0.28.0-m1
 
-                def tokens = publishName.minus('jdk-').minus('jdk').tokenize("_")
+                def tokens = buildConfig.PUBLISH_NAME.minus('jdk-').minus('jdk').tokenize("_")
                 version = tokens[0]
 
                 def variantTokens = tokens[1].tokenize('-')
