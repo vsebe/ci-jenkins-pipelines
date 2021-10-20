@@ -582,7 +582,7 @@ class Build {
                 def installerJob = context.build job: installerJobName,
                     propagate: true,
                     parameters: [
-                            ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "${nodeFilter}"],
+                            context.string(name: 'NODE_LABEL', value: "${nodeFilter}"),
                             ['$class': 'BooleanParameterValue', name: 'RELEASE', value: buildConfig.RELEASE],
                             ['$class': 'BooleanParameterValue', name: 'ENABLE_SIGNER', value: enableSigner],
                             context.string(name: 'JDK_VERSION', value: "${versionData.major}"),
