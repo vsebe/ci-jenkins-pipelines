@@ -44,6 +44,10 @@ pipelineJob("${BUILD_FOLDER}/${JOB_NAME}") {
                         credentials("${CHECKOUT_CREDENTIALS}")
                     }
                     branch('$SCM_BRANCH')
+                    extensions {
+                        // delete the content of the workspace before building
+                        wipeOutWorkspace()
+                    }
                 }
             }
             scriptPath(SCRIPT)
