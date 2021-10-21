@@ -778,7 +778,7 @@ class Builder implements Serializable {
                         // archive artifacts
                         try {
                             context.timeout(time: pipelineTimeouts.ARCHIVE_ARTIFACTS_TIMEOUT, unit: "HOURS") {
-                                context.archiveArtifacts artifacts: "target/**"
+                                context.archiveArtifacts artifacts: "**/*.src.rpm, **/*.src.rpm.sha256.txt"
                             }
                         } catch (FlowInterruptedException e) {
                             throw new Exception("[ERROR] Archive RPM artifact timeout (${pipelineTimeouts.ARCHIVE_ARTIFACTS_TIMEOUT} HOURS) has been reached. Exiting...")
@@ -835,6 +835,18 @@ class Builder implements Serializable {
 
             if (!checkConfigIsSane(jobConfigurations)) {
                 return
+            }
+
+            // Clean up the artifacts of the previous build
+            context.node("master") {
+                try {
+                    context.println "Remove old artifacts ON MASTER NODE..."
+                    context.timeout(time: pipelineTimeouts.REMOVE_ARTIFACTS_TIMEOUT, unit: "HOURS") {
+                        context.sh 'rm -fr target'
+                    }
+                } catch (FlowInterruptedException e) {
+                    throw new Exception("[ERROR] Artifact removal timeout (${pipelineTimeouts.REMOVE_ARTIFACTS_TIMEOUT} HOURS) has been reached. Exiting...")
+                }
             }
 
             if (release) {
@@ -922,16 +934,6 @@ class Builder implements Serializable {
                                 context.println "[NODE SHIFT] MOVING INTO MASTER NODE..."
                                 context.node("master") {
                                     context.catchError {
-
-                                        //Remove the previous artifacts
-                                        try {
-                                            context.timeout(time: pipelineTimeouts.REMOVE_ARTIFACTS_TIMEOUT, unit: "HOURS") {
-                                                context.sh "rm target/${config.TARGET_OS}/${config.ARCHITECTURE}/${config.VARIANT}/* || true"
-                                            }
-                                        } catch (FlowInterruptedException e) {
-                                            throw new Exception("[ERROR] Previous artifact removal timeout (${pipelineTimeouts.REMOVE_ARTIFACTS_TIMEOUT} HOURS) for ${downstreamJobName} has been reached. Exiting...")
-                                        }
-
                                         try {
                                             context.timeout(time: pipelineTimeouts.COPY_ARTIFACTS_TIMEOUT, unit: "HOURS") {
                                                 context.copyArtifacts(
@@ -1043,9 +1045,8 @@ class Builder implements Serializable {
             } else if (publish && release) {
                 context.println "NOT PUBLISHING RELEASE AUTOMATICALLY"
             }
-
-        }
-    }
+        } //context.timestamp
+    } //doBuild()
 }
 
 return {

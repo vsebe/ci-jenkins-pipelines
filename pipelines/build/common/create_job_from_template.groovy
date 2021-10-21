@@ -24,10 +24,7 @@ String buildFolder = "$JOB_FOLDER"
 if (!binding.hasVariable('GIT_URL')) GIT_URL = "https://github.com/adoptium/ci-jenkins-pipelines.git"
 if (!binding.hasVariable('GIT_BRANCH')) GIT_BRANCH = "master"
 
-isLightweight = true
-if (binding.hasVariable('PR_BUILDER')) {
-    isLightweight = false
-}
+isLightweight = false
 
 folder(buildFolder) {
     description 'Automatically generated build jobs.'
@@ -46,8 +43,8 @@ pipelineJob("$buildFolder/$JOB_NAME") {
                     }
                     branch('$SCM_BRANCH')
                     extensions {
-                        //repo clean is performed after scm checkout in pipelines/build/common/openjdk_build_pipeline.groovy
-                        pruneStaleBranch()
+                        // delete the contents of the workspace before building
+                        wipeOutWorkspace()
                     }
                 }
             }
