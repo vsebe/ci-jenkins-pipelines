@@ -4,7 +4,7 @@ class Config11 {
             os                  : 'mac',
             arch                : 'x64',
             additionalNodeLabels : 'ci.project.openj9 && hw.arch.x86 && sw.os.osx.10_14',
-            test                : 'default',
+            test                : false,
             configureArgs       : [
                     "openj9"      : '--enable-dtrace=auto  --with-vendor-name="International Business Machines Corporation" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues',
                     "hotspot"     : '--enable-dtrace=auto'
@@ -15,7 +15,7 @@ class Config11 {
             os                  : 'mac',
             arch                : 'x64',
             additionalNodeLabels : 'ci.project.openj9 && hw.arch.x86 && sw.os.osx.10_14',
-            test                : false,
+            test                : 'default',
             configureArgs       : [
                     "openj9"      : '--enable-dtrace=auto  --with-vendor-name="International Business Machines Corporation" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
             ],
@@ -33,7 +33,7 @@ class Config11 {
             ],
             dockerNode          : 'sw.tool.docker && sw.config.uid1000',
             dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
-            test                : 'default',
+            test                : false,
             configureArgs       : [
                     "openj9"      : '--enable-jitserver --enable-dtrace=auto --with-vendor-name="International Business Machines Corporation" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues',
                     "hotspot"     : '--enable-dtrace=auto',
@@ -54,7 +54,7 @@ class Config11 {
             ],
             dockerNode          : 'sw.tool.docker && sw.config.uid1000',
             dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
-            test                : false,
+            test                : 'default',
             configureArgs       : [
                     "openj9"      : '--enable-jitserver --enable-dtrace=auto --with-vendor-name="International Business Machines Corporation" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
             ],
@@ -70,7 +70,7 @@ class Config11 {
                     hotspot:    'win2012',
                     dragonwell: 'win2012'
             ],
-            test                : 'default',
+            test                : false,
             configureArgs       : [
                     "openj9"      : '--with-vendor-name="International Business Machines Corporation" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-jdk-rc-name="IBM Semeru Runtime"',
                     "hotspot" : '--jvm-variant client,server'
@@ -86,7 +86,7 @@ class Config11 {
             buildArgs : [
                     openj9 : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk"
             ],
-            test                : false,
+            test                : 'default',
             configureArgs       : [
                     "openj9"      : '--with-vendor-name="International Business Machines Corporation" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-jdk-rc-name="IBM Semeru Runtime"'
             ],
@@ -109,7 +109,7 @@ class Config11 {
             additionalNodeLabels: [
                     openj9:  'hw.arch.ppc64 && sw.os.aix.7_1'
             ],
-            test                : 'default',
+            test                : false,
             configureArgs       : [
                     "openj9"      : '--with-vendor-name="International Business Machines Corporation" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
             ]
@@ -121,7 +121,7 @@ class Config11 {
             additionalNodeLabels: [
                     openj9:  'hw.arch.ppc64 && sw.os.aix.7_1'
             ],
-            test                : false,
+            test                : 'default',
             configureArgs       : [
                     "openj9"      : '--with-vendor-name="International Business Machines Corporation" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
             ],
@@ -132,7 +132,7 @@ class Config11 {
         s390xLinux    : [
             os                  : 'linux',
             arch                : 's390x',
-            test                : 'default',
+            test                : false,
             additionalNodeLabels: [
                     openj9:  'hw.arch.s390x && (sw.os.cent.7 || sw.os.rhel.7)'
             ],
@@ -142,7 +142,7 @@ class Config11 {
         s390xLinuxIBM    : [
             os                  : 'linux',
             arch                : 's390x',
-            test                : false,
+            test                : 'default',
             additionalNodeLabels: [
                     openj9:  'hw.arch.s390x && (sw.os.cent.7 || sw.os.rhel.7)'
             ],
@@ -162,7 +162,7 @@ class Config11 {
             os                  : 'linux',
             arch                : 'ppc64le',
             additionalNodeLabels : 'centos7',
-            test                : 'default',
+            test                : false,
             additionalNodeLabels: [
                     openj9:  'hw.arch.ppc64le && (sw.os.cent.7 || sw.os.rhel.7)'
             ],
@@ -176,7 +176,7 @@ class Config11 {
             os                  : 'linux',
             arch                : 'ppc64le',
             additionalNodeLabels : 'centos7',
-            test                : false,
+            test                : 'default',
             additionalNodeLabels: [
                     openj9:  'hw.arch.ppc64le && (sw.os.cent.7 || sw.os.rhel.7)'
             ],
