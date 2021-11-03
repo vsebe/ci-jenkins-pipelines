@@ -62,6 +62,10 @@
             "numMachines"    : ["3", "3", "3", "3", "5", "4", "8", "2"]
         }
     },
+    "enableInstallers"       : true,
+    "enableSourceRpm"        : true,
+    "enableSigner"           : true,
+    "verifySigner"           : true,
     "importLibraryScript"    : "pipelines/build/common/import_lib.groovy",
     "defaultsUrl"            : "https://raw.githubusercontent.com/ibmruntimes/ci-jenkins-pipelines/ibm/pipelines/defaults.json"
 }
