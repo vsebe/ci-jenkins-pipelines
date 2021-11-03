@@ -1220,7 +1220,7 @@ class Build {
                     .replace("-b", "b")
 
             fileName = "${fileName}_${nameTag}"
-        } else if ((buildConfig.RELEASE) && (additionalFileNameTag == "IBM")) {
+        } else if ((buildConfig.RELEASE) && ((additionalFileNameTag == "IBM") && buildConfig.CONFIGURE_ARGS.contains('--with-vendor-version-string'))) {
             // extract vendor version string from buildConfig.CONFIGURE_ARGS
             //  e.g. "CONFIGURE_ARGS": "--with-vendor-version-string=\"11.0.12.0\""
 
@@ -1228,7 +1228,7 @@ class Build {
             def startIndex = configureArgs.indexOf('--with-vendor-version-string=\"') + 30
             def vendorVersion = configureArgs.substring(startIndex, configureArgs.indexOf('\"', startIndex))
 
-            context.println "vendorVersion:$vendorVersion"
+            context.println "vendorVersion: $vendorVersion"
 
             fileName = "${fileName}_${vendorVersion}"
 
