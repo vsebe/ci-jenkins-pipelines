@@ -610,7 +610,8 @@ class Build {
                         fingerprintArtifacts: true
                 )
 
-                context.archiveArtifacts artifacts: "workspace/target/*.rpm, workspace/target/*.rpm.sha256.txt"
+                writeMetadata(versionData, false)
+                context.archiveArtifacts artifacts: "workspace/target/*.rpm, workspace/target/*.rpm.sha256.txt, workspace/target/*.rpm.json"
 
             }  catch (e) {
                 context.println("Failed to build ${buildConfig.TARGET_OS} installer ${e}")
@@ -789,7 +790,7 @@ class Build {
         context.node('master') {
             context.stage("sign installer") {
                 try {
-                    if (buildConfig.TARGET_OS == "windows") {
+                    if (buildConfig.TARGET_OS == "mac" || buildConfig.TARGET_OS == "windows") {
                         signInstallerJob(versionData);
                         context.sh 'cd workspace/target/ && for file in $(ls *.tar.gz *.pkg *.msi); do sha256sum "$file" > $file.sha256.txt ; done'
                         writeMetadata(versionData, false)
@@ -797,7 +798,8 @@ class Build {
 
                     } else if (buildConfig.TARGET_OS == "aix") {
                         signInstallerJob(versionData);
-                        context.archiveArtifacts artifacts: "workspace/target/*.rpm, workspace/target/*.rpm.sha256.txt"
+                        writeMetadata(versionData, false)
+                        context.archiveArtifacts artifacts: "workspace/target/*.rpm, workspace/target/*.rpm.sha256.txt, workspace/target/*.rpm.json"
                     }
                 } catch (e) {
                     context.println("Failed to build ${buildConfig.TARGET_OS} installer ${e}")
@@ -880,7 +882,7 @@ class Build {
     */
     List<String> listArchives() {
         return context.sh(
-                script: '''find workspace/target/ | egrep '(.tar.gz|.zip|.msi|.pkg|.deb|.rpm)$' ''',
+                script: '''find workspace/target/ | egrep '(.tar.gz|.zip|.msi|.pkg|.deb|.rpm|.tar.gz.sig)$' ''',
                 returnStdout: true,
                 returnStatus: false
         )
