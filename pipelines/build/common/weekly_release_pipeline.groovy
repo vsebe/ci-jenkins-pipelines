@@ -41,11 +41,13 @@ stage("Submit Release Pipelines") {
                 stage("Build - ${params.buildPipeline} - ${variantName}") {
                   build job: "${params.buildPipeline}",
                       parameters: [
-                          string(name: 'releaseType',        value: 'Release'),
-                          string(name: 'scmReference',       value: scmRef),
-                          text(name: 'targetConfigurations', value: JsonOutput.prettyPrint(JsonOutput.toJson(targetConfig))),
-                          ['$class': 'BooleanParameterValue', name: 'keepReleaseLogs', value: false]
+                        string(name: 'releaseType',        value: 'Release'),
+                        string(name: 'scmReference',       value: scmRef),
+                        text(name: 'targetConfigurations', value: JsonOutput.prettyPrint(JsonOutput.toJson(targetConfig))),
+                        text(name: 'defaultsJson',         value: params.defaultsJson),
+                        ['$class': 'BooleanParameterValue', name: 'keepReleaseLogs', value: false]
                       ]
+
                 }
             }
         }
