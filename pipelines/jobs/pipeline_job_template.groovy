@@ -10,7 +10,7 @@ runSrcRpm = enableSourceRpm
 runVerifySigner = verifySigner
 cleanWsBuildOutput = true
 jdkVersion = "${JAVA_VERSION}"
-isLightweight = true
+isLightweight = false
 
 // if true means this is running in the pr builder pipeline
 if (binding.hasVariable('PR_BUILDER')) {
@@ -23,7 +23,6 @@ if (binding.hasVariable('PR_BUILDER')) {
     runSigner = false
     runSrcRpm = false
     runVerifySigner = false
-    isLightweight = false
 }
 
 if (!binding.hasVariable('disableJob')) {
@@ -40,11 +39,11 @@ pipelineJob("${BUILD_FOLDER}/${JOB_NAME}") {
             scm {
                 git {
                     remote {
-                        url("${GIT_URL}")
+                        url('$SCM_REPO')
                         refspec(gitRefSpec)
                         credentials("${CHECKOUT_CREDENTIALS}")
                     }
-                    branch("${BRANCH}")
+                    branch('$SCM_BRANCH')
                 }
             }
             scriptPath(SCRIPT)
@@ -118,5 +117,7 @@ pipelineJob("${BUILD_FOLDER}/${JOB_NAME}") {
         stringParam('adoptBuildNumber', "", "Empty by default. If you ever need to re-release then bump this number. Currently this is only added to the build metadata file.")
         textParam('defaultsJson', JsonOutput.prettyPrint(JsonOutput.toJson(defaultsJson)), '<strong>DO NOT ALTER THIS PARAM UNLESS YOU KNOW WHAT YOU ARE DOING!</strong> This passes down the user\'s default constants to the downstream jobs.')
         textParam('adoptDefaultsJson', JsonOutput.prettyPrint(JsonOutput.toJson(adoptDefaultsJson)), '<strong>DO NOT ALTER THIS PARAM UNDER ANY CIRCUMSTANCES!</strong> This passes down adopt\'s default constants to the downstream jobs. NOTE: <code>defaultsJson</code> has priority, the constants contained within this param will only be used as a failsafe.')
+        stringParam('SCM_REPO', "${GIT_URL}", "The URL of the SCM repository hosting the pipeline Groovy scripts.")
+        stringParam('SCM_BRANCH', "${BRANCH}", "The  SCM branch.")
     }
 }

@@ -40,11 +40,11 @@ pipelineJob("$buildFolder/$JOB_NAME") {
             scm {
                 git {
                     remote {
-                        url(GIT_URL)
+                        url('$SCM_REPO')
                         refspec(" +refs/pull/*:refs/remotes/origin/pr/* +refs/heads/master:refs/remotes/origin/master +refs/heads/*:refs/remotes/origin/*")
                         credentials("${CHECKOUT_CREDENTIALS}")
                     }
-                    branch("${GIT_BRANCH}")
+                    branch('$SCM_BRANCH')
                     extensions {
                         //repo clean is performed after scm checkout in pipelines/build/common/openjdk_build_pipeline.groovy
                         pruneStaleBranch()
@@ -135,5 +135,7 @@ pipelineJob("$buildFolder/$JOB_NAME") {
         if (binding.hasVariable('CUSTOM_BASEFILE_LOCATION')) {
             stringParam('CUSTOM_BASEFILE_LOCATION', "$CUSTOM_BASEFILE_LOCATION")
         }
+        stringParam('SCM_REPO', "${GIT_URL}", "The URL of the SCM repository hosting the pipeline Groovy scripts.")
+        stringParam('SCM_BRANCH', "${BRANCH}", "The  SCM branch.")
     }
 }
