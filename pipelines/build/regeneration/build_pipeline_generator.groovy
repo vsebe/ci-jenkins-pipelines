@@ -13,11 +13,19 @@ node('master') {
     }
 
     // Pull in User defaults
-    String DEFAULTS_FILE_URL = (params.DEFAULTS_URL) ?: ADOPT_DEFAULTS_FILE_URL
-    def getUser = new URL(DEFAULTS_FILE_URL).openConnection()
-    Map<String, ?> DEFAULTS_JSON = new JsonSlurper().parseText(getUser.getInputStream().getText()) as Map
+    Map<String, ?> DEFAULTS_JSON = null
+
+    if (params.DEFAULTS_JSON) {
+        DEFAULTS_JSON = new JsonSlurper().parseText(params.DEFAULTS_JSON) as Map
+    } else {
+        String DEFAULTS_FILE_URL = (params.DEFAULTS_URL) ?: ADOPT_DEFAULTS_FILE_URL
+        def getUser = new URL(DEFAULTS_FILE_URL).openConnection()
+
+        DEFAULTS_JSON = new JsonSlurper().parseText(getUser.getInputStream().getText()) as Map
+    }
+
     if (!DEFAULTS_JSON || !Map.class.isInstance(DEFAULTS_JSON)) {
-      throw new Exception("[ERROR] No DEFAULTS_JSON found at ${DEFAULTS_FILE_URL} or it is not a valid JSON object. Please ensure this path is correct and leads to a JSON or Map object file.")
+      throw new Exception("[ERROR] No DEFAULTS_JSON found at ${DEFAULTS_FILE_URL} or it is not a valid JSON object. Please ensure this path is correct and leads to a JSON or Map object file or DEFAULTS_JSON parameter is populated and it is a valid JSON object.")
     }
 
     Map remoteConfigs = [:]
@@ -274,7 +282,7 @@ node('master') {
           println "[SUCCESS] The path is now ${config.SCRIPT} relative to ${ADOPT_DEFAULTS_JSON['repository']['pipeline_url']}"
           checkoutUserPipelines()
         }
-        config.PIPELINE = "openjdk${javaVersion}-pipeline"
+        config.PIPELINE = jobName
         config.weekly_release_scmReferences = target.weekly_release_scmReferences
 
         // Load weeklyTemplatePath. This is where the weekly_release_pipeline_job_template.groovy code is located compared to the repository root. This actually sets up the weekly pipeline job using the parameters above.
@@ -289,6 +297,7 @@ node('master') {
         println "SCRIPT = ${config.SCRIPT}"
         println "PIPELINE = ${config.PIPELINE}"
         println "weekly_release_scmReferences = ${config.weekly_release_scmReferences}"
+        println "defaultsJson = ${config.defaultsJson}"
 
         try {
           jobDsl targets: weeklyTemplatePath, ignoreExisting: false, additionalParameters: config

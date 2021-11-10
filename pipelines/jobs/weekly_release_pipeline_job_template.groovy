@@ -13,10 +13,14 @@ pipelineJob("${BUILD_FOLDER}/${JOB_NAME}") {
                         credentials("${CHECKOUT_CREDENTIALS}")
                     }
                     branch("${BRANCH}")
+                    extensions {
+                        // delete the content of the workspace before building
+                        wipeOutWorkspace()
+                    }
                 }
             }
             scriptPath(SCRIPT)
-            lightweight(true)
+            lightweight(false)
         }
     }
     disabled(disableJob)
@@ -40,5 +44,6 @@ pipelineJob("${BUILD_FOLDER}/${JOB_NAME}") {
         stringParam('buildPipeline', "${BUILD_FOLDER}/${PIPELINE}", 'The build pipeline to invoke.')
         textParam('scmReferences', JsonOutput.prettyPrint(JsonOutput.toJson(weekly_release_scmReferences)), 'The map of scmReferences for each variant.')
         textParam('targetConfigurations', JsonOutput.prettyPrint(JsonOutput.toJson(targetConfigurations)), 'The map of platforms and variants to build.')
+        textParam('defaultsJson', JsonOutput.prettyPrint(JsonOutput.toJson(defaultsJson)), '<strong>DO NOT ALTER THIS PARAM UNLESS YOU KNOW WHAT YOU ARE DOING!</strong> This passes down the user\'s default constants to the downstream jobs.')
     }
 }
