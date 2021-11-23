@@ -41,6 +41,9 @@ class Config11 {
                     "SapMachine"  : '--enable-dtrace=auto',
                     "dragonwell"  : '--enable-dtrace=auto --enable-unlimited-crypto --with-jvm-variants=server --with-zlib=system --with-jvm-features=zgc',
                     "bisheng"     : '--enable-dtrace=auto --with-extra-cflags=-fstack-protector-strong --with-extra-cxxflags=-fstack-protector-strong --with-jvm-variants=server --disable-warnings-as-errors'
+            ],
+            buildArgs            : [
+                "hotspot"     : '--create-source-archive'
             ]
         ],
 
@@ -80,6 +83,14 @@ class Config11 {
             ],
             additionalFileNameTag: "IBM",
             buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk"
+        ],
+
+        x64AlpineLinux  : [
+                os                  : 'alpine-linux',
+                arch                : 'x64',
+                dockerImage         : 'adoptopenjdk/alpine3_build_image',
+                test                : 'default',
+                configureArgs       : '--enable-headless-only=yes'
         ],
 
         x64Windows: [
