@@ -6,6 +6,9 @@ class Config17 {
                 additionalNodeLabels: 'ci.project.openj9 && hw.arch.x86 && sw.os.osx.10_14',
                 test                : 'default',
                 cleanWorkspaceAfterBuild: true,
+                buildArgs           : [
+                        openj9      : '--create-jre-image'
+                ],
                 configureArgs       : '--enable-dtrace --with-vendor-name="IBM Corporation" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
         ],
 
@@ -39,6 +42,9 @@ class Config17 {
                 cleanWorkspaceAfterBuild: true,
                 additionalTestLabels: [
                         openj9      : '!(sw.os.cent.6||sw.os.rhel.6)'
+                ],
+                buildArgs           : [
+                        openj9      : '--create-jre-image'
                 ],
                 configureArgs       : [
                         "openj9"      : '--enable-dtrace --enable-jitserver --with-vendor-name="IBM Corporation" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues',
@@ -83,6 +89,9 @@ class Config17 {
                 arch                : 'x64',
                 additionalNodeLabels: 'ci.project.openj9 && hw.arch.x86 && sw.os.windows',
                 cleanWorkspaceAfterBuild: true,
+                buildArgs           : [
+                        openj9      : '--create-jre-image'
+                ],
                 configureArgs: '--with-vendor-name="IBM Corporation" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-jdk-rc-name="IBM Semeru Runtime"',
                 test                : 'default'
         ],
@@ -135,6 +144,9 @@ class Config17 {
                         openj9:  'hw.arch.ppc64 && sw.os.aix.7_1'
                 ],
                 test                : 'default',
+                buildArgs           : [
+                        openj9      : '--create-jre-image'
+                ],
                 configureArgs : [
                         openj9: '--disable-ccache --with-vendor-name="IBM Corporation" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
                 ],
@@ -163,6 +175,9 @@ class Config17 {
                 additionalNodeLabels: [
                         openj9:  'hw.arch.s390x && (sw.os.cent.7 || sw.os.rhel.7)'
                 ],
+                buildArgs           : [
+                        openj9      : '--create-jre-image'
+                ],
                 configureArgs       : '--enable-dtrace --with-vendor-name="IBM Corporation" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
         ],
 
@@ -186,6 +201,9 @@ class Config17 {
                 cleanWorkspaceAfterBuild: true,
                 additionalNodeLabels: [
                         openj9:  'hw.arch.ppc64le && (sw.os.cent.7 || sw.os.rhel.7)'
+                ],
+                buildArgs           : [
+                        openj9      : '--create-jre-image'
                 ],
                 configureArgs       : [
                         "hotspot"     : '--enable-dtrace',
@@ -235,6 +253,9 @@ class Config17 {
                 additionalNodeLabels: [
                         openj9:  'hw.arch.aarch64 && sw.os.linux'
                 ],
+                buildArgs           : [
+                        openj9      : '--create-jre-image'
+                ],
                 configureArgs       : '--enable-dtrace --with-vendor-name="IBM Corporation" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
         ],
 
@@ -256,7 +277,9 @@ class Config17 {
                 os                   : 'linux',
                 arch                 : 'riscv64',
                 configureArgs        : '--enable-dtrace --with-native-debug-symbols=none',
-                buildArgs            : '-r https://github.com/openjdk/jdk-sandbox -b riscv-port-branch --custom-cacerts false --disable-adopt-branch-safety',
+                buildArgs            : [
+                        openj9       : '-r https://github.com/openjdk/jdk-sandbox -b riscv-port-branch --custom-cacerts false --disable-adopt-branch-safety --create-jre-image'
+                ],
                 test                : false
         ]
 
