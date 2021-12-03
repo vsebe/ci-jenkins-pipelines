@@ -43,15 +43,13 @@ class Config17 {
                 additionalTestLabels: [
                         openj9      : '!(sw.os.cent.6||sw.os.rhel.6)'
                 ],
-                buildArgs           : [
-                        openj9      : '--create-jre-image'
-                ],
                 configureArgs       : [
                         "openj9"      : '--enable-dtrace --enable-jitserver --with-vendor-name="IBM Corporation" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues',
                         "hotspot"     : '--enable-dtrace'
                 ],
                 buildArgs           : [
-                        "hotspot"   : '--create-source-archive'
+                        "hotspot"   : '--create-source-archive',
+                        "openj9"      : '--create-jre-image'
                 ]
         ],
 
