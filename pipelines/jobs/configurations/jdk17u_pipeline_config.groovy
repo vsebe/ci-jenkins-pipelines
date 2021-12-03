@@ -7,7 +7,8 @@ class Config17 {
                 test                : 'default',
                 cleanWorkspaceAfterBuild: true,
                 buildArgs           : [
-                        openj9      : '--create-jre-image'
+                        "openj9"      : '--create-jre-image',
+                        "hotspot"     : '--create-jre-image'
                 ],
                 configureArgs       : '--enable-dtrace --with-vendor-name="IBM Corporation" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
         ],
@@ -48,8 +49,8 @@ class Config17 {
                         "hotspot"     : '--enable-dtrace'
                 ],
                 buildArgs           : [
-                        "hotspot"   : '--create-source-archive',
-                        "openj9"      : '--create-jre-image'
+                        "hotspot"   : '--create-source-archive --create-jre-image',
+                        "openj9"    : '--create-jre-image'
                 ]
         ],
 
@@ -58,7 +59,10 @@ class Config17 {
                 arch                : 'x64',
                 dockerImage         : 'adoptopenjdk/alpine3_build_image',
                 test                : 'default',
-                configureArgs       : '--enable-headless-only=yes'
+                configureArgs       : '--enable-headless-only=yes',
+                buildArgs           : [
+                        "hotspot"   : '--create-jre-image'
+                ]
         ],
 
         x64LinuxIBM  : [
@@ -88,7 +92,8 @@ class Config17 {
                 additionalNodeLabels: 'ci.project.openj9 && hw.arch.x86 && sw.os.windows',
                 cleanWorkspaceAfterBuild: true,
                 buildArgs           : [
-                        openj9      : '--create-jre-image'
+                        "openj9"    : '--create-jre-image',
+                        "hotspot"   : '--create-jre-image'
                 ],
                 configureArgs: '--with-vendor-name="IBM Corporation" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-jdk-rc-name="IBM Semeru Runtime"',
                 test                : 'default'
@@ -101,7 +106,7 @@ class Config17 {
                         openj9:     'ci.project.openj9 && hw.arch.x86 && sw.os.windows'
                 ],
                 buildArgs : [
-                        openj9 : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk"
+                        "openj9" : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk"
                 ],
                 test                : 'default',
                 configureArgs       : [
@@ -120,6 +125,9 @@ class Config17 {
                 test                : [
                         nightly: [],
                         weekly : []
+                ],
+                buildArgs           : [
+                        "hotspot"   : '--create-jre-image'
                 ]
         ],
 
@@ -131,7 +139,10 @@ class Config17 {
                 buildArgs : [
                         hotspot : '--jvm-variant client,server'
                 ],
-                test                : 'default'
+                test                : 'default',
+                buildArgs           : [
+                        "hotspot"   : '--create-jre-image'
+                ]
         ],
 
         ppc64Aix    : [
@@ -143,7 +154,8 @@ class Config17 {
                 ],
                 test                : 'default',
                 buildArgs           : [
-                        openj9      : '--create-jre-image'
+                        "openj9"    : '--create-jre-image',
+                        "hotspot"   : '--create-jre-image'
                 ],
                 configureArgs : [
                         openj9: '--disable-ccache --with-vendor-name="IBM Corporation" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
@@ -174,7 +186,8 @@ class Config17 {
                         openj9:  'hw.arch.s390x && (sw.os.cent.7 || sw.os.rhel.7)'
                 ],
                 buildArgs           : [
-                        openj9      : '--create-jre-image'
+                        "openj9"      : '--create-jre-image',
+                        "hotspot"   : '--create-jre-image'
                 ],
                 configureArgs       : '--enable-dtrace --with-vendor-name="IBM Corporation" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
         ],
@@ -201,7 +214,8 @@ class Config17 {
                         openj9:  'hw.arch.ppc64le && (sw.os.cent.7 || sw.os.rhel.7)'
                 ],
                 buildArgs           : [
-                        openj9      : '--create-jre-image'
+                        "openj9"    : '--create-jre-image',
+                        "hotspot"   : '--create-jre-image'
                 ],
                 configureArgs       : [
                         "hotspot"     : '--enable-dtrace',
@@ -238,7 +252,9 @@ class Config17 {
                         openj9      : '--enable-dtrace --with-vendor-name="IBM Corporation" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Certified Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
                 ],
                 additionalFileNameTag: "IBM",
-                buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk"
+                buildArgs : [
+                        "openj9"    : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk"
+                ]
         ],
 
         aarch64Linux    : [
@@ -252,7 +268,8 @@ class Config17 {
                         openj9:  'hw.arch.aarch64 && sw.os.linux'
                 ],
                 buildArgs           : [
-                        openj9      : '--create-jre-image'
+                        "openj9"    : '--create-jre-image',
+                        "hotspot"   : '--create-jre-image'
                 ],
                 configureArgs       : '--enable-dtrace --with-vendor-name="IBM Corporation" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
         ],
@@ -261,14 +278,22 @@ class Config17 {
                 os                  : 'mac',
                 arch                : 'aarch64',
                 additionalNodeLabels: 'macos11',
-                test                : 'default'
+                test                : 'default',
+                buildArgs           : [
+                        "hotspot"   : '--create-jre-image'
+                ]
+
         ],
 
         arm32Linux    : [
                 os                  : 'linux',
                 arch                : 'arm',
                 test                : 'default',
-                configureArgs       : '--enable-dtrace'
+                configureArgs       : '--enable-dtrace',
+                buildArgs           : [
+                        "hotspot"   : '--create-jre-image'
+                ]
+
         ],
 
         riscv64Linux      :  [
