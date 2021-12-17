@@ -293,17 +293,6 @@ class Config17 {
                 buildArgs           : [
                         "hotspot"   : '--create-jre-image'
                 ]
-
-        ],
-
-        riscv64Linux      :  [
-                os                   : 'linux',
-                arch                 : 'riscv64',
-                configureArgs        : '--enable-dtrace --with-native-debug-symbols=none',
-                buildArgs            : [
-                        openj9       : '-r https://github.com/openjdk/jdk-sandbox -b riscv-port-branch --custom-cacerts false --disable-adopt-branch-safety --create-jre-image'
-                ],
-                test                : false
         ]
 
   ]
