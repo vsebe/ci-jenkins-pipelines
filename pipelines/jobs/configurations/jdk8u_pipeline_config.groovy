@@ -17,7 +17,7 @@ class Config8 {
                 os                  : 'linux',
                 arch                : 'x64',
                 additionalNodeLabels : 'ci.project.openj9 && hw.arch.x86 && sw.os.linux',
-                dockerImage         : 'adoptopenjdk/centos6_build_image@sha256:643fa990a41dbaf448a24b2e189e69ef9d06ef1cd077ca78208dab35a2d48a19',
+                dockerImage         : 'adoptopenjdk/centos6_build_image',
                 dockerFile: [
                         openj9  : 'pipelines/build/dockerFiles/cuda.dockerfile',
                         dragonwell: 'pipelines/build/dockerFiles/dragonwell.dockerfile'
@@ -124,7 +124,7 @@ class Config8 {
         aarch64Linux  : [
                 os                  : 'linux',
                 arch                : 'aarch64',
-                dockerImage         : 'adoptopenjdk/centos7_build_image@sha256:e8ab3ee5aab3f78f88a39bacadbd4c9e87c7e2ff8fb7a9f7917427568ccf9ddd',
+                dockerImage         : 'adoptopenjdk/centos7_build_image',
                 dockerFile: [
                         dragonwell: 'pipelines/build/dockerFiles/dragonwell_aarch64.dockerfile'
                 ],

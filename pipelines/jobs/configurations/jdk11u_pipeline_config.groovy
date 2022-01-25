@@ -27,7 +27,7 @@ class Config11 {
             os                  : 'linux',
             arch                : 'x64',
             additionalNodeLabels : 'ci.project.openj9 && hw.arch.x86 && sw.os.linux',
-            dockerImage         : 'adoptopenjdk/centos6_build_image@sha256:19cdb5284da031aef7c73cb52ee7018502d65d0ca21cebc45d9652eec3926458',
+            dockerImage         : 'adoptopenjdk/centos6_build_image',
             dockerFile: [
                     openj9  : 'pipelines/build/dockerFiles/cuda.dockerfile'
             ],
@@ -51,7 +51,7 @@ class Config11 {
             os                  : 'linux',
             arch                : 'x64',
             additionalNodeLabels : 'ci.project.openj9 && hw.arch.x86 && sw.os.linux',
-            dockerImage         : 'adoptopenjdk/centos6_build_image@sha256:19cdb5284da031aef7c73cb52ee7018502d65d0ca21cebc45d9652eec3926458',
+            dockerImage         : 'adoptopenjdk/centos6_build_image',
             dockerFile: [
                     "openj9"  : 'pipelines/build/dockerFiles/cuda.dockerfile'
             ],
@@ -228,7 +228,7 @@ class Config11 {
         aarch64Linux    : [
             os                  : 'linux',
             arch                : 'aarch64',
-            dockerImage         : 'adoptopenjdk/centos7_build_image@sha256:e8ab3ee5aab3f78f88a39bacadbd4c9e87c7e2ff8fb7a9f7917427568ccf9ddd',
+            dockerImage         : 'adoptopenjdk/centos7_build_image',
             dockerNode         : 'sw.tool.docker',
             dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
             additionalNodeLabels: [
@@ -248,7 +248,7 @@ class Config11 {
             os                   : 'linux',
             arch                 : 'riscv64',
             dockerImage          : [
-                    "openj9"     : 'adoptopenjdk/centos6_build_image@sha256:19cdb5284da031aef7c73cb52ee7018502d65d0ca21cebc45d9652eec3926458',
+                    "openj9"     : 'adoptopenjdk/centos6_build_image',
                     "bisheng"    : 'adoptopenjdk/centos6_build_image'
             ],
             dockerNode         : 'sw.tool.docker && sw.config.uid1000',
