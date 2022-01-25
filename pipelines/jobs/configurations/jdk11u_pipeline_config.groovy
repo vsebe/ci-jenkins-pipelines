@@ -35,7 +35,7 @@ class Config11 {
             dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
             test                : 'default',
             configureArgs       : [
-                    "openj9"      : '--enable-jitserver --enable-dtrace=auto --with-vendor-name="International Business Machines Corporation" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues',
+                    "openj9"      : '--disable-ccache --enable-jitserver --enable-dtrace=auto --with-vendor-name="International Business Machines Corporation" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues',
                     "hotspot"     : '--enable-dtrace=auto',
                     "corretto"    : '--enable-dtrace=auto',
                     "SapMachine"  : '--enable-dtrace=auto',
