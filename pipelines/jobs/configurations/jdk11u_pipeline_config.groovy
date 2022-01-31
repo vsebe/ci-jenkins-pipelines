@@ -237,6 +237,27 @@ class Config11 {
             test                : 'default',
             configureArgs       : [
                     "hotspot" : '--enable-dtrace=auto',
+                    "openj9" : '--enable-dtrace=auto --without-version-opt  --with-vendor-name="International Business Machines Corporation" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues',
+                    "corretto" : '--enable-dtrace=auto',
+                    "dragonwell" : "--enable-dtrace=auto --with-extra-cflags=\"-march=armv8.2-a+crypto\" --with-extra-cxxflags=\"-march=armv8.2-a+crypto\"",
+                    "bisheng" : '--enable-dtrace=auto --with-extra-cflags=-fstack-protector-strong --with-extra-cxxflags=-fstack-protector-strong --with-jvm-variants=server'
+            ],
+            additionalFileNameTag: "IBM",
+            buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk"
+        ],
+
+        aarch64LinuxIBM    : [
+            os                  : 'linux',
+            arch                : 'aarch64',
+            dockerImage         : 'adoptopenjdk/centos7_build_image',
+            dockerNode         : 'sw.tool.docker',
+            dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
+            additionalNodeLabels: [
+                    openj9:  'hw.arch.aarch64 && sw.os.linux'
+            ],
+            test                : 'default',
+            configureArgs       : [
+                    "hotspot" : '--enable-dtrace=auto',
                     "openj9" : '--enable-dtrace=auto --without-version-opt  --with-vendor-name="International Business Machines Corporation" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues',
                     "corretto" : '--enable-dtrace=auto',
                     "dragonwell" : "--enable-dtrace=auto --with-extra-cflags=\"-march=armv8.2-a+crypto\" --with-extra-cxxflags=\"-march=armv8.2-a+crypto\"",
