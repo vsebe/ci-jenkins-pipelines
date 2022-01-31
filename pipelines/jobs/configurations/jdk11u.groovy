@@ -12,7 +12,8 @@ targetConfigurations = [
         "x64WindowsIBM"    : [ "openj9" ],
         "ppc64AixIBM"      : [ "openj9" ],
         "ppc64leLinuxIBM"  : [ "openj9" ],
-        "s390xLinuxIBM"    : [ "openj9" ]
+        "s390xLinuxIBM"    : [ "openj9" ],
+        "aarch64LinuxIBM"  : [ "openj9" ]
 ]
 
 // Weeknights at 9:00pm
