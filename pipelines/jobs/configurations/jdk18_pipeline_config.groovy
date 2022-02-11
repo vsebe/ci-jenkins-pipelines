@@ -163,7 +163,7 @@ class Config18 {
                 ],
                 cleanWorkspaceAfterBuild: true,
                 configureArgs       : [
-                        openj9      : '--enable-dtrace --disable-warnings-as-errors --with-noncompressedrefs --disable-ddr --with-vendor-name="IBM Corporation" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
+                        openj9      : '--enable-dtrace --disable-warnings-as-errors --with-noncompressedrefs --disable-ddr --with-version-pre=ea --with-vendor-name="IBM Corporation" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
                 ],
                 test                : [
                         hotspot : 'default',
