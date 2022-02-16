@@ -426,10 +426,7 @@ class Build {
 
         def targets = ["windows"]
         if (buildConfig.VARIANT.equals("openj9")) {
-            // Note: mac binaries for openj9 variant are signed by 3rd party, skip platform
-            targets.addAll(["aix", "linux"])
-        } else {
-            targets.add("mac")
+            targets.addAll(["aix", "linux", "mac"])
         }
 
         if (targets.contains(buildConfig.TARGET_OS)) {
@@ -448,9 +445,7 @@ class Build {
                     if (buildConfig.TARGET_OS == "windows") {
                         nodeFilter += "&&sw.os.windows"
                         filter = "**/ibm-semeru*-j*_${buildConfig.TARGET_OS}_*.zip"
-                    } else if (buildConfig.TARGET_OS == "mac") {
-                        nodeFilter += "&&sw.os.osx"
-                    } else if (["aix", "linux"].contains(buildConfig.TARGET_OS)) {
+                    } else if (["aix", "linux", "mac"].contains(buildConfig.TARGET_OS)) {
                         nodeFilter += "&&sw.os.linux"
                     }
                 } else {
@@ -1447,7 +1442,7 @@ class Build {
                                         }
                                         context.stash name: 'signed_jmods', includes: "${macos_base_path}/**/*"
                                     }
-                                    
+
                                     // Remove jmod directories to be replaced with the stash saved above
                                     context.sh "rm -rf ${macos_base_path}/hotspot/variant-server || true"
                                     context.sh "rm -rf ${macos_base_path}/support/modules_cmds || true"
