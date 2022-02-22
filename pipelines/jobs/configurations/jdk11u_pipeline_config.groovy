@@ -173,7 +173,26 @@ class Config11 {
         s390xLinuxIBM    : [
             os                  : 'linux',
             arch                : 's390x',
-            test                : 'default',
+            test                : [
+                    nightly: [
+                        "sanity.functional",
+                        "extended.functional",
+                        "sanity.openjdk",
+                        "sanity.perf",
+                        "sanity.jck",
+                        "sanity.system",
+                        "special.system"
+                    ],
+                    weekly : [
+                        "extended.openjdk",
+                        "extended.perf",
+                        "extended.jck",
+                        "extended.system",
+                        "special.functional",
+                        "special.jck",
+                        "sanity.external"
+                    ]
+            ],
             additionalNodeLabels: [
                     openj9:  'hw.arch.s390x && (sw.os.cent.7 || sw.os.rhel.7)'
             ],
@@ -207,7 +226,26 @@ class Config11 {
             os                  : 'linux',
             arch                : 'ppc64le',
             additionalNodeLabels : 'centos7',
-            test                : 'default',
+            test                : [
+                    nightly: [
+                        "sanity.functional",
+                        "extended.functional",
+                        "sanity.openjdk",
+                        "sanity.perf",
+                        "sanity.jck",
+                        "sanity.system",
+                        "special.system"
+                    ],
+                    weekly : [
+                        "extended.openjdk",
+                        "extended.perf",
+                        "extended.jck",
+                        "extended.system",
+                        "special.functional",
+                        "special.jck",
+                        "sanity.external"
+                    ]
+            ],
             additionalNodeLabels: [
                     openj9:  'hw.arch.ppc64le && (sw.os.cent.7 || sw.os.rhel.7)'
             ],
@@ -253,7 +291,26 @@ class Config11 {
             additionalNodeLabels: [
                     openj9:  'hw.arch.aarch64 && sw.os.linux'
             ],
-            test                : 'default',
+            test                : [
+                    nightly: [
+                        "sanity.functional",
+                        "extended.functional",
+                        "sanity.openjdk",
+                        "sanity.perf",
+                        "sanity.jck",
+                        "sanity.system",
+                        "special.system"
+                    ],
+                    weekly : [
+                        "extended.openjdk",
+                        "extended.perf",
+                        "extended.jck",
+                        "extended.system",
+                        "special.functional",
+                        "special.jck",
+                        "sanity.external"
+                    ]
+            ],
             configureArgs       : [
                     "hotspot" : '--enable-dtrace=auto',
                     "openj9" : '--enable-dtrace=auto --without-version-opt  --with-vendor-name="International Business Machines Corporation" --with-vendor-url=https://www.ibm.com/semeru-runtimes --with-vendor-bug-url=https://github.com/ibmruntimes/Semeru-Runtimes/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues',
