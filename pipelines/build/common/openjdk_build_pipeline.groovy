@@ -23,7 +23,7 @@ limitations under the License.
 */
 /**
  * This file is a template for running a build for a given configuration
- * A configuration is for example jdk10u-mac-x64-hotspot.
+ * A configuration is for example jdk10u-mac-x64-temurin.
  *
  * This file is referenced by the pipeline template create_job_from_template.groovy
  *
@@ -184,7 +184,11 @@ class Build {
         def jobParams = [:]
         String jdk_Version = getJavaVersionNumber() as String
         jobParams.put('JDK_VERSIONS', jdk_Version)
-        jobParams.put('JDK_IMPL', buildConfig.VARIANT)
+        if (buildConfig.VARIANT == "temurin") {
+            jobParams.put('JDK_IMPL', 'hotspot')
+        } else { 
+            jobParams.put('JDK_IMPL', buildConfig.VARIANT)
+        }
 
         def arch = buildConfig.ARCHITECTURE
         if (arch == "x64") {
@@ -204,7 +208,7 @@ class Build {
 
         if (buildConfig.SCM_REF) {
             // We need to override the SCM ref on jdk8 arm builds change aarch64-shenandoah-jdk8u282-b08 to jdk8u282-b08
-            if (buildConfig.JAVA_TO_BUILD == "jdk8u" &&  buildConfig.VARIANT == "hotspot" && (buildConfig.ARCHITECTURE == "aarch64" || buildConfig.ARCHITECTURE == "arm")) {
+            if (buildConfig.JAVA_TO_BUILD == "jdk8u" &&  buildConfig.VARIANT == "temurin" && (buildConfig.ARCHITECTURE == "aarch64" || buildConfig.ARCHITECTURE == "arm")) {
                 jdkBranch = buildConfig.OVERRIDE_FILE_NAME_VERSION
             } else {
                 jdkBranch = buildConfig.SCM_REF
@@ -215,6 +219,8 @@ class Build {
             } else if (buildConfig.VARIANT == "openj9") {
                 jdkBranch = 'openj9'
             } else if (buildConfig.VARIANT == "hotspot"){
+                jdkBranch = 'master'
+            } else if (buildConfig.VARIANT == "temurin"){
                 jdkBranch = 'dev'
             } else if (buildConfig.VARIANT == "dragonwell") {
                 jdkBranch = 'master'
@@ -246,7 +252,7 @@ class Build {
                 openj9JavaToBuild = openj9JavaToBuild.substring(0, openj9JavaToBuild.length() - 1)
             }
             suffix = "ibmruntimes/openj9-openjdk-${openj9JavaToBuild}"
-        } else if (buildConfig.VARIANT == "hotspot") {
+        } else if (buildConfig.VARIANT == "temurin") {
             suffix = "adoptium/${buildConfig.JAVA_TO_BUILD}"
         } else if (buildConfig.VARIANT == "dragonwell") {
             suffix = "alibaba/dragonwell${javaNumber}"
@@ -291,7 +297,6 @@ class Build {
                                     context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${env.BUILD_NUMBER}"),
                                     context.string(name: 'UPSTREAM_JOB_NAME', value: "${env.JOB_NAME}"),
                                     context.string(name: 'JDK_VERSION', value: "${jobParams.JDK_VERSIONS}"),
-                                    context.string(name: 'RELEASE_TAG', value: "${buildConfig.SCM_REF}"),
                                     context.string(name: 'LABEL_ADDITION', value: additionalTestLabel),
                                     context.string(name: 'KEEP_REPORTDIR', value: "${buildConfig.KEEP_TEST_REPORTDIR}"),
                                     context.string(name: 'ACTIVE_NODE_TIMEOUT', value: "${buildConfig.ACTIVE_NODE_TIMEOUT}")]
@@ -318,6 +323,14 @@ class Build {
         List dynamicList = buildConfig.DYNAMIC_LIST
         List numMachines = buildConfig.NUM_MACHINES
         def enableTestDynamicParallel = Boolean.valueOf(buildConfig.ENABLE_TESTDYNAMICPARALLEL)
+        def aqaBranch = "master"
+        def useTestEnvProperties = false
+        if (buildConfig.SCM_REF && buildConfig.AQA_REF) {
+            aqaBranch = buildConfig.AQA_REF
+            useTestEnvProperties = true
+        }
+
+        def aqaAutoGen = buildConfig.AQA_AUTO_GEN ?: false
 
         testList.each { testType ->
 
@@ -351,12 +364,16 @@ class Build {
                         def jobName = jobParams.TEST_JOB_NAME
                         def JobHelper = context.library(identifier: 'openjdk-jenkins-helper@master').JobHelper
 
-                        // Create test job if job doesn't exist or is not runnable
-                        if (!JobHelper.jobIsRunnable(jobName as String)) {
+                        // Create test job if AQA_AUTO_GEN is set to true, the job doesn't exist or is not runnable
+                        if (aqaAutoGen || !JobHelper.jobIsRunnable(jobName as String)) {
                             context.node('master') {
                                 context.sh('curl -Os https://raw.githubusercontent.com/adoptium/aqa-tests/master/buildenv/jenkins/testJobTemplate')
                                 def templatePath = 'testJobTemplate'
-                                context.println "Test job doesn't exist, create test job: ${jobName}"
+                                if (!JobHelper.jobIsRunnable(jobName as String)) {
+                                    context.println "AQA test job: ${jobName} doesn't exist, generate job : ${jobName}"
+                                } else {
+                                    context.println "Regenerate job: ${jobName}, note: default job parameters may change."
+                                }
                                 context.jobDsl targets: templatePath, ignoreExisting: false, additionalParameters: jobParams
                             }
                         }
@@ -376,6 +393,9 @@ class Build {
                                             context.string(name: 'KEEP_REPORTDIR', value: "${keep_test_reportdir}"),
                                             context.string(name: 'PARALLEL', value: parallel),
                                             context.string(name: 'NUM_MACHINES', value: "${numMachinesPerTest}"),
+                                            context.booleanParam(name: 'USE_TESTENV_PROPERTIES', value: useTestEnvProperties),
+                                            context.booleanParam(name: 'GENERATE_JOBS', value: aqaAutoGen),
+                                            context.string(name: 'ADOPTOPENJDK_BRANCH', value: aqaBranch),
                                             context.string(name: 'ACTIVE_NODE_TIMEOUT', value: "${buildConfig.ACTIVE_NODE_TIMEOUT}")]
                         }
                     }
@@ -1178,7 +1198,7 @@ class Build {
 
     /*
     Calculates what the binary filename will be based off of the version, arch, os, variant, timestamp and extension.
-    It will usually be something like OpenJDK8U-jdk_x64_linux_hotspot_2020-10-19-17-06.tar.gz
+    It will usually be something like OpenJDK8U-jdk_x64_linux_temurin_2020-10-19-17-06.tar.gz
     */
     def determineFileName() {
         String javaToBuild = buildConfig.JAVA_TO_BUILD
@@ -1197,6 +1217,10 @@ class Build {
         javaToBuild = javaToBuild.toUpperCase()
 
         def fileName = "Open${javaToBuild}-jdk_${architecture}_${os}_${variant}"
+        if (variant == "temurin") {
+          // For compatibility with existing releases
+          fileName = "Open${javaToBuild}-jdk_${architecture}_${os}_hotspot"
+        }
 
         if (variant == "openj9") {
              fileName = "ibm-semeru-" + ((additionalFileNameTag == "IBM") ? "certified" : "open") + "-jdk_${architecture}_${os}"

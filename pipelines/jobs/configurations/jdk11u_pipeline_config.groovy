@@ -7,7 +7,7 @@ class Config11 {
             test                : 'default',
             configureArgs       : [
                     "openj9"      : '--enable-dtrace=auto  --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
-                    "hotspot"     : '--enable-dtrace=auto'
+                    "temurin"     : '--enable-dtrace=auto'
             ]
         ],
 
@@ -36,14 +36,14 @@ class Config11 {
             test                : 'default',
             configureArgs       : [
                     "openj9"      : '--disable-ccache --enable-jitserver --enable-dtrace=auto --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
-                    "hotspot"     : '--enable-dtrace=auto',
+                    "temurin"     : '--enable-dtrace=auto',
                     "corretto"    : '--enable-dtrace=auto',
                     "SapMachine"  : '--enable-dtrace=auto',
                     "dragonwell"  : '--enable-dtrace=auto --enable-unlimited-crypto --with-jvm-variants=server --with-zlib=system --with-jvm-features=zgc',
                     "bisheng"     : '--enable-dtrace=auto --with-extra-cflags=-fstack-protector-strong --with-extra-cxxflags=-fstack-protector-strong --with-jvm-variants=server --disable-warnings-as-errors'
             ],
             buildArgs            : [
-                "hotspot"     : '--create-source-archive'
+                "temurin"     : '--create-source-archive'
             ]
         ],
 
@@ -98,13 +98,13 @@ class Config11 {
             arch                : 'x64',
             additionalNodeLabels: [
                     openj9:     'ci.project.openj9 && hw.arch.x86 && sw.os.windows',
-                    hotspot:    'win2012',
+                    temurin:    'win2012',
                     dragonwell: 'win2012'
             ],
             test                : 'default',
             configureArgs       : [
                     "openj9"      : '--with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-jdk-rc-name="IBM Semeru Runtime"',
-                    "hotspot" : '--jvm-variant client,server'
+                    "temurin" : '--jvm-variant client,server'
             ]
         ],
 
@@ -129,7 +129,7 @@ class Config11 {
             arch                : 'x86-32',
             additionalNodeLabels: 'win2012',
             buildArgs : [
-                    hotspot : '--jvm-variant client,server'
+                    temurin : '--jvm-variant client,server'
             ],
             test                : 'default'
         ],
@@ -214,7 +214,7 @@ class Config11 {
                     openj9:  'hw.arch.ppc64le && (sw.os.cent.7 || sw.os.rhel.7)'
             ],
             configureArgs       : [
-                    "hotspot"     : '--enable-dtrace=auto',
+                    "temurin"     : '--enable-dtrace=auto',
                     "openj9"      : '--enable-dtrace=auto --enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
             ]
         ],
@@ -271,7 +271,7 @@ class Config11 {
             ],
             test                : 'default',
             configureArgs       : [
-                    "hotspot" : '--enable-dtrace=auto',
+                    "temurin" : '--enable-dtrace=auto',
                     "openj9" : '--enable-dtrace=auto --without-version-opt  --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
                     "corretto" : '--enable-dtrace=auto',
                     "dragonwell" : "--enable-dtrace=auto --with-extra-cflags=\"-march=armv8.2-a+crypto\" --with-extra-cxxflags=\"-march=armv8.2-a+crypto\"",
@@ -309,7 +309,7 @@ class Config11 {
                     ]
             ],
             configureArgs       : [
-                    "hotspot" : '--enable-dtrace=auto',
+                    "temurin" : '--enable-dtrace=auto',
                     "openj9" : '--enable-dtrace=auto --without-version-opt ',
                     "corretto" : '--enable-dtrace=auto',
                     "dragonwell" : "--enable-dtrace=auto --with-extra-cflags=\"-march=armv8.2-a+crypto\" --with-extra-cxxflags=\"-march=armv8.2-a+crypto\"",

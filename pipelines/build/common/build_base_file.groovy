@@ -48,6 +48,8 @@ class Builder implements Serializable {
     boolean release
     String releaseType
     String scmReference
+    String aqaReference
+    boolean aqaAutoGen
     String publishName
     String additionalConfigureArgs
     def scmVars
@@ -146,6 +148,8 @@ class Builder implements Serializable {
             DYNAMIC_LIST: dynamicList,
             NUM_MACHINES: numMachines,
             SCM_REF: scmReference,
+            AQA_REF: aqaReference,
+            AQA_AUTO_GEN: aqaAutoGen,
             BUILD_ARGS: buildArgs,
             NODE_LABEL: "${additionalNodeLabels}",
             ADDITIONAL_TEST_LABEL: "${additionalTestLabels}",
@@ -890,6 +894,8 @@ class Builder implements Serializable {
             context.echo "Publish: ${publish}"
             context.echo "Release: ${release}"
             context.echo "Tag/Branch name: ${scmReference}"
+            context.echo "AQA tests Release/Branch name: ${aqaReference}"
+            context.echo "Force auto generate AQA test jobs: ${aqaAutoGen}"
             context.echo "Keep test reportdir: ${keepTestReportDir}"
             context.echo "Keep release logs: ${keepReleaseLogs}"
 
@@ -1064,6 +1070,8 @@ return {
     String verifySigner,
     String releaseType,
     String scmReference,
+    String aqaReference,
+    String aqaAutoGen,
     String overridePublishName,
     String useAdoptShellScripts,
     String additionalConfigureArgs,
@@ -1123,6 +1131,8 @@ return {
             release: release,
             releaseType: releaseType,
             scmReference: scmReference,
+            aqaReference: aqaReference,
+            aqaAutoGen: Boolean.parseBoolean(aqaAutoGen),
             publishName: publishName,
             additionalConfigureArgs: additionalConfigureArgs,
             scmVars: scmVars,

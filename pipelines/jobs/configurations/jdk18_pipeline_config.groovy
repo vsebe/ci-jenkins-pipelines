@@ -20,7 +20,7 @@ class Config18 {
                 arch                : 'x64',
                 additionalNodeLabels : 'ci.project.openj9 && hw.arch.x86 && sw.os.linux',
                 dockerImage: [
-                        hotspot     : 'adoptopenjdk/centos6_build_image',
+                        temurin     : 'adoptopenjdk/centos6_build_image',
                         openj9      : 'adoptopenjdk/centos7_build_image'
                 ],
                 dockerFile: [
@@ -35,7 +35,7 @@ class Config18 {
                 ],
                 configureArgs       : [
                         openj9      : '--enable-dtrace --enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
-                        hotspot     : '--enable-dtrace'
+                        temurin     : '--enable-dtrace'
                 ],
                 buildArgs           : [
                         "openj9"    : '--create-jre-image'
@@ -82,7 +82,7 @@ class Config18 {
                 arch                : 'x86-32',
                 additionalNodeLabels: 'win2012&&vs2017',
                 buildArgs           : [
-                        hotspot : '--jvm-variant client,server'
+                        temurin : '--jvm-variant client,server'
                 ],
                 test                : 'default'
         ],
@@ -91,7 +91,7 @@ class Config18 {
                 os                  : 'aix',
                 arch                : 'ppc64',
                 additionalNodeLabels: [
-                        hotspot: 'xlc16&&aix710',
+                        temurin: 'xlc16&&aix710',
                         openj9:  'hw.arch.ppc64 && sw.os.aix.7_1'
                 ],
                 test                : 'default',
@@ -127,7 +127,7 @@ class Config18 {
                 cleanWorkspaceAfterBuild: true,
                 additionalNodeLabels: 'hw.arch.ppc64le && (sw.os.cent.7 || sw.os.rhel.7)',
                 configureArgs       : [
-                        hotspot     : '--enable-dtrace',
+                        temurin     : '--enable-dtrace',
                         openj9      : '--enable-dtrace --enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ],
                 buildArgs           : [

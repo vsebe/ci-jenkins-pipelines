@@ -32,7 +32,7 @@ node ("master") {
   def testStats = []
 
   stage("getPipelineStatus") {
-    if (variant == "hotspot") { // hotspot only for now
+    if (variant == "temurin") { // temurin only for now
       // Determine nightly pipeline health by looking at published assets.
       // In particular, look at one data set for published binaries (Linux x64).
       // If no published assets happened the last 4 days, the nightly pipeline
@@ -57,7 +57,7 @@ node ("master") {
     // Determine build and test variant job name search strings
     def buildVariant = variant
     def testVariant
-    if (variant == "hotspot") {
+    if (variant == "temurin") {
       testVariant = "_hs_"
     } else if (variant == "openj9") {
       testVariant = "_j9_"
@@ -95,20 +95,23 @@ node ("master") {
               def testCaseDisabled = 0
               def testJobNumber = 0
               def buildJobNumber = 0
-              if (job.status != null && job.status.equals("Done") && job.startBy != null) {
+
+              // Determine when job ran?
+              def build_time = LocalDateTime.ofInstant(Instant.ofEpochMilli(job.timestamp), ZoneId.of("UTC"))
+              def now = LocalDateTime.now(ZoneId.of("UTC"))
+              def days = ChronoUnit.DAYS.between(build_time, now)
+
+              // Was job "Done" and started less than 7 days ago?
+              if (job.status != null && job.status.equals("Done") && job.startBy != null && days < 7) {
                 if (job.startBy.startsWith("timer")) {
+                  // Nightly job
                   pipeline_id = job._id
                   pipelineUrl = job.buildUrl
                   foundNightly = true
                 } else if (job.startBy.startsWith("upstream project \"build-scripts/weekly-${pipelineName}\"")) {
-                  // Weekend weekly, was it started in last 7 days?
-                  def build_time = LocalDateTime.ofInstant(Instant.ofEpochMilli(job.timestamp), ZoneId.of("UTC"))
-                  def now = LocalDateTime.now(ZoneId.of("UTC"))
-                  def days = ChronoUnit.DAYS.between(build_time, now)
-                  if (days < 7) { 
-                    pipeline_id = job._id
-                    pipelineUrl = job.buildUrl
-                  }
+                  // Weekend weekly job
+                  pipeline_id = job._id
+                  pipelineUrl = job.buildUrl
                 }
               }
               // Was job a "match"?
@@ -234,7 +237,7 @@ node ("master") {
   }
 
   stage("printPublishStats") {
-    if (variant == "hotspot") { // hotspot only for now
+    if (variant == "temurin") { // temurin only for now
       echo "-------------- Nightly pipeline health report ------------------"
       featureReleases.each { featureRelease ->
         def key = "jdk${featureRelease}"

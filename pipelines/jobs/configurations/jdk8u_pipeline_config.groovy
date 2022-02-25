@@ -4,7 +4,7 @@ class Config8 {
                 os                  : 'mac',
                 arch                : 'x64',
                 additionalNodeLabels: [
-                        hotspot : 'macos10.14',
+                        temurin : 'macos10.14',
                         corretto: 'build-macstadium-macos1010-1',
                         openj9  : 'ci.project.openj9 && hw.arch.x86 && sw.os.osx.10_14'
                 ],
@@ -30,7 +30,7 @@ class Config8 {
                         "dragonwell"  : '--enable-unlimited-crypto --with-jvm-variants=server --with-zlib=system',
                 ],
                 buildArgs           : [
-                        "hotspot"   : '--create-source-archive'
+                        "temurin"   : '--create-source-archive'
                 ]
         ],
         x64Windows    : [
@@ -55,7 +55,7 @@ class Config8 {
                         openj9  : 'ci.project.openj9 && hw.arch.x86 && sw.os.windows'
                 ],
                 buildArgs : [
-                        hotspot : '--jvm-variant client,server'
+                        temurin : '--jvm-variant client,server'
                 ],
                 configureArgs      : '--with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
                 test                 : 'default'
@@ -65,7 +65,7 @@ class Config8 {
                 os  : 'aix',
                 arch: 'ppc64',
                 additionalNodeLabels: [
-                        hotspot: 'xlc13&&aix710',
+                        temurin: 'xlc13&&aix710',
                         openj9:  'hw.arch.ppc64 && sw.os.aix.7_1'
                 ],
                 test                 : 'default',
@@ -84,7 +84,7 @@ class Config8 {
                 ],
                 configureArgs      : '--with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
                 test: [
-                        hotspot: ['sanity.openjdk'],
+                        temurin: ['sanity.openjdk'],
                         openj9: 'default'
                 ]
         ],

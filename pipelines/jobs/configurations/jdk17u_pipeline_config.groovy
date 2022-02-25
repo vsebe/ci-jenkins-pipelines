@@ -8,7 +8,7 @@ class Config17 {
                 cleanWorkspaceAfterBuild: true,
                 buildArgs           : [
                         "openj9"      : '--create-jre-image',
-                        "hotspot"     : '--create-jre-image'
+                        "temurin"     : '--create-jre-image'
                 ],
                 configureArgs       : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
         ],
@@ -31,7 +31,7 @@ class Config17 {
                 arch                : 'x64',
                 additionalNodeLabels : 'ci.project.openj9 && hw.arch.x86 && sw.os.linux',
                 dockerImage: [
-                        hotspot     : 'adoptopenjdk/centos6_build_image',
+                        temurin     : 'adoptopenjdk/centos6_build_image',
                         openj9      : 'adoptopenjdk/centos7_build_image'
                 ],
                 dockerFile: [
@@ -46,10 +46,10 @@ class Config17 {
                 ],
                 configureArgs       : [
                         "openj9"      : '--enable-dtrace --enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
-                        "hotspot"     : '--enable-dtrace'
+                        "temurin"     : '--enable-dtrace'
                 ],
                 buildArgs           : [
-                        "hotspot"   : '--create-source-archive --create-jre-image',
+                        "temurin"   : '--create-source-archive --create-jre-image',
                         "openj9"    : '--create-jre-image'
                 ]
         ],
@@ -61,7 +61,7 @@ class Config17 {
                 test                : 'default',
                 configureArgs       : '--enable-headless-only=yes',
                 buildArgs           : [
-                        "hotspot"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image'
                 ]
         ],
 
@@ -93,7 +93,7 @@ class Config17 {
                 cleanWorkspaceAfterBuild: true,
                 buildArgs           : [
                         "openj9"    : '--create-jre-image',
-                        "hotspot"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image'
                 ],
                 configureArgs: '--with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-jdk-rc-name="IBM Semeru Runtime"',
                 test                : 'default'
@@ -127,7 +127,7 @@ class Config17 {
                         weekly : []
                 ],
                 buildArgs           : [
-                        "hotspot"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image'
                 ]
         ],
 
@@ -136,12 +136,12 @@ class Config17 {
                 os                  : 'windows',
                 arch                : 'x86-32',
                 additionalNodeLabels: 'win2012&&vs2017',
-                buildArgs : [
-                        hotspot : '--jvm-variant client,server'
+                buildArgs           : [
+                        temurin : '--jvm-variant client,server'
                 ],
                 test                : 'default',
                 buildArgs           : [
-                        "hotspot"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image'
                 ]
         ],
 
@@ -149,13 +149,13 @@ class Config17 {
                 os                  : 'aix',
                 arch                : 'ppc64',
                 additionalNodeLabels: [
-                        hotspot: 'xlc16&&aix710',
+                        temurin: 'xlc16&&aix710',
                         openj9:  'hw.arch.ppc64 && sw.os.aix.7_1'
                 ],
                 test                : 'default',
                 buildArgs           : [
                         "openj9"    : '--create-jre-image',
-                        "hotspot"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image'
                 ],
                 configureArgs : [
                         openj9: '--disable-ccache --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
@@ -187,7 +187,7 @@ class Config17 {
                 ],
                 buildArgs           : [
                         "openj9"      : '--create-jre-image',
-                        "hotspot"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image'
                 ],
                 configureArgs       : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
         ],
@@ -215,10 +215,10 @@ class Config17 {
                 ],
                 buildArgs           : [
                         "openj9"    : '--create-jre-image',
-                        "hotspot"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image'
                 ],
                 configureArgs       : [
-                        "hotspot"     : '--enable-dtrace',
+                        "temurin"     : '--enable-dtrace',
                         "openj9"      : '--enable-dtrace --enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ]
         ],
@@ -269,7 +269,7 @@ class Config17 {
                 ],
                 buildArgs           : [
                         "openj9"    : '--create-jre-image',
-                        "hotspot"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image'
                 ],
                 configureArgs       : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
         ],
@@ -280,7 +280,7 @@ class Config17 {
                 additionalNodeLabels: 'macos11',
                 test                : 'default',
                 buildArgs           : [
-                        "hotspot"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image'
                 ]
 
         ],
@@ -291,7 +291,7 @@ class Config17 {
                 test                : 'default',
                 configureArgs       : '--enable-dtrace',
                 buildArgs           : [
-                        "hotspot"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image'
                 ]
         ]
 

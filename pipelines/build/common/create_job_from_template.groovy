@@ -54,7 +54,7 @@ pipelineJob("$buildFolder/$JOB_NAME") {
     }
     properties {
         // Hide all non Temurin builds from public view
-        if (VARIANT != "hotspot") {
+        if (VARIANT != "temurin") {
             authorizationMatrix {
                 inheritanceStrategy {
                     // Do not inherit permissions from global configuration
@@ -90,7 +90,9 @@ pipelineJob("$buildFolder/$JOB_NAME") {
                 <dt><strong>TEST_LIST</strong></dt><dd>Comma separated list of tests, i.e: sanity.openjdk,sanity.perf,sanity.system</dd>
                 <dt><strong>DYNAMIC_LIST</strong></dt><dd>Comma separated list of tests, i.e: sanity.openjdk,sanity.perf,sanity.system</dd>
                 <dt><strong>NUM_MACHINES</strong></dt><dd>The number of machines for parallel=dynamic</dd>
-                <dt><strong>SCM_REF</strong></dt><dd>Source code ref to build, i.e branch, tag, commit id</dd>
+                <dt><strong>SCM_REF</strong></dt><dd>Source code ref to build, i.e branch, tag, commit id.</dd>
+                <dt><strong>AQA_REF</strong></dt><dd>Specific aqa-tests release or branch.</dd>
+                <dt><strong>AQA_AUTO_GEN</strong></dt><dd>If true, froce auto generate AQA test jobs.</dd>
                 <dt><strong>BUILD_ARGS</strong></dt><dd>args to pass to makejdk-any-platform.sh</dd>
                 <dt><strong>NODE_LABEL</strong></dt><dd>Labels of node to build on</dd>
                 <dt><strong>ADDITIONAL_TEST_LABEL</strong></dt><dd>Additional label for test jobs</dd>

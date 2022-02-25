@@ -422,6 +422,8 @@ class Regeneration implements Serializable {
                 DYNAMIC_LIST: dynamicList,
                 NUM_MACHINES: numMachines,
                 SCM_REF: "",
+                AQA_REF: "",
+                AQA_AUTO_GEN: false,
                 BUILD_ARGS: buildArgs,
                 NODE_LABEL: "${additionalNodeLabels}",
                 ADDITIONAL_TEST_LABEL: "${additionalTestLabels}",
