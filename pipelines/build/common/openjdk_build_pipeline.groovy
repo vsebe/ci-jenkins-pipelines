@@ -172,6 +172,7 @@ class Build {
             case "openj9": variant = "j9"; break
             case "corretto": variant = "corretto"; break
             case "dragonwell": variant = "dragonwell"; break;
+            case "fast_startup": variant = "fast_startup"; break;
             case "bisheng": variant = "bisheng"; break;
             default: variant = "hs"
         }
@@ -196,7 +197,7 @@ class Build {
         }
         def arch_os = "${arch}_${buildConfig.TARGET_OS}"
         jobParams.put('ARCH_OS_LIST', arch_os)
-        jobParams.put('LIGHT_WEIGHT_CHECKOUT', true)
+        jobParams.put('LIGHT_WEIGHT_CHECKOUT', false)
         return jobParams
     }
     /*
@@ -223,6 +224,8 @@ class Build {
             } else if (buildConfig.VARIANT == "temurin"){
                 jdkBranch = 'dev'
             } else if (buildConfig.VARIANT == "dragonwell") {
+                jdkBranch = 'master'
+            } else if (buildConfig.VARIANT == "fast_startup") {
                 jdkBranch = 'master'
             } else if (buildConfig.VARIANT == "bisheng") {
                 jdkBranch = 'master'
@@ -256,6 +259,8 @@ class Build {
             suffix = "adoptium/${buildConfig.JAVA_TO_BUILD}"
         } else if (buildConfig.VARIANT == "dragonwell") {
             suffix = "alibaba/dragonwell${javaNumber}"
+        } else if (buildConfig.VARIANT == "fast_startup") {
+            suffix = "adoptium/jdk11u-fast-startup-incubator"
         } else if (buildConfig.VARIANT == "bisheng") {
             suffix = "openeuler-mirror/bishengjdk-${javaNumber}"
         } else {
@@ -366,15 +371,33 @@ class Build {
 
                         // Create test job if AQA_AUTO_GEN is set to true, the job doesn't exist or is not runnable
                         if (aqaAutoGen || !JobHelper.jobIsRunnable(jobName as String)) {
-                            context.node('master') {
-                                context.sh('curl -Os https://raw.githubusercontent.com/adoptium/aqa-tests/master/buildenv/jenkins/testJobTemplate')
-                                def templatePath = 'testJobTemplate'
-                                if (!JobHelper.jobIsRunnable(jobName as String)) {
-                                    context.println "AQA test job: ${jobName} doesn't exist, generate job : ${jobName}"
-                                } else {
-                                    context.println "Regenerate job: ${jobName}, note: default job parameters may change."
+                            // use Test_Job_Auto_Gen if it is runnable. Otherwise, use testJobTemplate from aqa-tests repo
+                            if (JobHelper.jobIsRunnable("Test_Job_Auto_Gen")) {
+                                def updatedParams = []
+                                // loop through all the params and set string and boolean accordingly
+                                jobParams.each { param ->
+                                    def value = param.value.toString()
+                                    if (value == "true" || value == "false") {
+                                        updatedParams << context.booleanParam(name: param.key, value: value.toBoolean())
+                                    } else {
+                                        updatedParams << context.string(name: param.key, value: value)
+                                    }
                                 }
-                                context.jobDsl targets: templatePath, ignoreExisting: false, additionalParameters: jobParams
+                                context.println "Use Test_Job_Auto_Gen to generate AQA test job with parameters: ${updatedParams}"
+                                context.catchError {
+                                    context.build job: "Test_Job_Auto_Gen", propagate: false, parameters: updatedParams
+                                }
+                            } else {
+                                context.node('master') {
+                                    context.sh('curl -Os https://raw.githubusercontent.com/adoptium/aqa-tests/master/buildenv/jenkins/testJobTemplate')
+                                    def templatePath = 'testJobTemplate'
+                                    if (!JobHelper.jobIsRunnable(jobName as String)) {
+                                        context.println "AQA test job: ${jobName} doesn't exist, use testJobTemplate to generate job : ${jobName}"
+                                    } else {
+                                        context.println "Use testJobTemplate to regenerate job: ${jobName}, note: default job parameters may change."
+                                    }
+                                    context.jobDsl targets: templatePath, ignoreExisting: false, additionalParameters: jobParams
+                                }
                             }
                         }
                         context.catchError {
