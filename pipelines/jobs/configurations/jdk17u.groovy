@@ -20,6 +20,9 @@ targetConfigurations = [
         "aarch64Linux": [
                 "openj9"
         ],
+        "aarch64Mac": [
+            "openj9"
+        ],
         "x64MacIBM": [
                 "openj9"
         ],
