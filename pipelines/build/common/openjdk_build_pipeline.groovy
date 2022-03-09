@@ -592,10 +592,15 @@ class Build {
             }
 
             def version = ''
+            def specVersion = ''
             def variantVersion = ''
             def variantTags = ''
+            String additionalFileNameTag = buildConfig.ADDITIONAL_FILE_NAME_TAG
 
-            if (buildConfig.PUBLISH_NAME && buildConfig.PUBLISH_NAME.contains(buildConfig.VARIANT)) {
+            if (buildConfig.RELEASE && ((additionalFileNameTag == 'IBM') && buildConfig.CONFIGURE_ARGS.contains('--with-vendor-version-string'))) {
+                specVersion = getVendorVersion()
+
+            } else if (buildConfig.PUBLISH_NAME && buildConfig.PUBLISH_NAME.contains(buildConfig.VARIANT)) {
                 // expected publishName:  jdk[-]<version>_<variant>-<variant_version>[-<variant_tag>]
                 //e.g.
                 //  JDK8:  jdk8u192-b12_openj9-0.12.1
@@ -630,6 +635,7 @@ class Build {
                             context.string(name: 'VARIANT_VERSION', value: variantVersion),
                             context.string(name: 'VARIANT_TAG', value: variantTags),
                             context.string(name: 'VERSION', value: version),
+                            context.string(name: 'SPEC_VERSION', value: specVersion),
                             context.string(name: 'OS', value: buildConfig.TARGET_OS),
                             context.string(name: 'ARCHITECTURE', value: buildConfig.ARCHITECTURE),
                             context.string(name: 'BINARIES_SOURCE', value: 'upstreamJob'),
@@ -1265,17 +1271,7 @@ class Build {
 
             fileName = "${fileName}_${nameTag}"
         } else if ((buildConfig.RELEASE) && ((additionalFileNameTag == "IBM") && buildConfig.CONFIGURE_ARGS.contains('--with-vendor-version-string'))) {
-            // extract vendor version string from buildConfig.CONFIGURE_ARGS
-            //  e.g. "CONFIGURE_ARGS": "--with-vendor-version-string=\"11.0.12.0\""
-
-            def configureArgs = buildConfig.CONFIGURE_ARGS
-            def startIndex = configureArgs.indexOf('--with-vendor-version-string=\"') + 30
-            def vendorVersion = configureArgs.substring(startIndex, configureArgs.indexOf('\"', startIndex))
-
-            context.println "vendorVersion: $vendorVersion"
-
-            fileName = "${fileName}_${vendorVersion}"
-
+            fileName = "${fileName}_${getVendorVersion()}"
         } else {
             def timestamp = new Date().format("yyyy-MM-dd-HH-mm", TimeZone.getTimeZone("UTC"))
 
@@ -1291,6 +1287,27 @@ class Build {
 
         context.println "Filename will be: $fileName"
         return fileName
+    }
+
+    /*
+    Return the vendor version from the configure arguments when the
+    --with-vendor-version-string option is set, otherwise return an empty string.
+     */
+    def getVendorVersion() {
+        def vendorVersion = ''
+        def configureArgs = buildConfig.CONFIGURE_ARGS
+        def startIndex = configureArgs.indexOf('--with-vendor-version-string=\"')
+
+        if (startIndex != 1) {
+            // extract vendor version string from buildConfig.CONFIGURE_ARGS
+            //  e.g. "CONFIGURE_ARGS": "--with-vendor-version-string=\"11.0.12.0\""
+
+            startIndex += 30
+            vendorVersion = configureArgs.substring(startIndex, configureArgs.indexOf('\"', startIndex))
+            
+        }
+
+        return vendorVersion
     }
 
     /*
