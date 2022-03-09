@@ -342,6 +342,21 @@ class Config11 {
                     "bisheng"    : '--openjdk-target=riscv64-unknown-linux-gnu --with-sysroot=/opt/fedora28_riscv_root --with-jvm-features=shenandoahgc'
             ],
             test                 : false
+        ],
+
+        aarch64Mac: [
+                os                  : 'mac',
+                arch                : 'aarch64',
+                additionalNodeLabels: [
+                        openj9 : 'ci.project.openj9 && hw.arch.aarch64 && sw.os.mac'
+                ],
+                cleanWorkspaceAfterBuild: true,
+                configureArgs       : [
+                        openj9      : '--enable-dtrace --disable-warnings-as-errors --with-noncompressedrefs --disable-ddr --with-version-pre=ea --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+                ],
+                test                : [
+                        openj9 : ['sanity.functional', 'extended.functional', 'sanity.openjdk', 'sanity.system']
+                ]
         ]
   ]
 

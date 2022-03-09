@@ -277,12 +277,22 @@ class Config17 {
         aarch64Mac: [
                 os                  : 'mac',
                 arch                : 'aarch64',
-                additionalNodeLabels: 'macos11',
-                test                : 'default',
+                additionalNodeLabels: [
+                        temurin : 'macos11',
+                        openj9 : 'ci.project.openj9 && hw.arch.aarch64 && sw.os.mac'
+                ],
+                cleanWorkspaceAfterBuild: true,
+                configureArgs       : [
+                        openj9      : '--enable-dtrace --disable-warnings-as-errors --with-noncompressedrefs --disable-ddr --with-version-pre=ea --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+                ],
+                test                : [
+                        temurin : 'default',
+                        openj9 : ['sanity.functional', 'extended.functional', 'sanity.openjdk', 'sanity.system']
+                ],
                 buildArgs           : [
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image',
+                        "openj9"    : '--create-jre-image'
                 ]
-
         ],
 
         arm32Linux    : [
