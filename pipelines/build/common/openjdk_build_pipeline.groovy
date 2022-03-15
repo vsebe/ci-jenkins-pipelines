@@ -926,7 +926,7 @@ class Build {
     */
     List<String> listArchives() {
         return context.sh(
-                script: '''find workspace/target/ | egrep '(.tar.gz|.zip|.msi|.pkg|.deb|.rpm|.tar.gz.sig)$' ''',
+                script: '''find workspace/target/ | egrep '(.tar.gz|.zip|.msi|.pkg|.deb|.rpm)$' ''',
                 returnStdout: true,
                 returnStatus: false
         )
