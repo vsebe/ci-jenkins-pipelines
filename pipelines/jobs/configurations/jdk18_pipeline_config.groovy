@@ -147,7 +147,7 @@ class Config18 {
                 test                : 'default',
                 configureArgs       : [
                         hotspot     : '--enable-dtrace',
-                        openj9      : '--enable-dtrace --with-version-pre=ea --without-version-opt --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+                        openj9      : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ],
                 buildArgs           : [
                         "openj9"    : '--create-jre-image'
