@@ -247,7 +247,7 @@ node('master') {
 
         config.put("enableInstallers", (params.containsKey('ENABLE_INSTALLERS')) ? params.ENABLE_INSTALLERS : DEFAULTS_JSON['enableInstallers'] as Boolean)
         config.put("enableSigner", (params.containsKey('ENABLE_SIGNER')) ? params.ENABLE_SIGNER : DEFAULTS_JSON['enableSigner'] as Boolean)
-        config.put("enableSourceRpm", (params.containsKey('ENABLE_SOURCE_RPM')) ? params.ENABLE_INSTALLERS : DEFAULTS_JSON['enableSourceRpm'] as Boolean)
+        config.put("enableSourceRpm", (params.containsKey('ENABLE_SOURCE_RPM')) ? params.ENABLE_SOURCE_RPM : DEFAULTS_JSON['enableSourceRpm'] as Boolean)
         config.put("verifySigner", (params.containsKey('VERIFY_SIGNER')) ? params.ENABLE_SIGNER : DEFAULTS_JSON['enableSigner'] as Boolean)
 
         println "[INFO] JDK${javaVersion}: nightly pipelineSchedule = ${config.pipelineSchedule}"
