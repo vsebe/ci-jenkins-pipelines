@@ -6,6 +6,7 @@ targetConfigurations = [
         "ppc64leLinux"  : [ "openj9" ],
         "s390xLinux"    : [ "openj9" ],
         "aarch64Linux"  : [ "openj9" ],
+        "aarch64Mac"    : [ "openj9" ],
         "riscv64Linux"  : [ "openj9" ],
         "x64MacIBM"        : [ "openj9" ],
         "x64LinuxIBM"      : [ "openj9" ],
@@ -14,7 +15,7 @@ targetConfigurations = [
         "ppc64leLinuxIBM"  : [ "openj9" ],
         "s390xLinuxIBM"    : [ "openj9" ],
         "aarch64LinuxIBM"  : [ "openj9" ],
-        "aarch64Mac"       : [ "openj9" ],
+        "aarch64MacIBM"       : [ "openj9" ],
 ]
 
 // Weeknights at 9:00pm

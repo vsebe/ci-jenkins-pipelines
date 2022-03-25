@@ -287,11 +287,32 @@ class Config17 {
                 ],
                 test                : [
                         temurin : 'default',
-                        openj9 : ['sanity.functional', 'extended.functional', 'sanity.openjdk', 'sanity.system']
+                        openj9 : 'default'
                 ],
                 buildArgs           : [
                         "temurin"   : '--create-jre-image',
                         "openj9"    : '--create-jre-image'
+                ]
+        ],
+
+        aarch64MacIBM: [
+                os                  : 'mac',
+                arch                : 'aarch64',
+                additionalNodeLabels: [
+                        temurin : 'macos11',
+                        openj9 : 'ci.project.openj9 && hw.arch.aarch64 && sw.os.mac'
+                ],
+                cleanWorkspaceAfterBuild: true,
+                configureArgs       : [
+                        openj9      : '--enable-dtrace --disable-warnings-as-errors --with-noncompressedrefs --disable-ddr --with-version-pre=ea'
+                ],
+                test                : [
+                        temurin : 'default',
+                        openj9 : ['sanity.functional', 'extended.functional', 'sanity.openjdk', 'sanity.system']
+                ],
+                additionalFileNameTag: "IBM",
+                buildArgs : [
+                        "openj9"    : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk"
                 ]
         ],
 

@@ -355,8 +355,25 @@ class Config11 {
                         openj9      : '--enable-dtrace --disable-warnings-as-errors --with-noncompressedrefs --disable-ddr --with-version-pre=ea --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ],
                 test                : [
-                        openj9 : ['sanity.functional', 'extended.functional', 'sanity.openjdk', 'sanity.system']
+                        openj9 : 'default'
                 ]
+        ],
+
+        aarch64MacIBM: [
+                os                  : 'mac',
+                arch                : 'aarch64',
+                additionalNodeLabels: [
+                        openj9 : 'ci.project.openj9 && hw.arch.aarch64 && sw.os.mac'
+                ],
+                cleanWorkspaceAfterBuild: true,
+                configureArgs       : [
+                        openj9      : '--enable-dtrace --disable-warnings-as-errors --with-noncompressedrefs --disable-ddr --with-version-pre=ea --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+                ],
+                test                : [
+                        openj9 : ['sanity.functional', 'extended.functional', 'sanity.openjdk', 'sanity.system']
+                ],
+                additionalFileNameTag: "IBM",
+                buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk"
         ]
   ]
 
