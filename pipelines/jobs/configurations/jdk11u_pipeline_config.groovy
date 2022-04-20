@@ -381,7 +381,7 @@ class Config11 {
                 ],
                 cleanWorkspaceAfterBuild: true,
                 configureArgs       : [
-                        openj9      : '--enable-dtrace --disable-warnings-as-errors --with-noncompressedrefs --disable-ddr --with-version-pre=ea --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+                        openj9      : '--enable-dtrace --disable-warnings-as-errors --with-noncompressedrefs --disable-ddr --with-version-pre=ea'
                 ],
                 test                : [
                         openj9 : ['sanity.functional', 'extended.functional', 'sanity.openjdk', 'sanity.system']
