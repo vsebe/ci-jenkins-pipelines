@@ -23,7 +23,7 @@ class Config17 {
                         "openj9"      : '--enable-dtrace'
                 ],
                 additionalFileNameTag: "IBM",
-                buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk"
+                buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image"
         ],
 
         x64Linux  : [
@@ -83,7 +83,7 @@ class Config17 {
                         "openj9"      : '--enable-jitserver --enable-dtrace'
                 ],
                 additionalFileNameTag: "IBM",
-                buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk"
+                buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image"
         ],
 
         x64Windows: [
@@ -106,7 +106,7 @@ class Config17 {
                         openj9:     'ci.project.openj9 && hw.arch.x86 && sw.os.windows'
                 ],
                 buildArgs : [
-                        "openj9" : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk"
+                        "openj9" : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image"
                 ],
                 test                : 'default',
                 configureArgs       : [
@@ -174,7 +174,7 @@ class Config17 {
                         "openj9"      : '--disable-ccache'
                 ],
                 additionalFileNameTag: "IBM",
-                buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk"
+                buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image"
         ],
 
         s390xLinux    : [
@@ -201,7 +201,7 @@ class Config17 {
                 ],
                 configureArgs       : '--enable-dtrace',
                 additionalFileNameTag: "IBM",
-                buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk"
+                buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image"
         ],
 
         ppc64leLinux    : [
@@ -235,7 +235,7 @@ class Config17 {
                         "openj9"      : '--enable-dtrace --enable-jitserver'
                 ],
                 additionalFileNameTag: "IBM",
-                buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk"
+                buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image"
         ],
 
         aarch64LinuxIBM    : [
@@ -253,7 +253,7 @@ class Config17 {
                 ],
                 additionalFileNameTag: "IBM",
                 buildArgs : [
-                        "openj9"    : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk"
+                        "openj9"    : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image"
                 ]
         ],
 
@@ -312,7 +312,7 @@ class Config17 {
                 ],
                 additionalFileNameTag: "IBM",
                 buildArgs : [
-                        "openj9"    : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk"
+                        "openj9"    : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image"
                 ]
         ],
 
