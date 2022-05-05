@@ -344,6 +344,11 @@ class Build {
                 context.println "Running test: ${testType}"
                 testStages["${testType}"] = {
                     context.stage("${testType}") {
+                        def isFipsTestBuild = false
+                        if ("${testType}".contains(".fips")) {
+                            testType = testType.replace(".fips","")
+                            isFipsTestBuild = true
+                        }
                         def keep_test_reportdir = buildConfig.KEEP_TEST_REPORTDIR
                         if (("${testType}".contains("openjdk")) || ("${testType}".contains("jck"))) {
                             // Keep test reportdir always for JUnit targets
@@ -351,6 +356,14 @@ class Build {
                         }
 
                         def jobParams = getAQATestJobParams(testType)
+
+                        def testFlag = ""
+                        def extraOptions = ""
+                        if (isFipsTestBuild) {
+                            jobParams.put('TEST_JOB_NAME', "${jobParams.TEST_JOB_NAME}_fips")
+                            testFlag = "FIPS"
+                            extraOptions = "-Dsemeru.fips=true"
+                        }
                         def parallel = 'None'
                         def numMachinesPerTest = ''
 
@@ -419,6 +432,8 @@ class Build {
                                             context.booleanParam(name: 'USE_TESTENV_PROPERTIES', value: useTestEnvProperties),
                                             context.booleanParam(name: 'GENERATE_JOBS', value: aqaAutoGen),
                                             context.string(name: 'ADOPTOPENJDK_BRANCH', value: aqaBranch),
+                                            context.string(name: 'TEST_FLAG', value: "${testFlag}"),
+                                            context.string(name: 'EXTRA_OPTIONS', value: "${extraOptions}"),
                                             context.string(name: 'ACTIVE_NODE_TIMEOUT', value: "${buildConfig.ACTIVE_NODE_TIMEOUT}")]
                         }
                     }
@@ -1799,7 +1814,6 @@ class Build {
                         if (buildConfig.CODEBUILD) {
                             label = "codebuild"
                         }
-
                         context.println "[NODE SHIFT] MOVING INTO DOCKER NODE MATCHING LABELNAME ${label}..."
                         context.node(label) {
                             addNodeToBuildDescription()
