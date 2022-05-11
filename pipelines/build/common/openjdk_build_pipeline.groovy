@@ -79,7 +79,7 @@ class Build {
         NODE_CHECKOUT_TIMEOUT : 1,
         BUILD_JDK_TIMEOUT : 8,
         BUILD_ARCHIVE_TIMEOUT : 3,
-        MASTER_CLEAN_TIMEOUT : 1,
+        CONTROLLER_CLEAN_TIMEOUT : 1,
         DOCKER_CHECKOUT_TIMEOUT : 1,
         DOCKER_PULL_TIMEOUT : 2
     ]
@@ -288,7 +288,7 @@ class Build {
                 def jobName = jobParams.TEST_JOB_NAME
                 def JobHelper = context.library(identifier: 'openjdk-jenkins-helper@master').JobHelper
                 if (!JobHelper.jobIsRunnable(jobName as String)) {
-                    context.node('master') {
+                    context.node('built-in || master') {
                         context.sh('curl -Os https://raw.githubusercontent.com/adoptium/aqa-tests/master/buildenv/jenkins/testJobTemplate')
                         def templatePath = 'testJobTemplate'
                         context.println "Smoke test job doesn't exist, create test job: ${jobName}"
@@ -401,7 +401,7 @@ class Build {
                                     context.build job: "Test_Job_Auto_Gen", propagate: false, parameters: updatedParams
                                 }
                             } else {
-                                context.node('master') {
+                                context.node('built-in || master') {
                                     context.sh('curl -Os https://raw.githubusercontent.com/adoptium/aqa-tests/master/buildenv/jenkins/testJobTemplate')
                                     def templatePath = 'testJobTemplate'
                                     if (!JobHelper.jobIsRunnable(jobName as String)) {
@@ -530,7 +530,7 @@ class Build {
                     propagate: true,
                     parameters: params
 
-                context.node('master') {
+                context.node('built-in || master') {
                     //Copy signed artifact back and archive again
                     context.sh "rm workspace/target/* || true"
 
@@ -802,7 +802,7 @@ class Build {
             return
         }
 
-        context.node('master') {
+        context.node('built-in || master') {
             context.stage("installer") {
                 switch (buildConfig.TARGET_OS) {
                     case "aix":
@@ -846,7 +846,7 @@ class Build {
             return
         }
 
-        context.node('master') {
+        context.node('built-in || master') {
             context.stage("sign installer") {
                 try {
                     if (buildConfig.TARGET_OS == "mac" || buildConfig.TARGET_OS == "windows") {
@@ -1799,7 +1799,7 @@ class Build {
 
                     // Set Github Commit Status
                     if (env.JOB_NAME.contains("pr-tester")) {
-                        context.node('master') {
+                        context.node('built-in || master') {
                             updateGithubCommitStatus("PENDING", "Pending")
                         }
                     }
@@ -1821,7 +1821,7 @@ class Build {
                             if (cleanWorkspace) {
 
                                 try {
-                                    context.timeout(time: buildTimeouts.MASTER_CLEAN_TIMEOUT, unit: "HOURS") {
+                                    context.timeout(time: buildTimeouts.CONTROLLER_CLEAN_TIMEOUT, unit: "HOURS") {
                                         // Cannot clean workspace from inside docker container
                                         if (cleanWorkspace) {
                                             try {
@@ -1833,7 +1833,7 @@ class Build {
                                         }
                                     }
                                 } catch (FlowInterruptedException e) {
-                                    throw new Exception("[ERROR] Master clean workspace timeout (${buildTimeouts.MASTER_CLEAN_TIMEOUT} HOURS) has been reached. Exiting...")
+                                    throw new Exception("[ERROR] Controller clean workspace timeout (${buildTimeouts.CONTROLLER_CLEAN_TIMEOUT} HOURS) has been reached. Exiting...")
                                 }
 
                             }
@@ -1852,7 +1852,7 @@ class Build {
                                     dockerImageDigest = context.sh(script: "docker inspect --format='{{.RepoDigests}}' ${buildConfig.DOCKER_IMAGE}", returnStdout:true)
                                 }
                             } catch (FlowInterruptedException e) {
-                                throw new Exception("[ERROR] Master docker image pull timeout (${buildTimeouts.DOCKER_PULL_TIMEOUT} HOURS) has been reached. Exiting...")
+                                throw new Exception("[ERROR] Controller docker image pull timeout (${buildTimeouts.DOCKER_PULL_TIMEOUT} HOURS) has been reached. Exiting...")
                             }
 
                             // Use our docker file if DOCKER_FILE is defined
@@ -1872,7 +1872,7 @@ class Build {
                                         context.sh(script: "git clean -fdx")
                                     }
                                 } catch (FlowInterruptedException e) {
-                                    throw new Exception("[ERROR] Master docker file scm checkout timeout (${buildTimeouts.DOCKER_CHECKOUT_TIMEOUT} HOURS) has been reached. Exiting...")
+                                    throw new Exception("[ERROR] Built-in docker file scm checkout timeout (${buildTimeouts.DOCKER_CHECKOUT_TIMEOUT} HOURS) has been reached. Exiting...")
                                 }
 
                                 context.docker.build("build-image", "--build-arg image=${buildConfig.DOCKER_IMAGE} -f ${buildConfig.DOCKER_FILE} .").inside {

@@ -763,9 +763,9 @@ class Builder implements Serializable {
                     ]
 
             if (downstreamJob.getResult() == 'SUCCESS') {
-                context.println "[NODE SHIFT] MOVING INTO MASTER NODE..."
+                context.println "[NODE SHIFT] MOVING INTO CONTROLLER NODE..."
 
-                context.node("master") {
+                context.node("built-in || master") {
                     context.catchError {
                         // copy artifacts from downstreamJob
                         try {
@@ -792,7 +792,7 @@ class Builder implements Serializable {
                     }
                 }
 
-                context.println "[NODE SHIFT] OUT OF MASTER NODE!"
+                context.println "[NODE SHIFT] OUT OF CONTROLLER NODE!"
 
             } else if (propagateFailures) {
                 context.error("Build failed due to downstream failure of ${downstreamJobName}")
@@ -844,9 +844,9 @@ class Builder implements Serializable {
             }
 
             // Clean up the artifacts of the previous build
-            context.node("master") {
+            context.node("built-in || master") {
                 try {
-                    context.println "Remove old artifacts ON MASTER NODE..."
+                    context.println "Remove old artifacts ON CONTROLLER NODE..."
                     context.timeout(time: pipelineTimeouts.REMOVE_ARTIFACTS_TIMEOUT, unit: "HOURS") {
                         context.sh 'rm -fr target'
                     }
@@ -939,8 +939,8 @@ class Builder implements Serializable {
 
                             if (downstreamJob.getResult() == 'SUCCESS') {
                                 // copy artifacts from build
-                                context.println "[NODE SHIFT] MOVING INTO MASTER NODE..."
-                                context.node("master") {
+                                context.println "[NODE SHIFT] MOVING INTO CONTROLLER NODE..."
+                                context.node("built-in || master") {
                                     context.catchError {
                                         try {
                                             context.timeout(time: pipelineTimeouts.COPY_ARTIFACTS_TIMEOUT, unit: "HOURS") {
@@ -985,7 +985,7 @@ class Builder implements Serializable {
                                         // TODO: Archive Artifatcory ??
                                     }
                                 }
-                                context.println "[NODE SHIFT] OUT OF MASTER NODE!"
+                                context.println "[NODE SHIFT] OUT OF CONTROLLER NODE!"
                             } else if (propagateFailures) {
                                 context.error("Build failed due to downstream failure of ${downstreamJobName}")
                                 currentBuild.result = "FAILURE"
