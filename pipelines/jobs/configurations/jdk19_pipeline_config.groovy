@@ -3,28 +3,39 @@ class Config19 {
         x64Mac    : [
                 os                  : 'mac',
                 arch                : 'x64',
-                additionalNodeLabels: 'macos10.14',
+                additionalNodeLabels: 'hw.arch.x86 && sw.os.osx.10_14',
                 test                : 'default',
-                configureArgs       : '--enable-dtrace'
+                cleanWorkspaceAfterBuild: true,
+                configureArgs       : [
+                        temurin     : '--enable-dtrace',
+                        openj9      : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+                ],
+                buildArgs           : [
+                        "openj9"    : '-create-jre-image'
+                ]
         ],
 
         x64Linux  : [
                 os                  : 'linux',
                 arch                : 'x64',
-                dockerImage: [
-                        temurin     : 'adoptopenjdk/centos6_build_image',
-                        openj9      : 'adoptopenjdk/centos7_build_image'
+                additionalNodeLabels : [
+                        openj9      : 'hw.arch.x86 && sw.os.linux && (sw.os.cent.7 || sw.os.rhel.7)'
                 ],
-                dockerFile: [
-                        openj9      : 'pipelines/build/dockerFiles/cuda.dockerfile'
+                dockerImage: [
+                        temurin     : 'adoptopenjdk/centos6_build_image'
                 ],
                 test                : 'default',
+                cleanWorkspaceAfterBuild: true,
                 additionalTestLabels: [
-                        openj9      : '!(centos6||rhel6)'
+                        openj9      : '!(sw.os.cent.6||sw.os.rhel.6)'
                 ],
                 configureArgs       : [
-                        "openj9"    : '--enable-dtrace --enable-jitserver',
-                        "temurin"   : '--enable-dtrace'
+                        openj9      : '--enable-dtrace --enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
+                        temurin     : '--enable-dtrace'
+                ],
+                buildArgs           : [
+                        "temurin"   : '--create-source-archive --create-jre-image',
+                        "openj9"    : '--create-jre-image'
                 ]
         ],
 
@@ -39,8 +50,15 @@ class Config19 {
         x64Windows: [
                 os                  : 'windows',
                 arch                : 'x64',
-                additionalNodeLabels: 'win2012&&vs2017',
-                test                : 'default'
+                additionalNodeLabels: 'hw.arch.x86 && sw.os.windows',
+                test                : 'default',
+                cleanWorkspaceAfterBuild: true,
+                configureArgs       : [
+                        openj9      :'--with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-jdk-rc-name="IBM Semeru Runtime"'
+                ],
+                buildArgs           : [
+                        "openj9"    : '--create-jre-image'
+                ]
         ],
 
         // TODO: Enable testing (https://github.com/adoptium/ci-jenkins-pipelines/issues/77)
@@ -71,47 +89,86 @@ class Config19 {
                 os                  : 'aix',
                 arch                : 'ppc64',
                 additionalNodeLabels: [
-                        temurin: 'xlc16&&aix710',
-                        openj9:  'xlc16&&aix715'
+                        temurin     : 'xlc16&&aix710',
+                        openj9      : 'hw.arch.ppc64 && sw.os.aix.7_1'
                 ],
                 test                : 'default',
-                cleanWorkspaceAfterBuild: true
+                configureArgs       : [
+                        openj9      : '--disable-ccache --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+                ],
+                cleanWorkspaceAfterBuild: true,
+                buildArgs           : [
+                        "openj9"    : '--create-jre-image'
+                ]
         ],
-
 
         s390xLinux    : [
                 os                  : 'linux',
                 arch                : 's390x',
                 test                : 'default',
-                configureArgs       : '--enable-dtrace'
+                cleanWorkspaceAfterBuild: true,
+                additionalNodeLabels: 'hw.arch.s390x && (sw.os.cent.7 || sw.os.rhel.7)',
+                configureArgs       : [
+                        temurin     : '--enable-dtrace',
+                        openj9      : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+                ],
+                buildArgs           : [
+                        "openj9"    : '--create-jre-image'
+                ]
         ],
 
         ppc64leLinux    : [
                 os                  : 'linux',
                 arch                : 'ppc64le',
-                additionalNodeLabels: 'centos7',
                 test                : 'default',
+                cleanWorkspaceAfterBuild: true,
+                additionalNodeLabels: 'hw.arch.ppc64le && (sw.os.cent.7 || sw.os.rhel.7)',
                 configureArgs       : [
-                        "temurin"     : '--enable-dtrace',
-                        "openj9"      : '--enable-dtrace --enable-jitserver'
+                        temurin     : '--enable-dtrace',
+                        openj9      : '--enable-dtrace --enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+                ],
+                buildArgs           : [
+                        "openj9"    : '--create-jre-image'
                 ]
-
         ],
 
         aarch64Linux    : [
                 os                  : 'linux',
                 arch                : 'aarch64',
-                dockerImage         : 'adoptopenjdk/centos7_build_image',
+                additionalNodeLabels: [
+                        openj9      : 'hw.arch.aarch64 && sw.os.linux && sw.os.cent.7'
+                ],
+                dockerImage         : [
+                        temurin     : 'adoptopenjdk/centos7_build_image'
+                ],
                 test                : 'default',
-                configureArgs : '--enable-dtrace',
-                testDynamic          : false
+                configureArgs       : [
+                        temurin     : '--enable-dtrace',
+                        openj9      : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+                ],
+                buildArgs           : [
+                        "openj9"    : '--create-jre-image'
+                ]
         ],
-        
+
         aarch64Mac: [
                 os                  : 'mac',
                 arch                : 'aarch64',
-                additionalNodeLabels: 'macos11',
-                test                : 'default'
+                additionalNodeLabels: [
+                        temurin     : 'macos11',
+                        openj9      : 'ci.project.openj9 && hw.arch.aarch64 && sw.os.mac'
+                ],
+                cleanWorkspaceAfterBuild: true,
+                configureArgs       : [
+                        openj9      : '--enable-dtrace --disable-warnings-as-errors --with-noncompressedrefs --disable-ddr --with-version-pre=ea --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+                ],
+                test                : [
+                        hotspot : 'default',
+                        openj9 : ['sanity.functional', 'extended.functional', 'sanity.openjdk', 'sanity.system']
+                ],
+                buildArgs           : [
+                        "openj9"    : '--create-jre-image'
+                ]
         ],
 
         arm32Linux    : [
