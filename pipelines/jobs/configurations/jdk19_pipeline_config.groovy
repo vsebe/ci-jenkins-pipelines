@@ -9,6 +9,7 @@ class Config19 {
                 ],
                 test                : 'default',
                 cleanWorkspaceAfterBuild: true,
+                bootJDK             : '18',
                 configureArgs       : [
                         temurin     : '--enable-dtrace',
                         openj9      : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
@@ -23,16 +24,23 @@ class Config19 {
                 os                  : 'linux',
                 arch                : 'x64',
                 additionalNodeLabels : [
-                        openj9      : 'hw.arch.x86 && sw.os.linux && (sw.os.cent.7 || sw.os.rhel.7)'
+                        openj9      : 'hw.arch.x86 && sw.os.linux'
                 ],
                 dockerImage: [
-                        temurin     : 'adoptopenjdk/centos6_build_image'
+                        temurin     : 'adoptopenjdk/centos6_build_image',
+                        openj9      : 'adoptopenjdk/centos7_build_image'
                 ],
+                dockerFile: [
+                        openj9      : 'pipelines/build/dockerFiles/cuda.dockerfile'
+                ],
+                dockerNode          : 'sw.tool.docker && sw.config.uid1000',
+                dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
                 test                : 'default',
                 cleanWorkspaceAfterBuild: true,
                 additionalTestLabels: [
                         openj9      : '!(sw.os.cent.6||sw.os.rhel.6)'
                 ],
+                bootJDK             : '18',
                 configureArgs       : [
                         openj9      : '--enable-dtrace --enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
                         temurin     : '--enable-dtrace'
@@ -71,6 +79,7 @@ class Config19 {
                 additionalNodeLabels: 'hw.arch.x86 && sw.os.windows',
                 test                : 'default',
                 cleanWorkspaceAfterBuild: true,
+                bootJDK             : '18',
                 configureArgs       : [
                         openj9      :'--with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-jdk-rc-name="IBM Semeru Runtime"'
                 ],
@@ -115,6 +124,7 @@ class Config19 {
                         openj9      : 'hw.arch.ppc64 && sw.os.aix.7_1'
                 ],
                 test                : 'default',
+                bootJDK             : '18',
                 configureArgs       : [
                         openj9      : '--disable-ccache --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ],
@@ -131,6 +141,7 @@ class Config19 {
                 test                : 'default',
                 cleanWorkspaceAfterBuild: true,
                 additionalNodeLabels: 'hw.arch.s390x && (sw.os.cent.7 || sw.os.rhel.7)',
+                bootJDK             : '18',
                 configureArgs       : [
                         temurin     : '--enable-dtrace',
                         openj9      : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
@@ -147,6 +158,7 @@ class Config19 {
                 test                : 'default',
                 cleanWorkspaceAfterBuild: true,
                 additionalNodeLabels: 'hw.arch.ppc64le && (sw.os.cent.7 || sw.os.rhel.7)',
+                bootJDK             : '18',
                 configureArgs       : [
                         temurin     : '--enable-dtrace',
                         openj9      : '--enable-dtrace --enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
@@ -161,12 +173,13 @@ class Config19 {
                 os                  : 'linux',
                 arch                : 'aarch64',
                 additionalNodeLabels: [
-                        openj9      : 'hw.arch.aarch64 && sw.os.linux && sw.os.cent.7'
+                        openj9      : 'hw.arch.aarch64 && sw.os.linux'
                 ],
-                dockerImage         : [
-                        temurin     : 'adoptopenjdk/centos7_build_image'
-                ],
+                dockerImage         : 'adoptopenjdk/centos7_build_image',
+                dockerNode          : 'sw.tool.docker',
+                dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
                 test                : 'default',
+                bootJDK             : '18',
                 configureArgs       : [
                         temurin     : '--enable-dtrace',
                         openj9      : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
@@ -182,11 +195,12 @@ class Config19 {
                 arch                : 'aarch64',
                 additionalNodeLabels: [
                         temurin     : 'macos11',
-                        openj9      : 'ci.project.openj9 && hw.arch.aarch64 && sw.os.mac'
+                        openj9      : 'hw.arch.aarch64 && sw.os.mac'
                 ],
                 cleanWorkspaceAfterBuild: true,
+                bootJDK             : '18',
                 configureArgs       : [
-                        openj9      : '--enable-dtrace --disable-warnings-as-errors --with-noncompressedrefs --disable-ddr --with-version-pre=ea --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+                        openj9      : '--enable-dtrace --disable-warnings-as-errors --with-noncompressedrefs --with-version-pre=ea --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ],
                 test                : [
                         temurin : 'default',
