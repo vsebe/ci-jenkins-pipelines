@@ -4,6 +4,9 @@ class Config17 {
                 os                  : 'mac',
                 arch                : 'x64',
                 additionalNodeLabels: 'ci.project.openj9 && hw.arch.x86 && sw.os.osx.10_14',
+                additionalTestLabels: [
+                        openj9      : '!sw.os.osx.10_11'
+                ],
                 test                : 'default',
                 cleanWorkspaceAfterBuild: true,
                 buildArgs           : [
@@ -86,6 +89,17 @@ class Config17 {
                 buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image"
         ],
 
+        aarch64AlpineLinux  : [
+                os                  : 'alpine-linux',
+                arch                : 'aarch64',
+                dockerImage         : 'adoptopenjdk/alpine3_build_image',
+                test                : 'default',
+                configureArgs       : '--enable-headless-only=yes',
+                buildArgs           : [
+                        "temurin"   : '--create-jre-image'
+                ]
+        ],
+
         x64Windows: [
                 os                  : 'windows',
                 arch                : 'x64',
@@ -136,12 +150,9 @@ class Config17 {
                 os                  : 'windows',
                 arch                : 'x86-32',
                 additionalNodeLabels: 'win2012&&vs2017',
-                buildArgs           : [
-                        temurin : '--jvm-variant client,server'
-                ],
                 test                : 'default',
                 buildArgs           : [
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--jvm-variant client,server --create-jre-image'
                 ]
         ],
 

@@ -41,6 +41,14 @@ class Config16 {
                 configureArgs       : '--enable-headless-only=yes'
         ],
 
+        aarch64AlpineLinux  : [
+                os                  : 'alpine-linux',
+                arch                : 'aarch64',
+                dockerImage         : 'adoptopenjdk/alpine3_build_image',
+                test                : 'default',
+                configureArgs       : '--enable-headless-only=yes'
+        ],
+
         x64Windows: [
                 os                  : 'windows',
                 arch                : 'x64',

@@ -4,14 +4,18 @@ class Config18 {
                 os                  : 'mac',
                 arch                : 'x64',
                 additionalNodeLabels: 'ci.project.openj9 && hw.arch.x86 && sw.os.osx.10_14',
+                additionalTestLabels: [
+                        openj9      : '!sw.os.osx.10_11'
+                ],
                 test                : 'default',
                 cleanWorkspaceAfterBuild: true,
                 configureArgs       : [
-                        hostspot    : '--enable-dtrace',
+                        "temurin"    : '--enable-dtrace',
                         openj9      : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ],
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image'
+                        "openj9"    : '--create-jre-image',
+                        "temurin"   : '--create-jre-image'
                 ]
         ],
 
@@ -38,7 +42,8 @@ class Config18 {
                         temurin     : '--enable-dtrace'
                 ],
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image'
+                        "openj9"    : '--create-jre-image',
+                        "temurin"   : '--create-source-archive --create-jre-image'
                 ]
         ],
 
@@ -47,7 +52,21 @@ class Config18 {
                 arch                : 'x64',
                 dockerImage         : 'adoptopenjdk/alpine3_build_image',
                 test                : 'default',
-                configureArgs       : '--enable-headless-only=yes'
+                configureArgs       : '--enable-headless-only=yes',
+                buildArgs           : [
+                        "temurin"   : '--create-jre-image'
+                ]
+        ],
+
+        aarch64AlpineLinux  : [
+                os                  : 'alpine-linux',
+                arch                : 'aarch64',
+                dockerImage         : 'adoptopenjdk/alpine3_build_image',
+                test                : 'default',
+                configureArgs       : '--enable-headless-only=yes',
+                buildArgs           : [
+                        "temurin"   : '--create-jre-image'
+                ]
         ],
 
         x64Windows: [
@@ -60,7 +79,8 @@ class Config18 {
                         openj9      :'--with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-jdk-rc-name="IBM Semeru Runtime"'
                 ],
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image'
+                        "openj9"    : '--create-jre-image',
+                        "temurin"   : '--create-jre-image'
                 ]
         ],
 
@@ -74,6 +94,9 @@ class Config18 {
                 test                : [
                         nightly: [],
                         weekly : []
+                ],
+                buildArgs           : [
+                        "temurin"   : '--create-jre-image'
                 ]
         ],
 
@@ -81,10 +104,10 @@ class Config18 {
                 os                  : 'windows',
                 arch                : 'x86-32',
                 additionalNodeLabels: 'win2012&&vs2017',
+                test                : 'default',
                 buildArgs           : [
-                        temurin : '--jvm-variant client,server'
-                ],
-                test                : 'default'
+                        "temurin"   : '--jvm-variant client,server --create-jre-image'
+                ]
         ],
 
         ppc64Aix    : [
@@ -100,7 +123,8 @@ class Config18 {
                 ],
                 cleanWorkspaceAfterBuild: true,
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image'
+                        "openj9"    : '--create-jre-image',
+                        "temurin"   : '--create-jre-image'
                 ]
         ],
 
@@ -111,11 +135,12 @@ class Config18 {
                 cleanWorkspaceAfterBuild: true,
                 additionalNodeLabels: 'hw.arch.s390x && (sw.os.cent.7 || sw.os.rhel.7)',
                 configureArgs       : [
-                        hotspot     : '--enable-dtrace',
+                        temurin     : '--enable-dtrace',
                         openj9      : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ],
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image'
+                        "openj9"    : '--create-jre-image',
+                        "temurin"   : '--create-jre-image'
                 ]
         ],
 
@@ -131,7 +156,8 @@ class Config18 {
                         openj9      : '--enable-dtrace --enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ],
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image'
+                        "openj9"    : '--create-jre-image',
+                        "temurin"   : '--create-jre-image'
                 ]
         ],
 
@@ -146,11 +172,12 @@ class Config18 {
                 dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
                 test                : 'default',
                 configureArgs       : [
-                        hotspot     : '--enable-dtrace',
+                        temurin     : '--enable-dtrace',
                         openj9      : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ],
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image'
+                        "openj9"    : '--create-jre-image',
+                        "temurin"   : '--create-jre-image'
                 ]
         ],
 
@@ -158,7 +185,7 @@ class Config18 {
                 os                  : 'mac',
                 arch                : 'aarch64',
                 additionalNodeLabels: [
-                        hotspot : 'macos11',
+                        temurin : 'macos11',
                         openj9 : 'ci.project.openj9 && hw.arch.aarch64 && sw.os.mac'
                 ],
                 cleanWorkspaceAfterBuild: true,
@@ -166,11 +193,12 @@ class Config18 {
                         openj9      : '--enable-dtrace --disable-warnings-as-errors --with-noncompressedrefs --disable-ddr --with-version-pre=ea --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ],
                 test                : [
-                        hotspot : 'default',
+                        temurin : 'default',
                         openj9 : ['sanity.functional', 'extended.functional', 'sanity.openjdk', 'sanity.system']
                 ],
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image'
+                        "openj9"    : '--create-jre-image',
+                        "temurin"   : '--create-jre-image'
                 ]
         ],
 
@@ -178,7 +206,10 @@ class Config18 {
                 os                  : 'linux',
                 arch                : 'arm',
                 test                : 'default',
-                configureArgs       : '--enable-dtrace'
+                configureArgs       : '--enable-dtrace',
+                buildArgs           : [
+                        "temurin"   : '--create-jre-image'
+                ]
         ]
   ]
 

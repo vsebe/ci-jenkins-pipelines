@@ -295,16 +295,18 @@ class Build {
                         context.jobDsl targets: templatePath, ignoreExisting: false, additionalParameters: jobParams
                     }
                 }
-               context.catchError {
+                context.catchError {
                     context.build job: jobName,
                             propagate: false,
                             parameters: [
+                                    context.string(name: 'SDK_RESOURCE', value: "upstream"),
                                     context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${env.BUILD_NUMBER}"),
                                     context.string(name: 'UPSTREAM_JOB_NAME', value: "${env.JOB_NAME}"),
                                     context.string(name: 'JDK_VERSION', value: "${jobParams.JDK_VERSIONS}"),
                                     context.string(name: 'LABEL_ADDITION', value: additionalTestLabel),
                                     context.string(name: 'KEEP_REPORTDIR', value: "${buildConfig.KEEP_TEST_REPORTDIR}"),
-                                    context.string(name: 'ACTIVE_NODE_TIMEOUT', value: "${buildConfig.ACTIVE_NODE_TIMEOUT}")]
+                                    context.string(name: 'ACTIVE_NODE_TIMEOUT', value: "${buildConfig.ACTIVE_NODE_TIMEOUT}"),
+                                    context.booleanParam(name: 'DYNAMIC_COMPILE', value: true)]
                 }
             }
         } catch (Exception e) {
@@ -353,6 +355,11 @@ class Build {
                         if (("${testType}".contains("openjdk")) || ("${testType}".contains("jck"))) {
                             // Keep test reportdir always for JUnit targets
                             keep_test_reportdir = "true"
+                        }
+
+                        def DYNAMIC_COMPILE = false
+                        if (("${testType}".contains("functional")) || ("${testType}".contains("external"))) {
+                            DYNAMIC_COMPILE = true
                         }
 
                         def jobParams = getAQATestJobParams(testType)
@@ -434,7 +441,8 @@ class Build {
                                             context.string(name: 'ADOPTOPENJDK_BRANCH', value: aqaBranch),
                                             context.string(name: 'TEST_FLAG', value: "${testFlag}"),
                                             context.string(name: 'EXTRA_OPTIONS', value: "${extraOptions}"),
-                                            context.string(name: 'ACTIVE_NODE_TIMEOUT', value: "${buildConfig.ACTIVE_NODE_TIMEOUT}")]
+                                            context.string(name: 'ACTIVE_NODE_TIMEOUT', value: "${buildConfig.ACTIVE_NODE_TIMEOUT}"),
+                                            context.booleanParam(name: 'DYNAMIC_COMPILE', value: DYNAMIC_COMPILE)]
                         }
                     }
                 }
@@ -823,7 +831,6 @@ class Build {
                 }
 
                 // Archive the Mac and Windows pkg/msi
-                // (Linux installer job produces no artifacts, it just uploads rpm/deb to the repositories)
                 if (buildConfig.TARGET_OS == "mac" || buildConfig.TARGET_OS == "windows") {
                     try {
                         context.sh 'cd workspace/target/ && for file in $(ls *.tar.gz *.pkg *.msi); do sha256sum "$file" > "$file".sha256.txt ; done'
@@ -1158,7 +1165,7 @@ class Build {
     /*
     Calculates and writes out the metadata to a file.
     The metadata defines and summarises a build and the jdk it creates.
-    The adopt v3 api makes use of it in its endpoints to quickly display information about the jdk binaries that are stored on github.
+    https://api.adoptium.net/ v3 api makes use of it in its endpoints to quickly display information about the jdk binaries that are stored on github.
     */
     def writeMetadata(VersionInfo version, Boolean initialWrite) {
         /*
@@ -1392,7 +1399,7 @@ class Build {
         useAdoptShellScripts
     ) {
         return context.stage("build") {
-            // Create the repo handler with the user's defaults to ensure a openjdk-build checkout is not null
+            // Create the repo handler with the user's defaults to ensure a temurin-build checkout is not null
             def repoHandler = new RepoHandler(USER_REMOTE_CONFIGS)
             repoHandler.setUserDefaultsJson(context, DEFAULTS_JSON['defaultsUrl'])
             if (cleanWorkspace) {
@@ -1556,7 +1563,7 @@ class Build {
                                     repoHandler.checkoutUserPipelines(context)
                                 }
                             } else {
-                                context.println "[CHECKOUT] Checking out to the user's openjdk-build..."
+                                ccontext.println "[CHECKOUT] Checking out to the user's temurin-build..."
 
                                 repoHandler.setUserDefaultsJson(context, DEFAULTS_JSON)
                                 repoHandler.checkoutUserBuild(context)
@@ -1567,7 +1574,7 @@ class Build {
                                 } else {
                                     context.sh(script: "./${DEFAULTS_JSON['scriptDirectories']['buildfarm']}")
                                 }
-                                context.println "[CHECKOUT] Reverting pre-build user openjdk-build checkout..."
+                                context.println "[CHECKOUT] Reverting pre-build user temurin-build checkout..."
                                 repoHandler.checkoutUserPipelines(context)
                             }
                         }

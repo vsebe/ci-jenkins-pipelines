@@ -5,6 +5,9 @@ targetConfigurations = [
         "x64Linux"      : [
                 "openj9"
         ],
+        "x64AlpineLinux" : [
+                "temurin"
+        ],
         "x32Windows"    : [
                 "openj9"
         ],
@@ -21,7 +24,6 @@ targetConfigurations = [
                 "openj9"
         ],
         "aarch64Linux"  : [
-                "openj9"
         ]
 ]
 

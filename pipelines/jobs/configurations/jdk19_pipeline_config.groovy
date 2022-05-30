@@ -4,6 +4,9 @@ class Config19 {
                 os                  : 'mac',
                 arch                : 'x64',
                 additionalNodeLabels: 'hw.arch.x86 && sw.os.osx.10_14',
+                additionalTestLabels: [
+                        openj9      : '!sw.os.osx.10_11'
+                ],
                 test                : 'default',
                 cleanWorkspaceAfterBuild: true,
                 configureArgs       : [
@@ -11,7 +14,8 @@ class Config19 {
                         openj9      : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ],
                 buildArgs           : [
-                        "openj9"    : '-create-jre-image'
+                        "openj9"    : '--create-jre-image',
+                        "temurin"   : '--create-jre-image'
                 ]
         ],
 
@@ -44,7 +48,21 @@ class Config19 {
                 arch                : 'x64',
                 dockerImage         : 'adoptopenjdk/alpine3_build_image',
                 test                : 'default',
-                configureArgs       : '--enable-headless-only=yes'
+                configureArgs       : '--enable-headless-only=yes',
+                buildArgs           : [
+                        "temurin"   : '--create-jre-image'
+                ]
+        ],
+
+        aarch64AlpineLinux  : [
+                os                  : 'alpine-linux',
+                arch                : 'aarch64',
+                dockerImage         : 'adoptopenjdk/alpine3_build_image',
+                test                : 'default',
+                configureArgs       : '--enable-headless-only=yes',
+                buildArgs           : [
+                        "temurin"   : '--create-jre-image'
+                ]
         ],
 
         x64Windows: [
@@ -57,7 +75,8 @@ class Config19 {
                         openj9      :'--with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-jdk-rc-name="IBM Semeru Runtime"'
                 ],
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image'
+                        "openj9"    : '--create-jre-image',
+                        "temurin"   : '--create-jre-image'
                 ]
         ],
 
@@ -71,6 +90,9 @@ class Config19 {
                 test                : [
                         nightly: [],
                         weekly : []
+                ],
+                buildArgs           : [
+                        "temurin"   : '--create-jre-image'
                 ]
         ],
 
@@ -79,10 +101,10 @@ class Config19 {
                 os                  : 'windows',
                 arch                : 'x86-32',
                 additionalNodeLabels: 'win2012&&vs2017',
+                test                : 'default',
                 buildArgs           : [
-                        temurin : '--jvm-variant client,server'
-                ],
-                test                : 'default'
+                        "temurin"   : '--jvm-variant client,server --create-jre-image'
+                ]
         ],
 
         ppc64Aix    : [
@@ -98,7 +120,8 @@ class Config19 {
                 ],
                 cleanWorkspaceAfterBuild: true,
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image'
+                        "openj9"    : '--create-jre-image',
+                        "temurin"   : '--create-jre-image'
                 ]
         ],
 
@@ -113,7 +136,8 @@ class Config19 {
                         openj9      : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ],
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image'
+                        "openj9"    : '--create-jre-image',
+                        "temurin"   : '--create-jre-image'
                 ]
         ],
 
@@ -128,7 +152,8 @@ class Config19 {
                         openj9      : '--enable-dtrace --enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ],
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image'
+                        "openj9"    : '--create-jre-image',
+                        "temurin"   : '--create-jre-image'
                 ]
         ],
 
@@ -147,7 +172,8 @@ class Config19 {
                         openj9      : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ],
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image'
+                        "openj9"    : '--create-jre-image',
+                        "temurin"   : '--create-jre-image'
                 ]
         ],
 
@@ -163,11 +189,12 @@ class Config19 {
                         openj9      : '--enable-dtrace --disable-warnings-as-errors --with-noncompressedrefs --disable-ddr --with-version-pre=ea --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ],
                 test                : [
-                        hotspot : 'default',
+                        temurin : 'default',
                         openj9 : ['sanity.functional', 'extended.functional', 'sanity.openjdk', 'sanity.system']
                 ],
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image'
+                        "openj9"    : '--create-jre-image',
+                        "temurin"   : '--create-jre-image'
                 ]
         ],
 
@@ -175,7 +202,10 @@ class Config19 {
                 os                  : 'linux',
                 arch                : 'arm',
                 test                : 'default',
-                configureArgs       : '--enable-dtrace'
+                configureArgs       : '--enable-dtrace',
+                buildArgs           : [
+                        "temurin"   : '--create-jre-image'
+                ]
         ],
         riscv64Linux      :  [
                 os                   : 'linux',

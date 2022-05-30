@@ -934,7 +934,7 @@ class Builder implements Serializable {
                             //TODO: remove parameters
                             context.echo "with parameters: ${downstreamJobParams}"
 
-                            // execute build
+                            // Triggering downstream job ${downstreamJobName}
                             def downstreamJob = context.build job: downstreamJobName, propagate: false, parameters: downstreamJobParams
 
                             if (downstreamJob.getResult() == 'SUCCESS') {

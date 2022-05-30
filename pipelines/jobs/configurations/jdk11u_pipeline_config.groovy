@@ -97,7 +97,7 @@ class Config11 {
             test                : 'default',
             additionalTestLabels: [
                         openj9      : 'ci.project.openj9 && hw.arch.x86 && sw.os.ubuntu && ci.role.test.criu'
-                ],
+            ],
             configureArgs       : [
                     "openj9"      : '--disable-ccache --enable-jitserver --enable-dtrace=auto --with-version-pre=ea --enable-criu-support --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
             ],
@@ -108,6 +108,14 @@ class Config11 {
         x64AlpineLinux  : [
                 os                  : 'alpine-linux',
                 arch                : 'x64',
+                dockerImage         : 'adoptopenjdk/alpine3_build_image',
+                test                : 'default',
+                configureArgs       : '--enable-headless-only=yes'
+        ],
+
+        aarch64AlpineLinux  : [
+                os                  : 'alpine-linux',
+                arch                : 'aarch64',
                 dockerImage         : 'adoptopenjdk/alpine3_build_image',
                 test                : 'default',
                 configureArgs       : '--enable-headless-only=yes'
@@ -271,6 +279,14 @@ class Config11 {
             ],
             additionalFileNameTag: "IBM",
             buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk"
+        ],
+
+        aarch64Mac: [
+                os                  : 'mac',
+                arch                : 'aarch64',
+                additionalNodeLabels: 'macos11',
+                test                : 'default',
+                configureArgs       : '--disable-ccache'
         ],
 
         arm32Linux    : [

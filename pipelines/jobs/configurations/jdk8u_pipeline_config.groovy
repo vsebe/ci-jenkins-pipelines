@@ -33,11 +33,28 @@ class Config8 {
                         "temurin"   : '--create-source-archive'
                 ]
         ],
+
+        x64AlpineLinux  : [
+                os                  : 'alpine-linux',
+                arch                : 'x64',
+                dockerImage         : 'adoptopenjdk/alpine3_build_image',
+                test                : 'default',
+                configureArgs       : '--disable-headful'
+        ],
+
+        aarch64AlpineLinux  : [
+                os                  : 'alpine-linux',
+                arch                : 'aarch64',
+                dockerImage         : 'adoptopenjdk/alpine3_build_image',
+                test                : 'default',
+                configureArgs       : '--disable-headful'
+        ],
+
         x64Windows    : [
                 os                  : 'windows',
                 arch                : 'x64',
                 additionalNodeLabels: [
-                        hotspot : 'win2012',
+                        temurin : 'win2012',
                         corretto: 'win2012',
                         openj9  : 'ci.project.openj9 && hw.arch.x86 && sw.os.windows',
                         dragonwell: 'win2012'
@@ -50,7 +67,7 @@ class Config8 {
                 os                  : 'windows',
                 arch                : 'x86-32',
                 additionalNodeLabels: [
-                        hotspot : 'win2012',
+                        temurin : 'win2012',
                         corretto: 'win2012',
                         openj9  : 'ci.project.openj9 && hw.arch.x86 && sw.os.windows'
                 ],
