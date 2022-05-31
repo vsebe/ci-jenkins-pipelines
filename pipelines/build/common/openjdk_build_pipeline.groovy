@@ -1565,7 +1565,7 @@ class Build {
                                     repoHandler.checkoutUserPipelines(context)
                                 }
                             } else {
-                                ccontext.println "[CHECKOUT] Checking out to the user's temurin-build..."
+                                context.println "[CHECKOUT] Checking out to the user's temurin-build..."
 
                                 repoHandler.setUserDefaultsJson(context, DEFAULTS_JSON)
                                 repoHandler.checkoutUserBuild(context)
