@@ -78,7 +78,31 @@ class Config17 {
                 ],
                 dockerNode          : 'sw.tool.docker && sw.config.uid1000',
                 dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
-                test                : 'default',
+                test                : [
+                        nightly: [
+                                "sanity.functional",
+                                "extended.functional",
+                                "sanity.openjdk",
+                                "sanity.perf",
+                                "sanity.jck",
+                                "sanity.system",
+                                "special.system"
+                        ],
+                        weekly : [
+                                "extended.openjdk",
+                                "extended.perf",
+                                "extended.jck",
+                                "extended.system",
+                                "special.functional",
+                                "special.jck",
+                                "sanity.external",
+                                "sanity.jck.fips",
+                                "extended.jck.fips",
+                                "special.jck.fips",
+                                "sanity.openjdk.fips",
+                                "extended.openjdk.fips"
+                        ]
+                ],
                 additionalTestLabels: [
                         openj9      : '!(centos6||rhel6)'
                 ],
