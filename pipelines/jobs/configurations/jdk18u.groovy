@@ -1,5 +1,4 @@
 targetConfigurations = [
-<<<<<<< HEAD:pipelines/jobs/configurations/jdk18.groovy
     "x64Mac"      : [
             "openj9"
     ],
