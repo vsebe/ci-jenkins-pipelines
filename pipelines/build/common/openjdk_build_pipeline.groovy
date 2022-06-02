@@ -1634,7 +1634,9 @@ class Build {
                         def server = context.Artifactory.server "na.artifactory.swg-devops"
 
                         def buildInfo = context.Artifactory.newBuildInfo()
-                        buildInfo.retention maxBuilds: 30, maxDays: 60, deleteBuildArtifacts: true
+                        // 150 artifacts is >6months for 5 builds/week (more for non-lts releases that run overy-other day)
+                        // 200 days is >6months
+                        buildInfo.retention maxBuilds: 150, maxDays: 200, deleteBuildArtifacts: true
 
                         server.upload spec: uploadJSON, buildInfo: buildInfo
                         server.publishBuildInfo buildInfo
