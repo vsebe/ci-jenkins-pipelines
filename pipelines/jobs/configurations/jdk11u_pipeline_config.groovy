@@ -6,7 +6,7 @@ class Config11 {
             additionalNodeLabels : 'ci.project.openj9 && hw.arch.x86 && sw.os.osx.10_14',
             test                : 'default',
             configureArgs       : [
-                    "openj9"      : '--enable-dtrace=auto  --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
+                    "openj9"      : '--enable-dtrace=auto  --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-macosx-bundle-name-base="IBM Semeru Runtime Open Edition" --with-macosx-bundle-id-base="net.semeru.open"',
                     "temurin"     : '--enable-dtrace=auto'
             ]
         ],
@@ -17,7 +17,7 @@ class Config11 {
             additionalNodeLabels : 'ci.project.openj9 && hw.arch.x86 && sw.os.osx.10_14',
             test                : 'default',
             configureArgs       : [
-                    "openj9"      : '--enable-dtrace=auto '
+                    "openj9"      : '--enable-dtrace=auto --with-macosx-bundle-name-base="IBM Semeru Runtime Certified Edition" --with-macosx-bundle-id-base="net.semeru.certified.11"'
             ],
             additionalFileNameTag: "IBM",
             buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk"

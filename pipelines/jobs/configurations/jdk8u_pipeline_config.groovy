@@ -10,7 +10,7 @@ class Config8 {
                 ],
                 cleanWorkspaceAfterBuild: true,
                 configureArgs      : '--with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
-                test                 : 'default'
+                test               : 'default'
         ],
 
         x64Linux      : [

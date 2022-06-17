@@ -11,7 +11,7 @@ class Config18 {
                 cleanWorkspaceAfterBuild: true,
                 configureArgs       : [
                         "temurin"    : '--enable-dtrace',
-                        openj9      : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+                        openj9      : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-macosx-bundle-name-base="IBM Semeru Runtime Open Edition" --with-macosx-bundle-id-base="net.semeru.open"'
                 ],
                 buildArgs           : [
                         "openj9"    : '--create-jre-image',

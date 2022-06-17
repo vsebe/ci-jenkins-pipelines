@@ -13,7 +13,7 @@ class Config17 {
                         "openj9"      : '--create-jre-image',
                         "temurin"     : '--create-jre-image'
                 ],
-                configureArgs       : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+                configureArgs       : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-macosx-bundle-name-base="IBM Semeru Runtime Open Edition" --with-macosx-bundle-id-base="net.semeru.open"'
         ],
 
         x64MacIBM    : [
@@ -23,7 +23,7 @@ class Config17 {
                 test                : 'default',
                 cleanWorkspaceAfterBuild: true,
                 configureArgs       : [
-                        "openj9"      : '--enable-dtrace'
+                        "openj9"      : '--enable-dtrace --with-macosx-bundle-name-base="IBM Semeru Runtime Certified Edition" --with-macosx-bundle-id-base="net.semeru.certified"'
                 ],
                 additionalFileNameTag: "IBM",
                 buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image"
