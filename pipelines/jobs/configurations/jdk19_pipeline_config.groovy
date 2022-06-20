@@ -120,7 +120,7 @@ class Config19 {
                 os                  : 'aix',
                 arch                : 'ppc64',
                 additionalNodeLabels: [
-                        temurin     : 'xlc16&&aix710',
+                        temurin     : 'xlc16&&aix720',
                         openj9      : 'hw.arch.ppc64 && sw.os.aix.7_1'
                 ],
                 test                : 'default',

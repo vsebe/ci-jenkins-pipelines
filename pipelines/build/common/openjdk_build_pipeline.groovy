@@ -304,7 +304,7 @@ class Build {
                                     context.string(name: 'UPSTREAM_JOB_NAME', value: "${env.JOB_NAME}"),
                                     context.string(name: 'JDK_VERSION', value: "${jobParams.JDK_VERSIONS}"),
                                     context.string(name: 'LABEL_ADDITION', value: additionalTestLabel),
-                                    context.string(name: 'KEEP_REPORTDIR', value: "${buildConfig.KEEP_TEST_REPORTDIR}"),
+                                    context.booleanParam(name: 'KEEP_REPORTDIR', value: buildConfig.KEEP_TEST_REPORTDIR),
                                     context.string(name: 'ACTIVE_NODE_TIMEOUT', value: "${buildConfig.ACTIVE_NODE_TIMEOUT}"),
                                     context.booleanParam(name: 'DYNAMIC_COMPILE', value: true)]
                 }
@@ -354,7 +354,7 @@ class Build {
                         def keep_test_reportdir = buildConfig.KEEP_TEST_REPORTDIR
                         if (("${testType}".contains("openjdk")) || ("${testType}".contains("jck"))) {
                             // Keep test reportdir always for JUnit targets
-                            keep_test_reportdir = "true"
+                            keep_test_reportdir = true
                         }
 
                         def DYNAMIC_COMPILE = false
@@ -433,7 +433,7 @@ class Build {
                                             context.string(name: 'JDK_BRANCH', value: jdkBranch),
                                             context.string(name: 'OPENJ9_BRANCH', value: openj9Branch),
                                             context.string(name: 'LABEL_ADDITION', value: additionalTestLabel),
-                                            context.string(name: 'KEEP_REPORTDIR', value: "${keep_test_reportdir}"),
+                                            context.booleanParam(name: 'KEEP_REPORTDIR', value: keep_test_reportdir),
                                             context.string(name: 'PARALLEL', value: parallel),
                                             context.string(name: 'NUM_MACHINES', value: "${numMachinesPerTest}"),
                                             context.booleanParam(name: 'USE_TESTENV_PROPERTIES', value: useTestEnvProperties),
@@ -547,7 +547,7 @@ class Build {
                             selector: context.specific("${signJob.getNumber()}"),
                             filter: 'workspace/target/*',
                             fingerprintArtifacts: true,
-                            target: "workspace/target/",
+                            target: 'workspace/target/',
                             flatten: true)
 
                     def extension = (buildConfig.TARGET_OS == "windows") ? "zip" : "tar.gz"
@@ -561,6 +561,34 @@ class Build {
             }
         } else {
             context.echo "Skip signing for unsupported OS: ${buildConfig.TARGET_OS}"
+        }
+        context.stage("GPG sign") {
+
+            context.println "RUNNING sign_temurin_gpg for ${buildConfig.TARGET_OS}/${buildConfig.ARCHITECTURE} ..."
+           
+            def params = [
+                context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${env.BUILD_NUMBER}"),
+                context.string(name: 'UPSTREAM_JOB_NAME', value: "${env.JOB_NAME}"),
+                context.string(name: 'UPSTREAM_DIR', value: "workspace/target"),
+                ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "built-in"]
+            ]
+
+            def signSHAsJob = context.build job: "build-scripts/release/sign_temurin_gpg",
+                propagate: true,
+                parameters: params
+
+            context.node('built-in || master') {
+                context.sh "rm -f workspace/target/*.sig"
+                context.copyArtifacts(
+                    projectName: "build-scripts/release/sign_temurin_gpg",
+                    selector: context.specific("${signSHAsJob.getNumber()}"),
+                    filter: '**/*.sig',
+                    fingerprintArtifacts: true, 
+                    target: 'workspace/target/',
+                    flatten: true)
+                // Archive GPG signatures in Jenkins
+                context.archiveArtifacts artifacts: "workspace/target/*.sig"
+            }
         }
     }
 
@@ -812,6 +840,9 @@ class Build {
 
         context.node('built-in || master') {
             context.stage("installer") {
+                // Ensure master context workspace is clean of any previous archives
+                context.sh "rm -f workspace/target/* || true"
+
                 switch (buildConfig.TARGET_OS) {
                     case "aix":
                         buildLinuxInstaller(versionData)
@@ -856,6 +887,8 @@ class Build {
         context.node('built-in || master') {
             context.stage("sign installer") {
                 try {
+                    // Ensure master context workspace is clean of any previous archives
+                    context.sh "rm -f workspace/target/* || true"
                     if (buildConfig.TARGET_OS == "mac" || buildConfig.TARGET_OS == "windows") {
                         signInstallerJob(versionData);
                         context.sh 'cd workspace/target/ && for file in $(ls *.tar.gz *.pkg *.msi); do sha256sum "$file" > $file.sha256.txt ; done'
@@ -944,11 +977,11 @@ class Build {
     }
 
     /*
-    Lists and returns any compressed archived contents of the top directory of the build node
+    Lists and returns any compressed archived or sbom file contents of the top directory of the build node
     */
     List<String> listArchives() {
         return context.sh(
-                script: '''find workspace/target/ | egrep '(.tar.gz|.zip|.msi|.pkg|.deb|.rpm)$' ''',
+                script: '''find workspace/target/ | egrep -e '(.tar.gz|.zip|.msi|.pkg|.deb|.rpm)$' -e '-sbom_' ''',
                 returnStdout: true,
                 returnStatus: false
         )
@@ -1171,7 +1204,7 @@ class Build {
         /*
         example data:
             {
-                "vendor": "Eclipse Foundation",
+                "vendor": "Eclipse Adoptium",
                 "os": "mac",
                 "arch": "x64",
                 "variant": "openj9",
@@ -1245,7 +1278,13 @@ class Build {
                 metaWrittenOut = true
             }
 
-            context.writeFile file: "${file}.json", text: JsonOutput.prettyPrint(JsonOutput.toJson(data.asMap()))
+            // Special handling for sbom metadata file (to be backwards compatible for api service)
+            // from "*sbom<XXX>.json" to "*sbom<XXX>-metadata.json"
+            if (file.contains("sbom")) {
+                context.writeFile file: file.replace(".json", "-metadata.json"), text: JsonOutput.prettyPrint(JsonOutput.toJson(data.asMap()))
+            } else {
+                context.writeFile file: "${file}.json", text: JsonOutput.prettyPrint(JsonOutput.toJson(data.asMap()))
+            }
         })
     }
 
@@ -1267,7 +1306,12 @@ class Build {
             extension = "zip"
         }
 
-        javaToBuild = javaToBuild.toUpperCase()
+        javaToBuild = javaToBuild.trim().toUpperCase()
+ 
+        // Add "U" to javaToBuild filename prefix for non-head versions
+        if (!javaToBuild.endsWith("U") && !javaToBuild.equals("JDK")) {
+          javaToBuild += "U"
+        }
 
         def fileName = "Open${javaToBuild}-jdk_${architecture}_${os}_${variant}"
         if (variant == "temurin") {
@@ -1457,7 +1501,7 @@ class Build {
                 List<String> envVars = buildConfig.toEnvVars()
                 envVars.add("FILENAME=${filename}" as String)
 
-                // Add in the adopt platform config path so it can be used if the user doesn't have one
+                // Add platform config path so it can be used if the user doesn't have one
                 def splitAdoptUrl = ((String)ADOPT_DEFAULTS_JSON['repository']['build_url']).minus(".git").split('/')
                 // e.g. https://github.com/adoptium/temurin-build.git will produce adoptium/temurin-build
                 String userOrgRepo = "${splitAdoptUrl[splitAdoptUrl.size() - 2]}/${splitAdoptUrl[splitAdoptUrl.size() - 1]}"

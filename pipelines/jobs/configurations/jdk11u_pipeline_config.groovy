@@ -126,10 +126,13 @@ class Config11 {
             arch                : 'x64',
             additionalNodeLabels: [
                     openj9:     'ci.project.openj9 && hw.arch.x86 && sw.os.windows',
-                    temurin:    'win2012',
+                    temurin:    'win2012&&vs2017',
                     dragonwell: 'win2012'
             ],
             test                : 'default',
+            buildArgs : [
+                temurin : '--jvm-variant client,server'
+            ],
             configureArgs       : [
                     "openj9"      : '--with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-jdk-rc-name="IBM Semeru Runtime"',
                     "temurin" : '--jvm-variant client,server'
@@ -166,9 +169,11 @@ class Config11 {
             os                  : 'aix',
             arch                : 'ppc64',
             additionalNodeLabels: [
-                    openj9:  'hw.arch.ppc64 && sw.os.aix.7_1'
+                    openj9:  'hw.arch.ppc64 && sw.os.aix.7_1',
+                    temurin: 'xlc16&&aix710',
             ],
             test                : 'default',
+            cleanWorkspaceAfterBuild: true,
             configureArgs       : [
                     "openj9"      : '--with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
             ]
@@ -182,6 +187,7 @@ class Config11 {
             ],
             test                : 'default',
             additionalFileNameTag: "IBM",
+            cleanWorkspaceAfterBuild: true,
             buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk"
         ],
 
