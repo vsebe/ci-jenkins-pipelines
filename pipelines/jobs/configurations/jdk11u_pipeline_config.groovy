@@ -3,7 +3,7 @@ class Config11 {
         x64Mac    : [
             os                  : 'mac',
             arch                : 'x64',
-            additionalNodeLabels : 'ci.project.openj9 && hw.arch.x86 && sw.os.osx.10_14',
+            additionalNodeLabels : 'ci.project.openj9 && hw.arch.x86 && sw.os.osx.10_15',
             test                : 'default',
             configureArgs       : [
                     "openj9"      : '--enable-dtrace=auto  --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
@@ -14,7 +14,7 @@ class Config11 {
         x64MacIBM    : [
             os                  : 'mac',
             arch                : 'x64',
-            additionalNodeLabels : 'ci.project.openj9 && hw.arch.x86 && sw.os.osx.10_14',
+            additionalNodeLabels : 'ci.project.openj9 && hw.arch.x86 && sw.os.osx.10_15',
             test                : 'default',
             configureArgs       : [
                     "openj9"      : '--enable-dtrace=auto '
@@ -287,14 +287,6 @@ class Config11 {
             buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk"
         ],
 
-        aarch64Mac: [
-                os                  : 'mac',
-                arch                : 'aarch64',
-                additionalNodeLabels: 'macos11',
-                test                : 'default',
-                configureArgs       : '--disable-ccache'
-        ],
-
         arm32Linux    : [
             os                  : 'linux',
             arch                : 'arm',
@@ -389,11 +381,13 @@ class Config11 {
                 os                  : 'mac',
                 arch                : 'aarch64',
                 additionalNodeLabels: [
-                        openj9 : 'ci.project.openj9 && hw.arch.aarch64 && sw.os.mac'
+                        openj9 : 'ci.project.openj9 && hw.arch.aarch64 && sw.os.mac',
+                        temurin: 'macos11'
                 ],
                 cleanWorkspaceAfterBuild: true,
                 configureArgs       : [
-                        openj9      : '--enable-dtrace --disable-warnings-as-errors --with-noncompressedrefs --with-version-pre=ea --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+                        openj9      : '--enable-dtrace --disable-warnings-as-errors --with-noncompressedrefs --with-version-pre=ea --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
+                        temurin     : '--disable-ccache'
                 ],
                 test                : [
                         openj9 : 'default'

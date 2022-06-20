@@ -3,7 +3,7 @@ class Config19 {
         x64Mac    : [
                 os                  : 'mac',
                 arch                : 'x64',
-                additionalNodeLabels: 'hw.arch.x86 && sw.os.osx.10_14',
+                additionalNodeLabels: 'hw.arch.x86 && sw.os.osx.10_15',
                 additionalTestLabels: [
                         openj9      : '!sw.os.osx.10_11'
                 ],
