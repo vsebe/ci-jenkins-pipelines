@@ -6,7 +6,7 @@ class Config8 {
                 additionalNodeLabels: [
                         temurin : 'macos10.14',
                         corretto: 'build-macstadium-macos1010-1',
-                        openj9  : 'ci.project.openj9 && hw.arch.x86 && sw.os.osx.10_14'
+                        openj9  : 'ci.project.openj9 && hw.arch.x86 && sw.os.osx.10_15'
                 ],
                 cleanWorkspaceAfterBuild: true,
                 configureArgs      : '--with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
