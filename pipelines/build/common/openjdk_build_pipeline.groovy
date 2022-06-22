@@ -368,8 +368,12 @@ class Build {
                         def extraOptions = ""
                         if (isFipsTestBuild) {
                             jobParams.put('TEST_JOB_NAME', "${jobParams.TEST_JOB_NAME}_fips")
+                            if ("${jobParams.TEST_JOB_NAME}".contains("functional")) {
+                                jobParams.put('BUILD_LIST', "functional/cmdLineTests/fips")
+                            }
                             testFlag = "FIPS"
                             extraOptions = "-Dsemeru.fips=true"
+
                         }
                         def parallel = 'None'
                         def numMachinesPerTest = ''
