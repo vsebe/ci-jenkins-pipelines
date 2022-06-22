@@ -126,7 +126,7 @@ class Config11 {
             arch                : 'x64',
             additionalNodeLabels: [
                     openj9:     'ci.project.openj9 && hw.arch.x86 && sw.os.windows',
-                    temurin:    'win2012&&vs2017',
+                    temurin:    'win2012&&vs2019',
                     dragonwell: 'win2012'
             ],
             test                : 'default',

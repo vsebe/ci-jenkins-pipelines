@@ -942,6 +942,15 @@ class Builder implements Serializable {
                                 context.println "[NODE SHIFT] MOVING INTO CONTROLLER NODE..."
                                 context.node("built-in || master") {
                                     context.catchError {
+                                        //Remove the previous artifacts
+                                        try {
+                                            context.timeout(time: pipelineTimeouts.REMOVE_ARTIFACTS_TIMEOUT, unit: "HOURS") {
+                                                context.sh "rm -rf target/${config.TARGET_OS}/${config.ARCHITECTURE}/${config.VARIANT}/"
+                                            }
+                                        } catch (FlowInterruptedException e) {
+                                            throw new Exception("[ERROR] Previous artifact removal timeout (${pipelineTimeouts.REMOVE_ARTIFACTS_TIMEOUT} HOURS) for ${downstreamJobName} has been reached. Exiting...")
+                                        }
+
                                         try {
                                             context.timeout(time: pipelineTimeouts.COPY_ARTIFACTS_TIMEOUT, unit: "HOURS") {
                                                 context.copyArtifacts(
@@ -964,6 +973,15 @@ class Builder implements Serializable {
                                                         linuxTargets.add(config.ARCHITECTURE)
                                                     }
                                                 }
+
+                                                context.copyArtifacts(
+                                                        projectName: downstreamJobName,
+                                                        selector: context.specific("${downstreamJob.getNumber()}"),
+                                                        filter: 'workspace/target/AQATestTaps/*.tap',
+                                                        fingerprintArtifacts: true,
+                                                        target: "target/${config.TARGET_OS}/${config.ARCHITECTURE}/${config.VARIANT}/AQATestTaps/",
+                                                        flatten: true
+                                                )
                                             }
                                         } catch (FlowInterruptedException e) {
                                             throw new Exception("[ERROR] Copy artifact timeout (${pipelineTimeouts.COPY_ARTIFACTS_TIMEOUT} HOURS) for ${downstreamJobName} has been reached. Exiting...")
@@ -976,7 +994,7 @@ class Builder implements Serializable {
                                         // Archive in Jenkins
                                         try {
                                             context.timeout(time: pipelineTimeouts.ARCHIVE_ARTIFACTS_TIMEOUT, unit: "HOURS") {
-                                                context.archiveArtifacts artifacts: "target/${config.TARGET_OS}/${config.ARCHITECTURE}/${config.VARIANT}/*"
+                                                context.archiveArtifacts artifacts: "target/${config.TARGET_OS}/${config.ARCHITECTURE}/${config.VARIANT}/**/*"
                                             }
                                         } catch (FlowInterruptedException e) {
                                             throw new Exception("[ERROR] Archive artifact timeout (${pipelineTimeouts.ARCHIVE_ARTIFACTS_TIMEOUT} HOURS) for ${downstreamJobName}has been reached. Exiting...")
@@ -1105,10 +1123,9 @@ return {
         if (overridePublishName) {
             publishName = overridePublishName
         } else if (release) {
-            // Default to scmReference, remove any trailing "_adopt" or "_adoptium" from the source code tag if present
+            // Default to scmReference, remove any trailing "_adopt" from the tag if present
             if (scmReference) {
-                tagSuffix = ~/_adopt$|_adoptium$/
-                publishName = scmReference - tagSuffix
+                publishName = scmReference.minus("_adopt")
             }
         }
 

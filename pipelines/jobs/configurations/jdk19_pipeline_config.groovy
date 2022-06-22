@@ -76,7 +76,10 @@ class Config19 {
         x64Windows: [
                 os                  : 'windows',
                 arch                : 'x64',
-                additionalNodeLabels: 'hw.arch.x86 && sw.os.windows',
+                additionalNodeLabels: [
+                        openj9 : 'hw.arch.x86 && sw.os.windows',
+                        temurin : 'win2012&&vs2019'
+                ],
                 test                : 'default',
                 cleanWorkspaceAfterBuild: true,
                 bootJDK             : '18',
@@ -109,7 +112,7 @@ class Config19 {
         x32Windows: [
                 os                  : 'windows',
                 arch                : 'x86-32',
-                additionalNodeLabels: 'win2012&&vs2017',
+                additionalNodeLabels: 'win2012&&vs2019',
                 test                : 'default',
                 buildArgs           : [
                         "temurin"   : '--jvm-variant client,server --create-jre-image'

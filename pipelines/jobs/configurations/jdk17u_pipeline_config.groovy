@@ -127,7 +127,10 @@ class Config17 {
         x64Windows: [
                 os                  : 'windows',
                 arch                : 'x64',
-                additionalNodeLabels: 'ci.project.openj9 && hw.arch.x86 && sw.os.windows',
+                additionalNodeLabels: [
+                        openj9 : 'ci.project.openj9 && hw.arch.x86 && sw.os.windows',
+                        temruin : 'win2012&&vs2019'
+                ],
                 cleanWorkspaceAfterBuild: true,
                 buildArgs           : [
                         "openj9"    : '--create-jre-image',
@@ -173,7 +176,7 @@ class Config17 {
         x32Windows: [
                 os                  : 'windows',
                 arch                : 'x86-32',
-                additionalNodeLabels: 'win2012&&vs2017',
+                additionalNodeLabels: 'win2012&&vs2019',
                 test                : 'default',
                 buildArgs           : [
                         "temurin"   : '--jvm-variant client,server --create-jre-image'
