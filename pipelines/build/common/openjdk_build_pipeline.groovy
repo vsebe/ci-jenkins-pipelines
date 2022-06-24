@@ -444,30 +444,28 @@ class Build {
                                             context.string(name: 'ACTIVE_NODE_TIMEOUT', value: "${buildConfig.ACTIVE_NODE_TIMEOUT}"),
                                             context.booleanParam(name: 'DYNAMIC_COMPILE', value: DYNAMIC_COMPILE)],
                                             wait: true
-                            if (buildConfig.RELEASE) {
-                                context.node('built-in || master') {
-                                    def result = testJob.getResult()
-                                    context.echo " ${jobName} result is ${result}"
-                                    if (testJob.getResult() == 'SUCCESS' || testJob.getResult() == 'UNSTABLE') {
-                                        context.sh "rm -f workspace/target/AQATestTaps/*.tap"
-                                        try {
-                                            context.timeout(time: 2, unit: 'HOURS') {
-                                                context.copyArtifacts(
-                                                    projectName:jobName,
-                                                    selector:context.specific("${testJob.getNumber()}"),
-                                                    filter: "**/${jobName}*.tap",
-                                                    target: "workspace/target/AQATestTaps/",
-                                                    fingerprintArtifacts: true,
-                                                    flatten: true
-                                                )
-                                            }
-                                        } catch (Exception e) {
-                                           context.echo "Cannot run copyArtifacts from job ${jobName}. Exception: ${e.message}. Skipping copyArtifacts..."
+                            context.node('built-in || master') {
+                                def result = testJob.getResult()
+                                context.echo " ${jobName} result is ${result}"
+                                if (testJob.getResult() == 'SUCCESS' || testJob.getResult() == 'UNSTABLE') {
+                                    context.sh "rm -f workspace/target/AQAvitTaps/*.tap"
+                                    try {
+                                        context.timeout(time: 2, unit: 'HOURS') {
+                                            context.copyArtifacts(
+                                                projectName:jobName,
+                                                selector:context.specific("${testJob.getNumber()}"),
+                                                filter: "**/${jobName}*.tap",
+                                                target: "workspace/target/AQAvitTaps/",
+                                                fingerprintArtifacts: true,
+                                                flatten: true
+                                            )
                                         }
-                                        context.archiveArtifacts artifacts: "workspace/target/AQATestTaps/*.tap", fingerprint: true
-                                    } else {
-                                        context.echo "Warning: ${jobName} result is ${result}, no tap file is archived"
+                                    } catch (Exception e) {
+                                       context.echo "Cannot run copyArtifacts from job ${jobName}. Exception: ${e.message}. Skipping copyArtifacts..."
                                     }
+                                    context.archiveArtifacts artifacts: "workspace/target/AQAvitTaps/*.tap", fingerprint: true
+                                } else {
+                                    context.echo "Warning: ${jobName} result is ${result}, no tap file is archived"
                                 }
                             }
 >>>>>>> upstream/master
@@ -937,6 +935,41 @@ class Build {
                 }
             }
         }
+        if (variant == "temurin") {
+            context.stage("GPG sign") {
+
+               context.println "RUNNING sign_temurin_gpg for ${buildConfig.TARGET_OS}/${buildConfig.ARCHITECTURE} ..."
+
+               def params = [
+                      context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${env.BUILD_NUMBER}"),
+                      context.string(name: 'UPSTREAM_JOB_NAME', value: "${env.JOB_NAME}"),
+                      context.string(name: 'UPSTREAM_DIR', value: "workspace/target"),
+                      ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "built-in"]
+               ]
+
+               def signSHAsJob = context.build job: "build-scripts/release/sign_temurin_gpg",
+                   propagate: true,
+                   parameters: params
+
+               context.node('built-in || master') {
+                   context.copyArtifacts(
+                        projectName: "build-scripts/release/sign_temurin_gpg",
+                        selector: context.specific("${signSHAsJob.getNumber()}"),
+                        filter: '**/*.sig',
+                        fingerprintArtifacts: true, 
+                        target: 'workspace/target/',
+                        flatten: true)
+               }
+               // Archive GPG signatures in Jenkins
+               try {
+                   context.timeout(time: pipelineTimeouts.ARCHIVE_ARTIFACTS_TIMEOUT, unit: "HOURS") {
+                       context.archiveArtifacts artifacts: "target/${buildConfig.TARGET_OS}/${buildConfig.ARCHITECTURE}/${buildConfig.VARIANT}/*.sha256.txt.sig"
+                   }
+               } catch (FlowInterruptedException e) {
+                   throw new Exception("[ERROR] Archive artifact timeout (${pipelineTimeouts.ARCHIVE_ARTIFACTS_TIMEOUT} HOURS) for ${downstreamJobName}has been reached. Exiting...")
+               }
+            }
+        }
     }
 
     private void signInstallerJob(VersionInfo versionData) {
@@ -1007,6 +1040,41 @@ class Build {
         }
     }
 
+    private void gpgSign() {
+        context.stage("GPG sign") {
+
+           context.println "RUNNING sign_temurin_gpg for ${buildConfig.TARGET_OS}/${buildConfig.ARCHITECTURE} ..."
+
+           def params = [
+                  context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${env.BUILD_NUMBER}"),
+                  context.string(name: 'UPSTREAM_JOB_NAME', value: "${env.JOB_NAME}"),
+                  context.string(name: 'UPSTREAM_DIR', value: "workspace/target"),
+                  ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "gpgsign"]
+           ]
+
+           def signSHAsJob = context.build job: "build-scripts/release/sign_temurin_gpg",
+               propagate: true,
+               parameters: params
+
+           context.node('gpgsign') {
+               context.copyArtifacts(
+                    projectName: "build-scripts/release/sign_temurin_gpg",
+                    selector: context.specific("${signSHAsJob.getNumber()}"),
+                    filter: '**/*.sig',
+                    fingerprintArtifacts: true, 
+                    target: 'workspace/target/',
+                    flatten: true)
+           }
+           // Archive GPG signatures in Jenkins
+           try {
+               context.timeout(time: pipelineTimeouts.ARCHIVE_ARTIFACTS_TIMEOUT, unit: "HOURS") {
+                   context.archiveArtifacts artifacts: "target/${buildConfig.TARGET_OS}/${buildConfig.ARCHITECTURE}/${buildConfig.VARIANT}/*.sha256.txt.sig"
+               }
+           } catch (FlowInterruptedException e) {
+               throw new Exception("[ERROR] Archive artifact timeout (${pipelineTimeouts.ARCHIVE_ARTIFACTS_TIMEOUT} HOURS) for ${downstreamJobName}has been reached. Exiting...")
+           }
+        }
+    }
     /*
     Lists and returns any compressed archived or sbom file contents of the top directory of the build node
     */
@@ -2059,6 +2127,13 @@ class Build {
                         }
                     } catch (FlowInterruptedException e) {
                         throw new Exception("[ERROR] Installer job timeout (${buildTimeouts.INSTALLER_JOBS_TIMEOUT} HOURS) has been reached OR the downstream installer job failed. Exiting...")
+                    }
+                }
+                if (variant == "temurin") {
+                    try {
+                        gpgSign()
+                    } catch (Exception e) {
+                        context.println(e.message)
                     }
                 }
 

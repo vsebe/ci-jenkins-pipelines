@@ -20,9 +20,6 @@ targetConfigurations = [
         "aarch64Linux": [
                 "openj9"
         ],
-        "aarch64AlpineLinux" : [
-                "temurin"
-        ],
         "aarch64Mac": [
                 "openj9"
         ]
