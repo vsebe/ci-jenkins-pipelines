@@ -468,7 +468,6 @@ class Build {
                                     context.echo "Warning: ${jobName} result is ${result}, no tap file is archived"
                                 }
                             }
->>>>>>> upstream/master
                         }
                     }
                 }
