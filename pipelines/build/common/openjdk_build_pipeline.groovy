@@ -588,7 +588,7 @@ class Build {
             context.echo "Skip signing for unsupported OS: ${buildConfig.TARGET_OS}"
         }
 
-        if (variant == "temurin") {
+        if (buildConfig.VARIANT == "temurin") {
             context.stage("GPG sign") {
 
                 context.println "RUNNING sign_temurin_gpg for ${buildConfig.TARGET_OS}/${buildConfig.ARCHITECTURE} ..."
@@ -934,7 +934,7 @@ class Build {
                 }
             }
         }
-        if (variant == "temurin") {
+        if (buildConfig.VARIANT == "temurin") {
             context.stage("GPG sign") {
 
                context.println "RUNNING sign_temurin_gpg for ${buildConfig.TARGET_OS}/${buildConfig.ARCHITECTURE} ..."
@@ -2128,7 +2128,7 @@ class Build {
                         throw new Exception("[ERROR] Installer job timeout (${buildTimeouts.INSTALLER_JOBS_TIMEOUT} HOURS) has been reached OR the downstream installer job failed. Exiting...")
                     }
                 }
-                if (variant == "temurin") {
+                if (buildConfig.VARIANT == "temurin") {
                     try {
                         gpgSign()
                     } catch (Exception e) {
