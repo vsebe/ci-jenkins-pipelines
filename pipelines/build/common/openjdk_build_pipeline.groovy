@@ -588,7 +588,7 @@ class Build {
             context.echo "Skip signing for unsupported OS: ${buildConfig.TARGET_OS}"
         }
 
-        if (variant == "temurin") {
+        if (buildConfig.VARIANT.equals("temurin")) {
             context.stage("GPG sign") {
 
                 context.println "RUNNING sign_temurin_gpg for ${buildConfig.TARGET_OS}/${buildConfig.ARCHITECTURE} ..."
