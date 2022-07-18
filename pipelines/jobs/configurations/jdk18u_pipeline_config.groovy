@@ -197,7 +197,7 @@ class Config18 {
                 ],
                 test                : [
                         temurin : 'default',
-                        openj9 : ['sanity.functional', 'extended.functional', 'sanity.openjdk', 'sanity.system']
+                        openj9 : 'default'
                 ],
                 buildArgs           : [
                         "openj9"    : '--create-jre-image',
