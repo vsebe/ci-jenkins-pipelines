@@ -405,7 +405,7 @@ class Config11 {
                         openj9      : '--enable-dtrace --disable-warnings-as-errors --with-noncompressedrefs --with-version-pre=ea'
                 ],
                 test                : [
-                        openj9 : ['sanity.functional', 'extended.functional', 'sanity.openjdk', 'sanity.system']
+                        openj9 : 'default'
                 ],
                 additionalFileNameTag: "IBM",
                 buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk"
