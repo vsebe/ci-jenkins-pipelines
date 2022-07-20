@@ -345,8 +345,7 @@ class Config17 {
                         openj9      : '--enable-dtrace --disable-warnings-as-errors --with-noncompressedrefs --with-version-pre=ea'
                 ],
                 test                : [
-                        temurin : 'default',
-                        openj9 : ['sanity.functional', 'extended.functional', 'sanity.openjdk', 'sanity.system']
+                        openj9 : 'default'
                 ],
                 additionalFileNameTag: "IBM",
                 buildArgs : [
