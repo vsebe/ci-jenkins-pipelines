@@ -93,16 +93,15 @@ class Config11 {
         x64LinuxCRIU  : [
             os                  : 'linux',
             arch                : 'x64',
-            additionalNodeLabels : 'ci.project.openj9 && hw.arch.x86 && sw.os.cent.7',
+            additionalNodeLabels : 'hw.arch.x86 && sw.os.linux && sw.os.cent.7 && ci.role.build.criu',
             test                : 'default',
             additionalTestLabels: [
-                        openj9      : 'ci.project.openj9 && hw.arch.x86 && sw.os.ubuntu && ci.role.test.criu'
+                        openj9      : 'ci.project.openj9 && hw.arch.x86 && sw.os.linux && ci.role.test.criu'
             ],
             configureArgs       : [
                     "openj9"      : '--disable-ccache --enable-jitserver --enable-dtrace=auto --with-version-pre=ea --enable-criu-support --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
             ],
-            additionalFileNameTag: "criu",
-            buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b criu-preview_1-release"
+            additionalFileNameTag: "criu"
         ],
 
         x64AlpineLinux  : [

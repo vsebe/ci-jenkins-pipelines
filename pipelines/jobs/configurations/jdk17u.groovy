@@ -21,7 +21,7 @@ targetConfigurations = [
                 "openj9"
         ],
         "aarch64Mac": [
-            "openj9"
+                "openj9"
         ],
         "x64MacIBM": [
                 "openj9"
@@ -45,7 +45,10 @@ targetConfigurations = [
                 "openj9"
         ],
         "aarch64MacIBM": [
-            "openj9"
+                "openj9"
+        ],
+        "x64LinuxCRIU" : [ 
+                "openj9"
         ]
 
 ]

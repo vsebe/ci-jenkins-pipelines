@@ -57,6 +57,24 @@ class Config17 {
                 ]
         ],
 
+        x64LinuxCRIU  : [
+            os                  : 'linux',
+            arch                : 'x64',
+            additionalNodeLabels : 'hw.arch.x86 && sw.os.linux && sw.os.cent.7 && ci.role.build.criu',
+            test                : 'default',
+            additionalTestLabels: [
+                        openj9  : 'ci.project.openj9 && hw.arch.x86 && sw.os.linux && ci.role.test.criu'
+            ],
+            configureArgs       : [
+                    "openj9"    : '--disable-ccache --enable-criu-support --enable-dtrace --enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-version-pre=ea'
+            ],
+            additionalFileNameTag: "criu",
+            buildArgs           : [
+                "openj9"    : '--create-jre-image'
+            ]
+        ],
+
+
         x64AlpineLinux  : [
                 os                  : 'alpine-linux',
                 arch                : 'x64',
