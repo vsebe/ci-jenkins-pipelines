@@ -76,6 +76,7 @@ class Config11 {
                         "special.functional",
                         "special.jck",
                         "sanity.external",
+                        "sanity.functional.fips",
                         "sanity.jck.fips",
                         "extended.jck.fips",
                         "special.jck.fips",
