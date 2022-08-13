@@ -24,7 +24,32 @@ class Config20 {
                 dockerFile: [
                         openj9      : 'pipelines/build/dockerFiles/cuda.dockerfile'
                 ],
-                test                : 'default',
+                test                : [
+                        nightly: [
+                                "sanity.functional",
+                                "extended.functional",
+                                "sanity.openjdk",
+                                "sanity.perf",
+                                "sanity.jck",
+                                "sanity.system",
+                                "special.system"
+                        ],
+                        weekly : [
+                                "extended.openjdk",
+                                "extended.perf",
+                                "extended.jck",
+                                "extended.system",
+                                "special.functional",
+                                "special.jck",
+                                "sanity.external",
+                                "sanity.functional.fips",
+                                "sanity.jck.fips",
+                                "extended.jck.fips",
+                                "special.jck.fips",
+                                "sanity.openjdk.fips",
+                                "extended.openjdk.fips"
+                        ]
+                ],
                 additionalTestLabels: [
                         openj9      : '!(centos6||rhel6)'
                 ],
