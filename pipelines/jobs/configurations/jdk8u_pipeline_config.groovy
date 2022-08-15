@@ -24,7 +24,32 @@ class Config8 {
                 ],
                 dockerNode          : 'sw.tool.docker && sw.config.uid1000',
                 dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
-                test                 : 'default',
+                test                : [
+                        nightly: [
+                                "sanity.functional",
+                                "extended.functional",
+                                "sanity.openjdk",
+                                "sanity.perf",
+                                "sanity.jck",
+                                "sanity.system",
+                                "special.system"
+                        ],
+                        weekly : [
+                                "extended.openjdk",
+                                "extended.perf",
+                                "extended.jck",
+                                "extended.system",
+                                "special.functional",
+                                "special.jck",
+                                "sanity.external",
+                                "sanity.functional.fips",
+                                "sanity.jck.fips",
+                                "extended.jck.fips",
+                                "special.jck.fips",
+                                "sanity.openjdk.fips",
+                                "extended.openjdk.fips"
+                        ]
+                ],
                 configureArgs       : [
                         "openj9"      : '--enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
                         "dragonwell"  : '--enable-unlimited-crypto --with-jvm-variants=server --with-zlib=system',
