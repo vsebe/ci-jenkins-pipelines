@@ -177,6 +177,10 @@ class Build {
             default: variant = "hs"
         }
         def jobName = "Test_openjdk${jobParams['JDK_VERSIONS']}_${variant}_${testType}_${jobParams['ARCH_OS_LIST']}"
+        if (buildConfig.ADDITIONAL_FILE_NAME_TAG == 'criu') {
+            jobName += "_criu"
+        }
+
         jobParams.put('TEST_JOB_NAME', jobName)
         return jobParams
     }
