@@ -61,7 +61,15 @@ class Config17 {
             os                  : 'linux',
             arch                : 'x64',
             additionalNodeLabels : 'hw.arch.x86 && sw.os.linux && sw.os.cent.7 && ci.role.build.criu',
-            test                : 'default',
+            test                : [
+                    nightly: [
+                        "sanity.functional",
+                        "extended.functional",
+                        "special.functional",
+                        "sanity.external"
+                    ],
+                    weekly : []
+            ],
             additionalTestLabels: [
                         openj9  : 'ci.project.openj9 && hw.arch.x86 && sw.os.linux && ci.role.test.criu'
             ],
