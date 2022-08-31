@@ -424,6 +424,7 @@ class Config11 {
                 arch                : 'aarch64',
                 additionalNodeLabels: [
                         openj9 : 'ci.project.openj9 && hw.arch.aarch64 && sw.os.mac'
+                ],
                 cleanWorkspaceAfterBuild: true,
                 configureArgs       : [
                         openj9      : '--enable-dtrace --disable-warnings-as-errors --with-noncompressedrefs --with-version-pre=ea'
