@@ -100,6 +100,7 @@ pipelineJob("$buildFolder/$JOB_NAME") {
                 <dt><strong>ACTIVE_NODE_TIMEOUT</strong></dt><dd>Number of minutes we will wait for a label-matching node to become active.</dd>
                 <dt><strong>CODEBUILD</strong></dt><dd>Use a dynamic codebuild machine if no other machine is available</dd>
                 <dt><strong>DOCKER_IMAGE</strong></dt><dd>Use a docker build environment</dd>
+                <dt><strong>DOCKER_ARGS</strong></dt><dd>Additional args to be used in conjuction with DOCKER_IMAGE</dd>
                 <dt><strong>DOCKER_FILE</strong></dt><dd>Relative path to a dockerfile to be built and used on top of the DOCKER_IMAGE</dd>
                 <dt><strong>DOCKER_REGISTRY</strong></dt><dd>Custom Docker registry to pull DOCKER_IMAGE from</dd>
                 <dt><strong>DOCKER_CREDENTIAL</strong></dt><dd>Username & Password Jenkins credential ID for Docker registry login</dd>
@@ -128,9 +129,6 @@ pipelineJob("$buildFolder/$JOB_NAME") {
         textParam('ADOPT_DEFAULTS_JSON', "$ADOPT_DEFAULTS_JSON", """
         <strong>DO NOT ALTER THIS PARAM UNDER ANY CIRCUMSTANCES!</strong> This passes down adopt's default constants to the downstream job. NOTE: <code>DEFAULTS_JSON</code> has priority, the constants contained within this param will only be used as a failsafe.
         """)
-        if (binding.hasVariable('CUSTOM_LIBRARY_LOCATION')) {
-            stringParam('CUSTOM_LIBRARY_LOCATION', "$CUSTOM_LIBRARY_LOCATION")
-        }
         if (binding.hasVariable('CUSTOM_BASEFILE_LOCATION')) {
             stringParam('CUSTOM_BASEFILE_LOCATION', "$CUSTOM_BASEFILE_LOCATION")
         }

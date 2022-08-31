@@ -1,8 +1,3 @@
-import common.IndividualBuildConfig
-import common.RepoHandler
-import groovy.json.JsonSlurper
-import groovy.json.JsonOutput
-import java.util.Base64
 /*
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,6 +11,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
+import common.IndividualBuildConfig
+import common.RepoHandler
+import groovy.json.JsonSlurper
+import groovy.json.JsonOutput
+import java.util.Base64
 
 /**
 This file is a job that regenerates all of the build configurations in pipelines/build/jobs/configurations/jdk*_pipeline_config.groovy. This ensures that race conditions are not encountered when running concurrent pipeline builds.
@@ -38,7 +39,7 @@ class Regeneration implements Serializable {
     private final def gitBranch
 
     private final def jobTemplatePath
-    private final def libraryPath
+
     private final def baseFilePath
     private final def scriptPath
     private final def jenkinsBuildRoot
@@ -67,7 +68,6 @@ class Regeneration implements Serializable {
         Map gitRemoteConfigs,
         String gitBranch,
         String jobTemplatePath,
-        String libraryPath,
         String baseFilePath,
         String scriptPath,
         String jenkinsBuildRoot,
@@ -87,7 +87,6 @@ class Regeneration implements Serializable {
         this.gitRemoteConfigs = gitRemoteConfigs
         this.gitBranch = gitBranch
         this.jobTemplatePath = jobTemplatePath
-        this.libraryPath = libraryPath
         this.baseFilePath = baseFilePath
         this.scriptPath = scriptPath
         this.jenkinsBuildRoot = jenkinsBuildRoot
@@ -156,6 +155,20 @@ class Regeneration implements Serializable {
             }
         }
         return dockerImageValue
+    }
+
+    def getDockerArgs(Map<String, ?> configuration, String variant) {
+        def dockerArgsValue = ""
+
+        if (configuration.containsKey("dockerArgs")) {
+            if (isMap(configuration.dockerArgs)) {
+                dockerArgsValue = (configuration.dockerArgs as Map<String, ?>).get(variant)
+            } else {
+                dockerArgsValue = configuration.dockerArgs
+            }
+        }
+
+        return dockerArgsValue
     }
 
     /*
@@ -395,6 +408,8 @@ class Regeneration implements Serializable {
 
             def dockerImage = getDockerImage(platformConfig, variant)
 
+            def dockerArgs = getDockerArgs(platformConfig, variant)
+
             def dockerFile = getDockerFile(platformConfig, variant)
 
             def dockerNode = getDockerNode(platformConfig, variant)
@@ -413,7 +428,7 @@ class Regeneration implements Serializable {
 
             def numMachines = getDynamicParams().get("numMachines")
 
-           return new IndividualBuildConfig( // final build config
+            return new IndividualBuildConfig( // final build config
                 JAVA_TO_BUILD: javaToBuild,
                 ARCHITECTURE: platformConfig.arch as String,
                 TARGET_OS: platformConfig.os as String,
@@ -431,6 +446,7 @@ class Regeneration implements Serializable {
                 ACTIVE_NODE_TIMEOUT: "",
                 CODEBUILD: platformConfig.codebuild as Boolean,
                 DOCKER_IMAGE: dockerImage,
+                DOCKER_ARGS: dockerArgs,
                 DOCKER_FILE: dockerFile,
                 DOCKER_NODE: dockerNode,
                 DOCKER_REGISTRY: dockerRegistry,
@@ -496,10 +512,6 @@ class Regeneration implements Serializable {
 
         params.put("BUILD_CONFIG", config.toJson())
 
-        // If we are not using default lib or script param values, be sure to update the initial downstream job script file
-        if (libraryPath != DEFAULTS_JSON['importLibraryScript']) {
-            params.put("CUSTOM_LIBRARY_LOCATION", libraryPath)
-        }
         if (baseFilePath != DEFAULTS_JSON["baseFileDirectories"]["downstream"]) {
             params.put("CUSTOM_BASEFILE_LOCATION", baseFilePath)
         }
@@ -558,6 +570,7 @@ class Regeneration implements Serializable {
     * @param query
     */
     def queryAPI(String query) {
+        // TODO: use sharedlib JobHelper.groovy queryJsonApi() instead
         try {
             def getJenkins = new URL(query).openConnection()
 
@@ -737,7 +750,6 @@ return {
     Map gitRemoteConfigs,
     String gitBranch,
     String jobTemplatePath,
-    String libraryPath,
     String baseFilePath,
     String scriptPath,
     String jenkinsBuildRoot,
@@ -764,7 +776,6 @@ return {
             gitRemoteConfigs,
             gitBranch,
             jobTemplatePath,
-            libraryPath,
             baseFilePath,
             scriptPath,
             jenkinsBuildRoot,

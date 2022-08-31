@@ -11,6 +11,9 @@ targetConfigurations = [
         "x64Windows"  : [
                 "temurin"
         ],
+        "aarch64Windows" : [
+                "temurin"
+        ],
         "x32Windows"  : [
                 "temurin"
         ],
@@ -34,9 +37,6 @@ targetConfigurations = [
                 "temurin"
         ],
         "arm32Linux"  : [
-                "temurin"
-        ],
-        "riscv64Linux"  : [
                 "temurin"
         ]
 

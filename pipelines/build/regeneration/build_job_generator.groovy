@@ -17,11 +17,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+/* This script is the pipeline script for creating jobs via pipeline_jobs_generator_jdkX */
+
 String javaVersion = params.JAVA_VERSION
 String ADOPT_DEFAULTS_FILE_URL = "https://raw.githubusercontent.com/adoptium/ci-jenkins-pipelines/master/pipelines/defaults.json"
 String DEFAULTS_FILE_URL = (params.DEFAULTS_URL) ?: ADOPT_DEFAULTS_FILE_URL
 
-node ("built-in || master") {
+node ("worker") {
   // Retrieve Adopt Defaults
   def getAdopt = new URL(ADOPT_DEFAULTS_FILE_URL).openConnection()
   Map<String, ?> ADOPT_DEFAULTS_JSON = new JsonSlurper().parseText(getAdopt.getInputStream().getText()) as Map
@@ -75,17 +77,7 @@ node ("built-in || master") {
 
     checkoutUserPipelines()
 
-    // Import class library. This contains groovy classes, used for carrying across metadata between jobs.
-    def libraryPath = (params.LIBRARY_PATH) ?: DEFAULTS_JSON['importLibraryScript']
-    try {
-      load "${WORKSPACE}/${libraryPath}"
-    } catch (NoSuchFileException e) {
-      println "[WARNING] ${libraryPath} does not exist in your repository. Attempting to pull Adopt's library script instead."
-      checkoutAdoptPipelines()
-      libraryPath = ADOPT_DEFAULTS_JSON['importLibraryScript']
-      load "${WORKSPACE}/${libraryPath}"
-      checkoutUserPipelines()
-    }
+    library(identifier: 'openjdk-jenkins-helper@master')
 
     // Load buildConfigurations from config file. This is what the nightlies & releases use to setup their downstream jobs
     def buildConfigurations = null
@@ -182,7 +174,6 @@ node ("built-in || master") {
     println "JOB TEMPLATE PATH: $jobTemplatePath"
     println "SCRIPT PATH: $scriptPath"
     println "BASE FILE PATH: $baseFilePath"
-    println "LIBRARY PATH: $libraryPath"
     println "EXCLUDES LIST: $excludes"
     println "SLEEP_TIME: $sleepTime"
     if (jenkinsCreds == "") { println "[WARNING] No Jenkins API Credentials have been provided! If your server does not have anonymous read enabled, you may encounter 403 api request error codes." }
@@ -219,7 +210,6 @@ node ("built-in || master") {
           remoteConfigs,
           repoBranch,
           jobTemplatePath,
-          libraryPath,
           baseFilePath,
           scriptPath,
           jenkinsBuildRoot,
@@ -242,7 +232,6 @@ node ("built-in || master") {
         remoteConfigs,
         repoBranch,
         jobTemplatePath,
-        libraryPath,
         baseFilePath,
         scriptPath,
         jenkinsBuildRoot,

@@ -56,9 +56,6 @@ class RepoHandlerTest {
         Assertions.assertEquals(adoptJson.baseFileDirectories.upstream, "pipelines/build/common/build_base_file.groovy")
         Assertions.assertEquals(adoptJson.baseFileDirectories.downstream, "pipelines/build/common/openjdk_build_pipeline.groovy")
 
-        // Import library
-        Assertions.assertEquals(adoptJson.importLibraryScript, "pipelines/build/common/import_lib.groovy")
-
         // Defaults URL
         Assertions.assertEquals(adoptJson.defaultsUrl, "https://raw.githubusercontent.com/adoptium/ci-jenkins-pipelines/master/pipelines/defaults.json")
 
@@ -112,9 +109,6 @@ class RepoHandlerTest {
         Assertions.assertTrue(userJson.baseFileDirectories instanceof Map)
         Assertions.assertEquals(userJson.baseFileDirectories.upstream, "16")
         Assertions.assertEquals(userJson.baseFileDirectories.downstream, "17")
-
-        // Import library
-        Assertions.assertEquals(userJson.importLibraryScript, "18")
 
         // Defaults URL
         Assertions.assertEquals(userJson.defaultsUrl, "23")

@@ -8,6 +8,9 @@ class Config11 {
             configureArgs       : [
                     "openj9"      : '--enable-dtrace=auto  --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
                     "temurin"     : '--enable-dtrace=auto'
+            ],
+            buildArgs           : [
+                    "temurin"   : '--create-sbom'
             ]
         ],
 
@@ -44,7 +47,7 @@ class Config11 {
                     "bisheng"     : '--enable-dtrace=auto --with-extra-cflags=-fstack-protector-strong --with-extra-cxxflags=-fstack-protector-strong --with-jvm-variants=server --disable-warnings-as-errors'
             ],
             buildArgs            : [
-                "temurin"     : '--create-source-archive'
+                "temurin"     : '--create-source-archive --create-sbom'
             ]
         ],
 
@@ -118,7 +121,10 @@ class Config11 {
                 arch                : 'x64',
                 dockerImage         : 'adoptopenjdk/alpine3_build_image',
                 test                : 'default',
-                configureArgs       : '--enable-headless-only=yes'
+                configureArgs       : '--enable-headless-only=yes',
+                buildArgs           : [
+                        "temurin"   : '--create-sbom'
+                ]
         ],
 
         aarch64AlpineLinux  : [
@@ -126,7 +132,10 @@ class Config11 {
                 arch                : 'aarch64',
                 dockerImage         : 'adoptopenjdk/alpine3_build_image',
                 test                : 'default',
-                configureArgs       : '--enable-headless-only=yes'
+                configureArgs       : '--enable-headless-only=yes',
+                buildArgs           : [
+                        "temurin"   : '--create-sbom'
+                ]
         ],
 
         x64Windows: [
@@ -139,7 +148,7 @@ class Config11 {
             ],
             test                : 'default',
             buildArgs : [
-                temurin : '--jvm-variant client,server'
+                temurin : '--jvm-variant client,server --create-sbom'
             ],
             configureArgs       : [
                     "openj9"      : '--with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-jdk-rc-name="IBM Semeru Runtime"',
@@ -163,12 +172,23 @@ class Config11 {
             additionalFileNameTag: "IBM"
         ],
 
+        aarch64Windows: [
+                os                  : 'windows',
+                arch                : 'aarch64',
+                crossCompile        : 'x64',
+                additionalNodeLabels: 'win2016&&vs2019',
+                test                : false,
+                buildArgs       : [
+                        "temurin"   : '--jvm-variant client,server --create-sbom --cross-compile'
+                ]
+        ],
+
         x32Windows: [
             os                  : 'windows',
             arch                : 'x86-32',
             additionalNodeLabels: 'win2012',
             buildArgs : [
-                    temurin : '--jvm-variant client,server'
+                    temurin : '--jvm-variant client,server --create-sbom'
             ],
             test                : 'default'
         ],
@@ -184,6 +204,9 @@ class Config11 {
             cleanWorkspaceAfterBuild: true,
             configureArgs       : [
                     "openj9"      : '--with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+            ],
+            buildArgs           : [
+                    "temurin"   : '--create-sbom'
             ]
         ],
 
@@ -206,7 +229,10 @@ class Config11 {
             additionalNodeLabels: [
                     openj9:  'hw.arch.s390x && (sw.os.cent.7 || sw.os.rhel.7)'
             ],
-            configureArgs       : '--enable-dtrace=auto --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+            configureArgs       : '--enable-dtrace=auto --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
+            buildArgs           : [
+                    "temurin"   : '--create-sbom'
+            ]
         ],
 
         s390xLinuxIBM    : [
@@ -244,7 +270,10 @@ class Config11 {
             os                  : 'solaris',
             arch                : 'sparcv9',
             test                : false,
-            configureArgs       : '--enable-dtrace=auto'
+            configureArgs       : '--enable-dtrace=auto',
+            buildArgs           : [
+                    "temurin"   : '--create-sbom'
+            ]
         ],
 
         ppc64leLinux    : [
@@ -258,6 +287,9 @@ class Config11 {
             configureArgs       : [
                     "temurin"     : '--enable-dtrace=auto',
                     "openj9"      : '--enable-dtrace=auto --enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+            ],
+            buildArgs           : [
+                    "temurin"   : '--create-sbom'
             ]
         ],
 
@@ -299,7 +331,10 @@ class Config11 {
             os                  : 'linux',
             arch                : 'arm',
             test                : 'default',
-            configureArgs       : '--enable-dtrace=auto'
+            configureArgs       : '--enable-dtrace=auto',
+            buildArgs           : [
+                    "temurin"   : '--create-sbom'
+            ]
         ],
 
         aarch64Linux    : [
@@ -376,7 +411,8 @@ class Config11 {
             ],
             buildArgs            : [
                     "openj9"     : '--cross-compile',
-                    "bisheng"    : '--cross-compile --branch risc-v'
+                    "bisheng"    : '--cross-compile --branch risc-v'.
+                    "temurin"    : '--create-sbom'
             ],
             configureArgs        : [
                     "openj9"     : '--disable-ddr --with-cmake --openjdk-target=riscv64-unknown-linux-gnu --with-sysroot=/opt/fedora28_riscv_root',
@@ -399,6 +435,9 @@ class Config11 {
                 ],
                 test                : [
                         openj9 : 'default'
+                ],
+                buildArgs           : [
+                        "temurin"   : '--create-sbom'
                 ]
         ],
 
@@ -407,7 +446,6 @@ class Config11 {
                 arch                : 'aarch64',
                 additionalNodeLabels: [
                         openj9 : 'ci.project.openj9 && hw.arch.aarch64 && sw.os.mac'
-                ],
                 cleanWorkspaceAfterBuild: true,
                 configureArgs       : [
                         openj9      : '--enable-dtrace --disable-warnings-as-errors --with-noncompressedrefs --with-version-pre=ea'

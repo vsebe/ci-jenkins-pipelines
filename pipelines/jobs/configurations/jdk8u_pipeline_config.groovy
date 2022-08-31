@@ -10,7 +10,10 @@ class Config8 {
                 ],
                 cleanWorkspaceAfterBuild: true,
                 configureArgs      : '--with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
-                test                 : 'default'
+                test                 : 'default',
+                buildArgs           : [
+                        "temurin"   : '--create-sbom'
+                ]
         ],
 
         x64Linux      : [
@@ -55,7 +58,7 @@ class Config8 {
                         "dragonwell"  : '--enable-unlimited-crypto --with-jvm-variants=server --with-zlib=system',
                 ],
                 buildArgs           : [
-                        "temurin"   : '--create-source-archive'
+                        "temurin"   : '--create-source-archive --create-sbom'
                 ]
         ],
 
@@ -64,7 +67,10 @@ class Config8 {
                 arch                : 'x64',
                 dockerImage         : 'adoptopenjdk/alpine3_build_image',
                 test                : 'default',
-                configureArgs       : '--disable-headful'
+                configureArgs       : '--disable-headful',
+                buildArgs           : [
+                        "temurin"   : '--create-sbom'
+                ]
         ],
 
         aarch64AlpineLinux  : [
@@ -72,7 +78,10 @@ class Config8 {
                 arch                : 'aarch64',
                 dockerImage         : 'adoptopenjdk/alpine3_build_image',
                 test                : 'default',
-                configureArgs       : '--disable-headful'
+                configureArgs       : '--disable-headful',
+                buildArgs           : [
+                        "temurin"   : '--create-sbom'
+                ]
         ],
 
         x64Windows    : [
@@ -85,7 +94,10 @@ class Config8 {
                         dragonwell: 'win2012'
                 ],
                 configureArgs      : '--with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
-                test                 : 'default'
+                test                 : 'default',
+                buildArgs           : [
+                        "temurin"   : '--create-sbom'
+                ]
         ],
 
         x32Windows    : [
@@ -97,7 +109,7 @@ class Config8 {
                         openj9  : 'ci.project.openj9 && hw.arch.x86 && sw.os.windows'
                 ],
                 buildArgs : [
-                        temurin : '--jvm-variant client,server'
+                        temurin : '--jvm-variant client,server --create-sbom'
                 ],
                 configureArgs      : '--with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
                 test                 : 'default'
@@ -114,7 +126,10 @@ class Config8 {
                 configureArgs: [
                     "openj9"        : '--disable-ccache --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ],
-                cleanWorkspaceAfterBuild: true
+                cleanWorkspaceAfterBuild: true,
+                buildArgs           : [
+                        "temurin"   : '--create-sbom'
+                ]
         ],
 
         s390xLinux    : [
@@ -128,19 +143,28 @@ class Config8 {
                 test: [
                         temurin: ['sanity.openjdk'],
                         openj9: 'default'
+                ],
+                buildArgs           : [
+                        "temurin"   : '--create-sbom'
                 ]
         ],
 
         sparcv9Solaris: [
                 os  : 'solaris',
                 arch: 'sparcv9',
-                test: 'default'
+                test: 'default',
+                buildArgs           : [
+                        "temurin"   : '--create-sbom'
+                ]
         ],
 
         x64Solaris    : [
                 os                  : 'solaris',
                 arch                : 'x64',
-                test                : 'default'
+                test                : 'default',
+                buildArgs           : [
+                        "temurin"   : '--create-sbom'
+                ]
         ],
 
         ppc64leLinux  : [
@@ -154,13 +178,22 @@ class Config8 {
                 ],
                 configureArgs       : [
                         "openj9"      : '--enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+                ],
+                buildArgs           : [
+                        "temurin"   : '--create-sbom'
                 ]
         ],
 
         arm32Linux    : [
-                os  : 'linux',
+                os: 'linux',
                 arch: 'arm',
-                test: 'default'
+                crossCompile: 'aarch64',
+                dockerImage: 'adoptopenjdk/ubuntu1604_build_image',
+                dockerArgs: '--platform linux/arm/v7',
+                test: 'default',
+                buildArgs           : [
+                        "temurin"   : '--create-sbom'
+                ]
         ],
 
         aarch64Linux  : [
@@ -177,7 +210,10 @@ class Config8 {
                 ],
                 configureArgs      : '--with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
                 cleanWorkspaceAfterBuild: true,
-                test                 : 'default'
+                test                 : 'default',
+                buildArgs           : [
+                        "temurin"   : '--create-sbom'
+                ]
         ],
   ]
 

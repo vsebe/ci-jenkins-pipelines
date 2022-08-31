@@ -15,7 +15,7 @@ class Config18 {
                 ],
                 buildArgs           : [
                         "openj9"    : '--create-jre-image',
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ]
         ],
 
@@ -43,7 +43,7 @@ class Config18 {
                 ],
                 buildArgs           : [
                         "openj9"    : '--create-jre-image',
-                        "temurin"   : '--create-source-archive --create-jre-image'
+                        "temurin"   : '--create-source-archive --create-jre-image --create-sbom'
                 ]
         ],
 
@@ -54,7 +54,7 @@ class Config18 {
                 test                : 'default',
                 configureArgs       : '--enable-headless-only=yes',
                 buildArgs           : [
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ]
         ],
 
@@ -65,7 +65,7 @@ class Config18 {
                 test                : 'default',
                 configureArgs       : '--enable-headless-only=yes',
                 buildArgs           : [
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ]
         ],
 
@@ -83,23 +83,18 @@ class Config18 {
                 ],
                 buildArgs           : [
                         "openj9"    : '--create-jre-image',
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ]
         ],
 
-        // TODO: Enable testing (https://github.com/adoptium/ci-jenkins-pipelines/issues/77)
         aarch64Windows: [
                 os                  : 'windows',
                 arch                : 'aarch64',
                 crossCompile        : 'x64',
-                buildArgs           : '--cross-compile',
                 additionalNodeLabels: 'win2016&&vs2019',
-                test                : [
-                        nightly: [],
-                        weekly : []
-                ],
-                buildArgs           : [
-                        "temurin"   : '--create-jre-image'
+                test                : false,
+                buildArgs       : [
+                        "temurin"   : '--create-jre-image --create-sbom --cross-compile'
                 ]
         ],
 
@@ -109,7 +104,7 @@ class Config18 {
                 additionalNodeLabels: 'win2012&&vs2019',
                 test                : 'default',
                 buildArgs           : [
-                        "temurin"   : '--jvm-variant client,server --create-jre-image'
+                        "temurin"   : '--jvm-variant client,server --create-jre-image --create-sbom'
                 ]
         ],
 
@@ -127,7 +122,7 @@ class Config18 {
                 cleanWorkspaceAfterBuild: true,
                 buildArgs           : [
                         "openj9"    : '--create-jre-image',
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ]
         ],
 
@@ -143,7 +138,7 @@ class Config18 {
                 ],
                 buildArgs           : [
                         "openj9"    : '--create-jre-image',
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ]
         ],
 
@@ -160,7 +155,7 @@ class Config18 {
                 ],
                 buildArgs           : [
                         "openj9"    : '--create-jre-image',
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ]
         ],
 
@@ -180,7 +175,7 @@ class Config18 {
                 ],
                 buildArgs           : [
                         "openj9"    : '--create-jre-image',
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ]
         ],
 
@@ -201,17 +196,20 @@ class Config18 {
                 ],
                 buildArgs           : [
                         "openj9"    : '--create-jre-image',
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ]
         ],
 
         arm32Linux    : [
                 os                  : 'linux',
                 arch                : 'arm',
+                crossCompile        : 'aarch64',
+                dockerImage         : 'adoptopenjdk/ubuntu1604_build_image',
+                dockerArgs          : '--platform linux/arm/v7',
                 test                : 'default',
                 configureArgs       : '--enable-dtrace',
                 buildArgs           : [
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ]
         ]
   ]

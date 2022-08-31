@@ -28,27 +28,6 @@ This group consists of [GitHub Status Checks](https://docs.github.com/en/free-pr
 
 - The job runs our [groovy testing suite](https://github.com/adoptium/ci-jenkins-pipelines/tree/master/pipelines/src/test/groovy). The various tests in this directory ensure that our jenkins library classes return the correct information.
 
-- **If you are making any changes to any of the following classes, we strongly recommended you update the tests to conform to your changes (adding new ones if needs be!):**
-
-  - [ParseVersion.groovy](https://github.com/adoptium/ci-jenkins-pipelines/blob/master/pipelines/library/src/ParseVersion.groovy)
-  - [IndividualBuildConfig.groovy](https://github.com/adoptium/ci-jenkins-pipelines/blob/master/pipelines/library/src/common/IndividualBuildConfig.groovy)
-  - [RepoHandler.groovy](https://github.com/adoptium/ci-jenkins-pipelines/blob/master/pipelines/library/src/common/RepoHandler.groovy)
-  - [MetaData.groovy](https://github.com/adoptium/ci-jenkins-pipelines/blob/master/pipelines/library/src/common/MetaData.groovy)
-  - [VersionInfo.groovy](https://github.com/adoptium/ci-jenkins-pipelines/blob/master/pipelines/library/src/common/VersionInfo.groovy)
-
-- As an example of this in action, the output of [one such test](pipelines/src/test/groovy/VersionParsingTest.groovy#L60-L68) can be seen below:
-
-```groovy
-VersionParsingTest > parsesJava11NightlyString() STANDARD_OUT
-    =JAVA VERSION OUTPUT=
-    openjdk version "11.0.3" 2019-04-16
-    OpenJDK Runtime Environment AdoptOpenJDK (build 11.0.3+9-201903122221)
-    OpenJDK 64-Bit Server VM AdoptOpenJDK (build 11.0.3+9-201903122221, mixed mode)
-    =/JAVA VERSION OUTPUT=
-    matched
-    11.0.3+9-201903122221
-```
-
 - To run the suite locally:
 
 ```bash
@@ -92,6 +71,13 @@ If you're unsure if the tests failed because of your changes or not, check our [
 - 🟢**SUCCESS** 🟢 All the downstream jobs passed, congratulations!
 - 🟠**FAILURE** 🟠 Some of the downstream jobs failed OR the job was aborted. Check the link in the field at the bottom of the PR for the job link to see exactly where it went wrong.
 - 🔴**ERROR** 🔴 Something more serious went wrong with the tester itself. Please raise an issue with a link to the job, the error encountered and your PR that caused it (again, you can use the link at the bottom to see exactly what happened).
+
+##### `run tests quick`
+
+Simiar to `run tests` but runs a subset of jdk test jobs. Without specific jdk version, it uses 17, otherwise loops over given versions
+Example:
+`run tests quick` is the same as `run tests quick 19`
+`run tests quick 11, 19, 8` generates all jobs then runs openjdk pipeline on 8, 11 and 19
 
 ##### `add to whitelist`
 

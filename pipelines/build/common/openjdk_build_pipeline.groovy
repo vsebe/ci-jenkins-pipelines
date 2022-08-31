@@ -1,13 +1,3 @@
-import common.IndividualBuildConfig
-import common.MetaData
-import common.VersionInfo
-import common.RepoHandler
-import groovy.json.*
-import java.nio.file.NoSuchFileException
-import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
-
-import java.util.regex.Matcher
-
 /*
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,6 +11,17 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
+import common.IndividualBuildConfig
+import common.MetaData
+import common.VersionInfo
+import common.RepoHandler
+import groovy.json.*
+import java.nio.file.NoSuchFileException
+import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
+
+import java.util.regex.Matcher
+
 /**
  * This file is a template for running a build for a given configuration
  * A configuration is for example jdk10u-mac-x64-temurin.
@@ -81,7 +82,8 @@ class Build {
         BUILD_ARCHIVE_TIMEOUT : 3,
         CONTROLLER_CLEAN_TIMEOUT : 1,
         DOCKER_CHECKOUT_TIMEOUT : 1,
-        DOCKER_PULL_TIMEOUT : 2
+        DOCKER_PULL_TIMEOUT : 2,
+        ARCHIVE_ARTIFACTS_TIMEOUT : 6
     ]
 
     /*
@@ -260,7 +262,11 @@ class Build {
             }
             suffix = "ibmruntimes/openj9-openjdk-${openj9JavaToBuild}"
         } else if (buildConfig.VARIANT == "temurin") {
-            suffix = "adoptium/${buildConfig.JAVA_TO_BUILD}"
+            if (buildConfig.ARCHITECTURE == "arm" && buildConfig.JAVA_TO_BUILD == "jdk8u") {
+                suffix = "adoptium/aarch32-jdk8u";
+            } else {
+                suffix = "adoptium/${buildConfig.JAVA_TO_BUILD}"
+            }
         } else if (buildConfig.VARIANT == "dragonwell") {
             suffix = "alibaba/dragonwell${javaNumber}"
         } else if (buildConfig.VARIANT == "fast_startup") {
@@ -292,7 +298,7 @@ class Build {
                 def jobName = jobParams.TEST_JOB_NAME
                 def JobHelper = context.library(identifier: 'openjdk-jenkins-helper@master').JobHelper
                 if (!JobHelper.jobIsRunnable(jobName as String)) {
-                    context.node('built-in || master') {
+                    context.node('worker') {
                         context.sh('curl -Os https://raw.githubusercontent.com/adoptium/aqa-tests/master/buildenv/jenkins/testJobTemplate')
                         def templatePath = 'testJobTemplate'
                         context.println "Smoke test job doesn't exist, create test job: ${jobName}"
@@ -416,7 +422,7 @@ class Build {
                                     context.build job: "Test_Job_Auto_Gen", propagate: false, parameters: updatedParams
                                 }
                             } else {
-                                context.node('built-in || master') {
+                                context.node('worker') {
                                     context.sh('curl -Os https://raw.githubusercontent.com/adoptium/aqa-tests/master/buildenv/jenkins/testJobTemplate')
                                     def templatePath = 'testJobTemplate'
                                     if (!JobHelper.jobIsRunnable(jobName as String)) {
@@ -452,7 +458,7 @@ class Build {
                                             context.string(name: 'ACTIVE_NODE_TIMEOUT', value: "${buildConfig.ACTIVE_NODE_TIMEOUT}"),
                                             context.booleanParam(name: 'DYNAMIC_COMPILE', value: DYNAMIC_COMPILE)],
                                             wait: true
-                            context.node('built-in || master') {
+                            context.node('worker') {
                                 def result = testJob.getResult()
                                 context.echo " ${jobName} result is ${result}"
                                 if (testJob.getResult() == 'SUCCESS' || testJob.getResult() == 'UNSTABLE') {
@@ -571,7 +577,7 @@ class Build {
                     propagate: true,
                     parameters: params
 
-                context.node('built-in || master') {
+                context.node('worker') {
                     //Copy signed artifact back and archive again
                     context.sh "rm workspace/target/* || true"
 
@@ -594,37 +600,6 @@ class Build {
             }
         } else {
             context.echo "Skip signing for unsupported OS: ${buildConfig.TARGET_OS}"
-        }
-
-        if (buildConfig.VARIANT == "temurin") {
-            context.stage("GPG sign") {
-
-                context.println "RUNNING sign_temurin_gpg for ${buildConfig.TARGET_OS}/${buildConfig.ARCHITECTURE} ..."
-
-                def params = [
-                    context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${env.BUILD_NUMBER}"),
-                    context.string(name: 'UPSTREAM_JOB_NAME', value: "${env.JOB_NAME}"),
-                    context.string(name: 'UPSTREAM_DIR', value: "workspace/target"),
-                    ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "built-in"]
-                ]
-
-                def signSHAsJob = context.build job: "build-scripts/release/sign_temurin_gpg",
-                    propagate: true,
-                    parameters: params
-
-                context.node('built-in || master') {
-                    context.sh "rm -f workspace/target/*.sig"
-                    context.copyArtifacts(
-                        projectName: "build-scripts/release/sign_temurin_gpg",
-                        selector: context.specific("${signSHAsJob.getNumber()}"),
-                        filter: '**/*.sig',
-                        fingerprintArtifacts: true,
-                        target: 'workspace/target/',
-                        flatten: true)
-                    // Archive GPG signatures in Jenkins
-                    context.archiveArtifacts artifacts: "workspace/target/*.sig"
-                }
-            }
         }
     }
 
@@ -775,8 +750,8 @@ class Build {
     Run the Windows installer downstream jobs.
     We run two jobs if we have a JRE (see https://github.com/adoptium/temurin-build/issues/1751).
     */
-    private void buildWindowsInstaller(VersionInfo versionData) {
-        def filter = "**/OpenJDK*jdk_*_windows*.zip"
+    private void buildWindowsInstaller(VersionInfo versionData, String filter, String category) {
+        def nodeFilter = "sw.os.windows&&ci.role.packaging&&sw.tool.signing"
 
         if (buildConfig.VARIANT == "openj9") {
             filter = "**/ibm-semeru*-jdk_*_windows*.zip"
@@ -810,10 +785,10 @@ class Build {
                         context.string(name: 'PRODUCT_PATCH_VERSION', value: "${patch_version}"),
                         context.string(name: 'PRODUCT_BUILD_NUMBER', value: "${buildNumber}"),
                         context.string(name: 'MSI_PRODUCT_VERSION', value: "${versionData.msi_product_version}"),
-                        context.string(name: 'PRODUCT_CATEGORY', value: "jdk"),
+                        context.string(name: 'PRODUCT_CATEGORY', value: "${category}"),
                         context.string(name: 'JVM', value: "${buildConfig.VARIANT}"),
                         context.string(name: 'ARCH', value: "${INSTALLER_ARCH}"),
-                        ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "sw.os.windows&&ci.role.packaging&&sw.tool.signing"]
+                        ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "${nodeFilter}"]
                 ]
         context.copyArtifacts(
                 projectName: "build-scripts/release/create_installer_windows",
@@ -822,45 +797,6 @@ class Build {
                 fingerprintArtifacts: true,
                 target: "workspace/target/",
                 flatten: true)
-
-        // Check if JRE exists, if so, build another installer for it
-        listArchives().each({ file ->
-
-            if (file.contains("-jre")) {
-
-                context.println("We have a JRE. Running another installer for it...")
-                if (buildConfig.VARIANT == "openj9") {
-                    filter = "**/ibm-semeru*-jre_*_windows*.zip"
-                }
-                def jreinstallerJob = context.build job: "build-scripts/release/create_installer_windows",
-                        propagate: true,
-                        parameters: [
-                            context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${env.BUILD_NUMBER}"),
-                            context.string(name: 'UPSTREAM_JOB_NAME', value: "${env.JOB_NAME}"),
-                            context.string(name: 'FILTER', value: "${filter}"),
-                            context.string(name: 'PRODUCT_MAJOR_VERSION', value: "${versionData.major}"),
-                            context.string(name: 'PRODUCT_MINOR_VERSION', value: "${versionData.minor}"),
-                            context.string(name: 'PRODUCT_MAINTENANCE_VERSION', value: "${versionData.security}"),
-                            context.string(name: 'PRODUCT_PATCH_VERSION', value: "${patch_version}"),
-                            context.string(name: 'PRODUCT_BUILD_NUMBER', value: "${buildNumber}"),
-                            context.string(name: 'MSI_PRODUCT_VERSION', value: "${versionData.msi_product_version}"),
-                            context.string(name: 'PRODUCT_CATEGORY', value: "jre"),
-                            context.string(name: 'JVM', value: "${buildConfig.VARIANT}"),
-                            context.string(name: 'ARCH', value: "${INSTALLER_ARCH}"),
-                            ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "sw.os.windows&&ci.role.packaging&&sw.tool.signing"]
-                        ]
-
-                context.copyArtifacts(
-                    projectName: "build-scripts/release/create_installer_windows",
-                    selector: context.specific("${jreinstallerJob.getNumber()}"),
-                    filter: 'wix/ReleaseDir/*',
-                    fingerprintArtifacts: true,
-                    target: "workspace/target/",
-                    flatten: true
-                )
-            }
-
-        })
     }
 
     /*
@@ -874,24 +810,33 @@ class Build {
             return
         }
 
-        context.node('built-in || master') {
+        context.node('worker') {
             context.stage("installer") {
-                // Ensure master context workspace is clean of any previous archives
-                context.sh "rm -f workspace/target/* || true"
 
                 switch (buildConfig.TARGET_OS) {
                     case "aix":
                         buildLinuxInstaller(versionData)
                         break
                     case "mac":
-                        context.sh 'rm -f workspace/target/*.pkg workspace/target/*.pkg.json workspace/target/*.pkg.sha256.txt'
+                        context.sh "rm -rf workspace/target/* || true"
                         buildMacInstaller(versionData)
                         break
                     case "linux":
                         buildLinuxInstaller(versionData)
                         break
                     case "windows":
-                        buildWindowsInstaller(versionData)
+                        context.sh "rm -rf workspace/target/* || true"
+                        buildWindowsInstaller(versionData,"**/ibm-semeru*-jdk_*_windows*.zip", "jdk");
+                        // Copy jre artifact from current pipeline job 
+                        context.copyArtifacts(
+                            projectName: "${env.JOB_NAME}",
+                            selector: context.specific("${env.BUILD_NUMBER}"),      
+                            filter: '**/OpenJDK*jre_*_windows*.zip',
+                            fingerprintArtifacts: true,
+                            target: "workspace/target/",
+                            flatten: true)
+                        // Check if JRE exists, if so, build another installer for it
+                        if (listArchives().any { it =~ /-jre/} ) {buildWindowsInstaller(versionData,"**/ibm-semeru*-jre_*_windows*.zip", "jre");} 
                         break
                     default:
                         break
@@ -920,7 +865,7 @@ class Build {
             return
         }
 
-        context.node('built-in || master') {
+        context.node('worker') {
             context.stage("sign installer") {
                 try {
                     // Ensure master context workspace is clean of any previous archives
@@ -940,41 +885,6 @@ class Build {
                     context.println("Failed to build ${buildConfig.TARGET_OS} installer ${e}")
                     currentBuild.result = 'FAILURE'
                 }
-            }
-        }
-        if (buildConfig.VARIANT == "temurin") {
-            context.stage("GPG sign") {
-
-               context.println "RUNNING sign_temurin_gpg for ${buildConfig.TARGET_OS}/${buildConfig.ARCHITECTURE} ..."
-
-               def params = [
-                      context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${env.BUILD_NUMBER}"),
-                      context.string(name: 'UPSTREAM_JOB_NAME', value: "${env.JOB_NAME}"),
-                      context.string(name: 'UPSTREAM_DIR', value: "workspace/target"),
-                      ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "built-in"]
-               ]
-
-               def signSHAsJob = context.build job: "build-scripts/release/sign_temurin_gpg",
-                   propagate: true,
-                   parameters: params
-
-               context.node('built-in || master') {
-                   context.copyArtifacts(
-                        projectName: "build-scripts/release/sign_temurin_gpg",
-                        selector: context.specific("${signSHAsJob.getNumber()}"),
-                        filter: '**/*.sig',
-                        fingerprintArtifacts: true, 
-                        target: 'workspace/target/',
-                        flatten: true)
-               }
-               // Archive GPG signatures in Jenkins
-               try {
-                   context.timeout(time: pipelineTimeouts.ARCHIVE_ARTIFACTS_TIMEOUT, unit: "HOURS") {
-                       context.archiveArtifacts artifacts: "target/${buildConfig.TARGET_OS}/${buildConfig.ARCHITECTURE}/${buildConfig.VARIANT}/*.sha256.txt.sig"
-                   }
-               } catch (FlowInterruptedException e) {
-                   throw new Exception("[ERROR] Archive artifact timeout (${pipelineTimeouts.ARCHIVE_ARTIFACTS_TIMEOUT} HOURS) for ${downstreamJobName}has been reached. Exiting...")
-               }
             }
         }
     }
@@ -1063,7 +973,9 @@ class Build {
                propagate: true,
                parameters: params
 
-           context.node('gpgsign') {
+           context.node('worker') {
+               // Remove any previous workspace artifacts
+               context.sh "rm -rf workspace/target/* || true"
                context.copyArtifacts(
                     projectName: "build-scripts/release/sign_temurin_gpg",
                     selector: context.specific("${signSHAsJob.getNumber()}"),
@@ -1071,14 +983,15 @@ class Build {
                     fingerprintArtifacts: true, 
                     target: 'workspace/target/',
                     flatten: true)
-           }
-           // Archive GPG signatures in Jenkins
-           try {
-               context.timeout(time: pipelineTimeouts.ARCHIVE_ARTIFACTS_TIMEOUT, unit: "HOURS") {
-                   context.archiveArtifacts artifacts: "target/${buildConfig.TARGET_OS}/${buildConfig.ARCHITECTURE}/${buildConfig.VARIANT}/*.sha256.txt.sig"
+           
+               // Archive GPG signatures in Jenkins
+               try {
+                   context.timeout(time: buildTimeouts.ARCHIVE_ARTIFACTS_TIMEOUT, unit: "HOURS") {
+                       context.archiveArtifacts artifacts: "workspace/target/*.sig"
+                   }
+               } catch (FlowInterruptedException e) {
+                   throw new Exception("[ERROR] Archive artifact timeout (${buildTimeouts.ARCHIVE_ARTIFACTS_TIMEOUT} HOURS) for ${downstreamJobName} has been reached. Exiting...")
                }
-           } catch (FlowInterruptedException e) {
-               throw new Exception("[ERROR] Archive artifact timeout (${pipelineTimeouts.ARCHIVE_ARTIFACTS_TIMEOUT} HOURS) for ${downstreamJobName}has been reached. Exiting...")
            }
         }
     }
@@ -1086,14 +999,18 @@ class Build {
     Lists and returns any compressed archived or sbom file contents of the top directory of the build node
     */
     List<String> listArchives() {
-        return context.sh(
-                script: '''find workspace/target/ | egrep -e '(.tar.gz|.zip|.msi|.pkg|.deb|.rpm)$' -e '-sbom_' ''',
+        def files = context.sh(
+                script: '''find workspace/target/ | egrep -e '(\\.tar\\.gz|\\.zip|\\.msi|\\.pkg|\\.deb|\\.rpm|-sbom_.*\\.json)$' ''',
                 returnStdout: true,
                 returnStatus: false
         )
                 .trim()
                 .split('\n')
                 .toList()
+
+        context.println "listArchives: ${files}"
+
+        return files
     }
 
     /*
@@ -1274,6 +1191,10 @@ class Build {
                     dependency_version["${dep}"] = ""
                 }
             }
+
+            // Dump docker image SHA1 to workspace, consumed by build.sh sbom stage
+            context.writeFile file: "workspace/target/metadata/docker.txt", text: dockerImageDigest
+
         }
 
         return new MetaData(
@@ -1960,7 +1881,7 @@ class Build {
 
                     // Set Github Commit Status
                     if (env.JOB_NAME.contains("pr-tester")) {
-                        context.node('built-in || master') {
+                        context.node('worker') {
                             updateGithubCommitStatus("PENDING", "Pending")
                         }
                     }
@@ -2004,10 +1925,18 @@ class Build {
                                 context.timeout(time: buildTimeouts.DOCKER_PULL_TIMEOUT, unit: "HOURS") {
                                     if (buildConfig.DOCKER_CREDENTIAL) {
                                         context.docker.withRegistry(buildConfig.DOCKER_REGISTRY, buildConfig.DOCKER_CREDENTIAL) {
-                                            context.docker.image(buildConfig.DOCKER_IMAGE).pull()
+                                            if (buildConfig.DOCKER_ARGS) {
+                                                context.sh(script: "docker pull ${buildConfig.DOCKER_IMAGE} ${buildConfig.DOCKER_ARGS}")
+                                            } else {
+                                                 context.docker.image(buildConfig.DOCKER_IMAGE).pull()
+                                            }
                                         }
                                     } else {
-                                        context.docker.image(buildConfig.DOCKER_IMAGE).pull()
+                                        if (buildConfig.DOCKER_ARGS) {
+                                            context.sh(script: "docker pull ${buildConfig.DOCKER_IMAGE} ${buildConfig.DOCKER_ARGS}")
+                                        } else {
+                                            context.docker.image(buildConfig.DOCKER_IMAGE).pull()
+                                        }
                                     }
                                     // Store the pulled docker image digest as 'buildinfo'
                                     dockerImageDigest = context.sh(script: "docker inspect --format='{{.RepoDigests}}' ${buildConfig.DOCKER_IMAGE}", returnStdout:true)
@@ -2036,7 +1965,7 @@ class Build {
                                     throw new Exception("[ERROR] Controller docker file scm checkout timeout (${buildTimeouts.DOCKER_CHECKOUT_TIMEOUT} HOURS) has been reached. Exiting...")
                                 }
 
-                                context.docker.build("build-image", "--build-arg image=${buildConfig.DOCKER_IMAGE} -f ${buildConfig.DOCKER_FILE} .").inside {
+                                context.docker.build("build-image", "--build-arg image=${buildConfig.DOCKER_IMAGE} -f ${buildConfig.DOCKER_FILE} .").inside(buildConfig.DOCKER_ARGS) {
                                     buildScripts(
                                         cleanWorkspace,
                                         cleanWorkspaceAfter,
@@ -2048,7 +1977,7 @@ class Build {
 
                             } else {
 
-                                context.docker.image(buildConfig.DOCKER_IMAGE).inside {
+                                context.docker.image(buildConfig.DOCKER_IMAGE).inside(buildConfig.DOCKER_ARGS) {
                                     buildScripts(
                                         cleanWorkspace,
                                         cleanWorkspaceAfter,

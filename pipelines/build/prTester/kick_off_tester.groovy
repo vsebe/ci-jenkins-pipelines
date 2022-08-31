@@ -14,19 +14,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-node("built-in || master") {
-    // Don't parameterise url as we currently have no need and the job generates its own params anyway
-    String branch = "${ghprbActualCommit}"
-    String DEFAULTS_FILE_URL = "https://raw.githubusercontent.com/adoptium/ci-jenkins-pipelines/${branch}/pipelines/defaults.json"
+// Don't parameterise url as we currently have no need and the job generates its own params anyway
+String branch = "${ghprbActualCommit}"
+String DEFAULTS_FILE_URL = "https://raw.githubusercontent.com/adoptium/ci-jenkins-pipelines/${branch}/pipelines/defaults.json"
 
-    // Retrieve User defaults
-    def getUser = new URL(DEFAULTS_FILE_URL).openConnection()
-    Map<String, ?> DEFAULTS_JSON = new JsonSlurper().parseText(getUser.getInputStream().getText()) as Map
-    if (!DEFAULTS_JSON) {
-        throw new Exception("[ERROR] No DEFAULTS_JSON found at ${DEFAULTS_FILE_URL}. Please ensure this path is correct and it leads to a JSON or Map object file.")
-    }
+// Retrieve User defaults
+def getUser = new URL(DEFAULTS_FILE_URL).openConnection()
+Map<String, ?> DEFAULTS_JSON = new JsonSlurper().parseText(getUser.getInputStream().getText()) as Map
+if (!DEFAULTS_JSON) {
+    throw new Exception("[ERROR] No DEFAULTS_JSON found at ${DEFAULTS_FILE_URL}. Please ensure this path is correct and it leads to a JSON or Map object file.")
+}
 
-    String url = DEFAULTS_JSON['repository']['pipeline_url']
+String url = DEFAULTS_JSON['repository']['pipeline_url']
+Closure prTest
+
+// Switch to controller node to load library groovy definitions
+node("worker") {
     checkout([
         $class: 'GitSCM',
         branches: [[name: branch]],
@@ -36,14 +39,16 @@ node("built-in || master") {
         ]]
     ])
 
-    load DEFAULTS_JSON['importLibraryScript']
-    Closure prTest = load DEFAULTS_JSON['scriptDirectories']['tester']
+    library(identifier: 'openjdk-jenkins-helper@master')
+    prTest = load DEFAULTS_JSON['scriptDirectories']['tester']
+}
 
-    prTest(
+// Run tests outside node context
+prTest(
         branch,
         currentBuild,
         this,
         url,
         DEFAULTS_JSON
-    ).runTests()
-}
+).runTests()
+

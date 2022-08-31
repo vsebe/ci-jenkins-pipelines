@@ -10,7 +10,7 @@ class Config20 {
                 test                : 'default',
                 configureArgs       : '--enable-dtrace',
                 buildArgs           : [
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ]
         ],
 
@@ -58,7 +58,7 @@ class Config20 {
                         "temurin"   : '--enable-dtrace'
                 ],
                 buildArgs           : [
-                        "temurin"   : '--create-source-archive --create-jre-image'
+                        "temurin"   : '--create-source-archive --create-jre-image --create-sbom'
                 ]
         ],
 
@@ -69,7 +69,7 @@ class Config20 {
                 test                : 'default',
                 configureArgs       : '--enable-headless-only=yes',
                 buildArgs           : [
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ]
         ],
 
@@ -80,7 +80,7 @@ class Config20 {
                 test                : 'default',
                 configureArgs       : '--enable-headless-only=yes',
                 buildArgs           : [
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ]
         ],
         
@@ -90,26 +90,21 @@ class Config20 {
                 additionalNodeLabels: 'win2012&&vs2019',
                 test                : 'default',
                 buildArgs           : [
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ]
         ],
 
-        // TODO: Enable testing (https://github.com/adoptium/ci-jenkins-pipelines/issues/77)
         aarch64Windows: [
                 os                  : 'windows',
                 arch                : 'aarch64',
                 crossCompile        : 'x64',
-                buildArgs           : '--cross-compile',
                 additionalNodeLabels: 'win2016&&vs2019',
-                test                : [
-                        nightly: [],
-                        weekly : []
-                ],
-                buildArgs           : [
-                        "temurin"   : '--create-jre-image'
+                test                : false,
+                buildArgs       : [
+                        "temurin"   : '--create-jre-image --create-sbom --cross-compile'
                 ]
-        ],
 
+        ],
 
         x32Windows: [
                 os                  : 'windows',
@@ -117,7 +112,7 @@ class Config20 {
                 additionalNodeLabels: 'win2012&&vs2019',
                 test                : 'default',
                 buildArgs           : [
-                        "temurin"   : '--jvm-variant client,server --create-jre-image'
+                        "temurin"   : '--jvm-variant client,server --create-jre-image --create-sbom'
                 ]
         ],
 
@@ -129,9 +124,12 @@ class Config20 {
                         openj9:  'xlc16&&aix715'
                 ],
                 test                : 'default',
+                additionalTestLabels: [
+                        temurin      : 'aix720'
+                ],
                 cleanWorkspaceAfterBuild: true,
                 buildArgs           : [
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ]
         ],
 
@@ -142,7 +140,7 @@ class Config20 {
                 test                : 'default',
                 configureArgs       : '--enable-dtrace',
                 buildArgs           : [
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ]
         ],
 
@@ -156,7 +154,7 @@ class Config20 {
                         "openj9"      : '--enable-dtrace --enable-jitserver'
                 ],
                 buildArgs           : [
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ]
         ],
 
@@ -168,7 +166,7 @@ class Config20 {
                 configureArgs : '--enable-dtrace',
                 testDynamic          : false,
                 buildArgs           : [
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ]
         ],
         
@@ -178,24 +176,28 @@ class Config20 {
                 additionalNodeLabels: 'macos11',
                 test                : 'default',
                 buildArgs           : [
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ]
         ],
 
         arm32Linux    : [
                 os                  : 'linux',
                 arch                : 'arm',
+                crossCompile        : 'aarch64',
+                dockerImage         : 'adoptopenjdk/ubuntu1604_build_image',
+                dockerArgs          : '--platform linux/arm/v7',
                 test                : 'default',
                 configureArgs       : '--enable-dtrace',
                 buildArgs           : [
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ]
         ],
+
         riscv64Linux      :  [
                 os                   : 'linux',
                 arch                 : 'riscv64',
                 configureArgs        : '--enable-dtrace --with-native-debug-symbols=none',
-                buildArgs            : '-r https://github.com/openjdk/riscv-port -b riscv-port --custom-cacerts false --disable-adopt-branch-safety',
+                buildArgs            : '-r https://github.com/openjdk/riscv-port -b riscv-port --custom-cacerts false --disable-adopt-branch-safety --create-sbom',
                 test                : [
                         nightly: ['sanity.openjdk'],
                         weekly : ['sanity.openjdk', 'sanity.system', 'extended.system', 'sanity.perf']

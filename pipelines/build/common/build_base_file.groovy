@@ -1,9 +1,3 @@
-import common.IndividualBuildConfig
-import groovy.json.*
-
-import java.util.regex.Matcher
-import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
-
 /*
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,6 +11,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
+import common.IndividualBuildConfig
+import groovy.json.*
+
+import java.util.regex.Matcher
+import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
 
 /**
  * Represents parameters that get past to each individual build
@@ -103,6 +103,8 @@ class Builder implements Serializable {
 
         def dockerImage = getDockerImage(platformConfig, variant)
 
+        def dockerArgs = getDockerArgs(platformConfig, variant)
+
         def dockerFile = getDockerFile(platformConfig, variant)
 
         def dockerNode = getDockerNode(platformConfig, variant)
@@ -157,6 +159,7 @@ class Builder implements Serializable {
             ACTIVE_NODE_TIMEOUT: activeNodeTimeout,
             CODEBUILD: platformConfig.codebuild as Boolean,
             DOCKER_IMAGE: dockerImage,
+            DOCKER_ARGS: dockerArgs,
             DOCKER_FILE: dockerFile,
             DOCKER_NODE: dockerNode,
             DOCKER_REGISTRY: dockerRegistry,
@@ -403,6 +406,20 @@ class Builder implements Serializable {
         }
 
         return dockerImageValue
+    }
+
+    def getDockerArgs(Map<String, ?> configuration, String variant) {
+        def dockerArgsValue = ""
+
+        if (configuration.containsKey("dockerArgs") && !dockerOverride(configuration, variant)) {
+            if (isMap(configuration.dockerArgs)) {
+                dockerArgsValue = (configuration.dockerArgs as Map<String, ?>).get(variant)
+            } else {
+                dockerArgsValue = configuration.dockerArgs
+            }
+        }
+
+        return dockerArgsValue
     }
 
     /*
@@ -940,7 +957,7 @@ class Builder implements Serializable {
                             if (downstreamJob.getResult() == 'SUCCESS') {
                                 // copy artifacts from build
                                 context.println "[NODE SHIFT] MOVING INTO CONTROLLER NODE..."
-                                context.node("built-in || master") {
+                                context.node("worker") {
                                     context.catchError {
                                         //Remove the previous artifacts
                                         try {

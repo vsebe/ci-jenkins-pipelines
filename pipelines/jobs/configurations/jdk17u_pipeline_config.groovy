@@ -11,7 +11,7 @@ class Config17 {
                 cleanWorkspaceAfterBuild: true,
                 buildArgs           : [
                         "openj9"      : '--create-jre-image',
-                        "temurin"     : '--create-jre-image'
+                        "temurin"     : '--create-jre-image --create-sbom'
                 ],
                 configureArgs       : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
         ],
@@ -52,8 +52,8 @@ class Config17 {
                         "temurin"     : '--enable-dtrace'
                 ],
                 buildArgs           : [
-                        "temurin"   : '--create-source-archive --create-jre-image',
-                        "openj9"    : '--create-jre-image'
+                        "openj9"    : '--create-jre-image',
+                        "temurin"   : '--create-source-archive --create-jre-image --create-sbom'
                 ]
         ],
 
@@ -90,7 +90,7 @@ class Config17 {
                 test                : 'default',
                 configureArgs       : '--enable-headless-only=yes',
                 buildArgs           : [
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ]
         ],
 
@@ -147,7 +147,7 @@ class Config17 {
                 test                : 'default',
                 configureArgs       : '--enable-headless-only=yes',
                 buildArgs           : [
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ]
         ],
 
@@ -161,7 +161,7 @@ class Config17 {
                 cleanWorkspaceAfterBuild: true,
                 buildArgs           : [
                         "openj9"    : '--create-jre-image',
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ],
                 configureArgs: '--with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-jdk-rc-name="IBM Semeru Runtime"',
                 test                : 'default'
@@ -183,22 +183,16 @@ class Config17 {
                 additionalFileNameTag: "IBM"
         ],
 
-        // TODO: Enable testing (https://github.com/adoptium/ci-jenkins-pipelines/issues/77)
         aarch64Windows: [
                 os                  : 'windows',
                 arch                : 'aarch64',
                 crossCompile        : 'x64',
-                buildArgs           : '--cross-compile',
                 additionalNodeLabels: 'win2016&&vs2019',
-                test                : [
-                        nightly: [],
-                        weekly : []
-                ],
-                buildArgs           : [
-                        "temurin"   : '--create-jre-image'
+                test                : false,
+                buildArgs       : [
+                        "temurin"   : '--create-jre-image --create-sbom --cross-compile'
                 ]
         ],
-
 
         x32Windows: [
                 os                  : 'windows',
@@ -206,7 +200,7 @@ class Config17 {
                 additionalNodeLabels: 'win2012&&vs2019',
                 test                : 'default',
                 buildArgs           : [
-                        "temurin"   : '--jvm-variant client,server --create-jre-image'
+                        "temurin"   : '--jvm-variant client,server --create-jre-image --create-sbom'
                 ]
         ],
 
@@ -220,7 +214,7 @@ class Config17 {
                 test                : 'default',
                 buildArgs           : [
                         "openj9"    : '--create-jre-image',
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ],
                 configureArgs : [
                         openj9: '--disable-ccache --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
@@ -252,7 +246,7 @@ class Config17 {
                 ],
                 buildArgs           : [
                         "openj9"      : '--create-jre-image',
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ],
                 configureArgs       : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
         ],
@@ -334,7 +328,7 @@ class Config17 {
                 ],
                 buildArgs           : [
                         "openj9"    : '--create-jre-image',
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ],
                 configureArgs       : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
         ],
@@ -355,8 +349,8 @@ class Config17 {
                         openj9 : 'default'
                 ],
                 buildArgs           : [
-                        "temurin"   : '--create-jre-image',
-                        "openj9"    : '--create-jre-image'
+                        "openj9"    : '--create-jre-image',
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ]
         ],
 
@@ -383,10 +377,13 @@ class Config17 {
         arm32Linux    : [
                 os                  : 'linux',
                 arch                : 'arm',
+                crossCompile        : 'aarch64',
+                dockerImage         : 'adoptopenjdk/ubuntu1604_build_image',
+                dockerArgs          : '--platform linux/arm/v7',
                 test                : 'default',
                 configureArgs       : '--enable-dtrace',
                 buildArgs           : [
-                        "temurin"   : '--create-jre-image'
+                        "temurin"   : '--create-jre-image --create-sbom'
                 ]
         ]
 
