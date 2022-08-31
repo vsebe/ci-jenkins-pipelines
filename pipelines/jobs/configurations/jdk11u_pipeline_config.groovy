@@ -201,7 +201,7 @@ class Config11 {
             ],
             buildArgs            : [
                     "openj9"     : '--cross-compile',
-                    "bisheng"    : '--cross-compile --branch risc-v'.
+                    "bisheng"    : '--cross-compile --branch risc-v',
                     "temurin"    : '--create-sbom'
             ],
             configureArgs        : [
