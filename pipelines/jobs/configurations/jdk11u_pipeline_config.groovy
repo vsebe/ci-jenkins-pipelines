@@ -14,18 +14,6 @@ class Config11 {
             ]
         ],
 
-        x64MacIBM    : [
-            os                  : 'mac',
-            arch                : 'x64',
-            additionalNodeLabels : 'ci.project.openj9 && hw.arch.x86 && sw.os.osx.10_15',
-            test                : 'default',
-            configureArgs       : [
-                    "openj9"      : '--enable-dtrace=auto '
-            ],
-            additionalFileNameTag: "IBM",
-            buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk"
-        ],
-
         x64Linux  : [
             os                  : 'linux',
             arch                : 'x64',
@@ -49,71 +37,6 @@ class Config11 {
             buildArgs            : [
                 "temurin"     : '--create-source-archive --create-sbom'
             ]
-        ],
-
-        x64LinuxIBM  : [
-            os                  : 'linux',
-            arch                : 'x64',
-            additionalNodeLabels : 'ci.project.openj9 && hw.arch.x86 && sw.os.linux',
-            dockerImage         : 'adoptopenjdk/centos6_build_image',
-            dockerFile: [
-                    "openj9"  : 'pipelines/build/dockerFiles/cuda.dockerfile'
-            ],
-            dockerNode          : 'sw.tool.docker && sw.config.uid1000',
-            dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
-            test                : [
-                    nightly: [
-                        "sanity.functional",
-                        "extended.functional",
-                        "sanity.openjdk",
-                        "sanity.perf",
-                        "sanity.jck",
-                        "sanity.system",
-                        "special.system"
-                    ],
-                    weekly : [
-                        "extended.openjdk",
-                        "extended.perf",
-                        "extended.jck",
-                        "extended.system",
-                        "special.functional",
-                        "special.jck",
-                        "sanity.external",
-                        "sanity.functional.fips",
-                        "sanity.jck.fips",
-                        "extended.jck.fips",
-                        "special.jck.fips",
-                        "sanity.openjdk.fips",
-                        "extended.openjdk.fips"
-                    ]
-            ],
-            configureArgs       : [
-                    "openj9"      : '--disable-ccache --enable-jitserver --enable-dtrace=auto'
-            ],
-            additionalFileNameTag: "IBM",
-            buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk"
-        ],
-
-        x64LinuxCRIU  : [
-            os                  : 'linux',
-            arch                : 'x64',
-            additionalNodeLabels : 'hw.arch.x86 && sw.os.linux && sw.os.cent.7 && ci.role.build.criu',
-            test                : [
-                    nightly: [
-                        "sanity.functional",
-                        "extended.functional",
-                        "special.functional",
-                        "sanity.external"
-                    ],
-                    weekly : []
-            ],
-            additionalTestLabels: [
-                        openj9      : 'ci.project.openj9 && hw.arch.x86 && sw.os.linux && ci.role.test.criu'
-            ],
-            configureArgs       : [
-                    "openj9"      : '--disable-ccache --enable-jitserver --enable-dtrace=auto --with-version-pre=ea --enable-criu-support --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
-            ],
-            additionalFileNameTag: "criu"
         ],
 
         x64AlpineLinux  : [
@@ -156,22 +79,6 @@ class Config11 {
             ]
         ],
 
-        x64WindowsIBM: [
-            os                  : 'windows',
-            arch                : 'x64',
-            additionalNodeLabels: [
-                    openj9:     'ci.project.openj9 && hw.arch.x86 && sw.os.windows'
-            ],
-            buildArgs : [
-                    openj9 : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk"
-            ],
-            test                : 'default',
-            configureArgs       : [
-                    "openj9"      : '--with-jdk-rc-name="IBM Semeru Runtime"'
-            ],
-            additionalFileNameTag: "IBM"
-        ],
-
         aarch64Windows: [
                 os                  : 'windows',
                 arch                : 'aarch64',
@@ -210,18 +117,6 @@ class Config11 {
             ]
         ],
 
-        ppc64AixIBM    : [
-            os                  : 'aix',
-            arch                : 'ppc64',
-            additionalNodeLabels: [
-                    openj9:  'hw.arch.ppc64 && sw.os.aix.7_1'
-            ],
-            test                : 'default',
-            additionalFileNameTag: "IBM",
-            cleanWorkspaceAfterBuild: true,
-            buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk"
-        ],
-
         s390xLinux    : [
             os                  : 'linux',
             arch                : 's390x',
@@ -233,37 +128,6 @@ class Config11 {
             buildArgs           : [
                     "temurin"   : '--create-sbom'
             ]
-        ],
-
-        s390xLinuxIBM    : [
-            os                  : 'linux',
-            arch                : 's390x',
-            test                : [
-                    nightly: [
-                        "sanity.functional",
-                        "extended.functional",
-                        "sanity.openjdk",
-                        "sanity.perf",
-                        "sanity.jck",
-                        "sanity.system",
-                        "special.system"
-                    ],
-                    weekly : [
-                        "extended.openjdk",
-                        "extended.perf",
-                        "extended.jck",
-                        "extended.system",
-                        "special.functional",
-                        "special.jck",
-                        "sanity.external"
-                    ]
-            ],
-            additionalNodeLabels: [
-                    openj9:  'hw.arch.s390x && (sw.os.cent.7 || sw.os.rhel.7)'
-            ],
-            configureArgs       : '--enable-dtrace=auto',
-            additionalFileNameTag: "IBM",
-            buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk"
         ],
 
         sparcv9Solaris    : [
@@ -293,40 +157,6 @@ class Config11 {
             ]
         ],
 
-        ppc64leLinuxIBM    : [
-            os                  : 'linux',
-            arch                : 'ppc64le',
-            additionalNodeLabels : 'centos7',
-            test                : [
-                    nightly: [
-                        "sanity.functional",
-                        "extended.functional",
-                        "sanity.openjdk",
-                        "sanity.perf",
-                        "sanity.jck",
-                        "sanity.system",
-                        "special.system"
-                    ],
-                    weekly : [
-                        "extended.openjdk",
-                        "extended.perf",
-                        "extended.jck",
-                        "extended.system",
-                        "special.functional",
-                        "special.jck",
-                        "sanity.external"
-                    ]
-            ],
-            additionalNodeLabels: [
-                    openj9:  'hw.arch.ppc64le && (sw.os.cent.7 || sw.os.rhel.7)'
-            ],
-            configureArgs       : [
-                        "openj9"      : '--enable-dtrace=auto --enable-jitserver'
-            ],
-            additionalFileNameTag: "IBM",
-            buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk"
-        ],
-
         arm32Linux    : [
             os                  : 'linux',
             arch                : 'arm',
@@ -354,46 +184,6 @@ class Config11 {
                     "dragonwell" : "--enable-dtrace=auto --with-extra-cflags=\"-march=armv8.2-a+crypto\" --with-extra-cxxflags=\"-march=armv8.2-a+crypto\"",
                     "bisheng" : '--enable-dtrace=auto --with-extra-cflags=-fstack-protector-strong --with-extra-cxxflags=-fstack-protector-strong --with-jvm-variants=server'
             ]
-        ],
-
-        aarch64LinuxIBM    : [
-            os                  : 'linux',
-            arch                : 'aarch64',
-            dockerImage         : 'adoptopenjdk/centos7_build_image',
-            dockerNode         : 'sw.tool.docker',
-            dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
-            additionalNodeLabels: [
-                    openj9:  'hw.arch.aarch64 && sw.os.linux'
-            ],
-            test                : [
-                    nightly: [
-                        "sanity.functional",
-                        "extended.functional",
-                        "sanity.openjdk",
-                        "sanity.perf",
-                        "sanity.jck",
-                        "sanity.system",
-                        "special.system"
-                    ],
-                    weekly : [
-                        "extended.openjdk",
-                        "extended.perf",
-                        "extended.jck",
-                        "extended.system",
-                        "special.functional",
-                        "special.jck",
-                        "sanity.external"
-                    ]
-            ],
-            configureArgs       : [
-                    "temurin" : '--enable-dtrace=auto',
-                    "openj9" : '--enable-dtrace=auto --without-version-opt ',
-                    "corretto" : '--enable-dtrace=auto',
-                    "dragonwell" : "--enable-dtrace=auto --with-extra-cflags=\"-march=armv8.2-a+crypto\" --with-extra-cxxflags=\"-march=armv8.2-a+crypto\"",
-                    "bisheng" : '--enable-dtrace=auto --with-extra-cflags=-fstack-protector-strong --with-extra-cxxflags=-fstack-protector-strong --with-jvm-variants=server'
-            ],
-            additionalFileNameTag: "IBM",
-            buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk"
         ],
 
         riscv64Linux      :  [
@@ -441,6 +231,194 @@ class Config11 {
                 ]
         ],
 
+        x64MacIBM    : [
+            os                  : 'mac',
+            arch                : 'x64',
+            additionalNodeLabels : 'ci.project.openj9 && hw.arch.x86 && sw.os.osx.10_15',
+            test                : 'default',
+            configureArgs       : [
+                    "openj9"      : '--enable-dtrace=auto '
+            ],
+            additionalFileNameTag: "IBM",
+            buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk"
+        ],
+
+        x64LinuxIBM  : [
+            os                  : 'linux',
+            arch                : 'x64',
+            additionalNodeLabels : 'ci.project.openj9 && hw.arch.x86 && sw.os.linux',
+            dockerImage         : 'adoptopenjdk/centos6_build_image',
+            dockerFile: [
+                    "openj9"  : 'pipelines/build/dockerFiles/cuda.dockerfile'
+            ],
+            dockerNode          : 'sw.tool.docker && sw.config.uid1000',
+            dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
+            test                : [
+                    nightly: [
+                        "sanity.functional",
+                        "extended.functional",
+                        "sanity.openjdk",
+                        "sanity.perf",
+                        "sanity.jck",
+                        "sanity.system",
+                        "special.system"
+                    ],
+                    weekly : [
+                        "extended.openjdk",
+                        "extended.perf",
+                        "extended.jck",
+                        "extended.system",
+                        "special.functional",
+                        "special.jck",
+                        "sanity.external",
+                        "sanity.functional.fips",
+                        "sanity.jck.fips",
+                        "extended.jck.fips",
+                        "special.jck.fips",
+                        "sanity.openjdk.fips",
+                        "extended.openjdk.fips"
+                    ]
+            ],
+            configureArgs       : [
+                    "openj9"      : '--disable-ccache --enable-jitserver --enable-dtrace=auto'
+            ],
+            additionalFileNameTag: "IBM",
+            buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk"
+        ],
+
+        x64WindowsIBM: [
+            os                  : 'windows',
+            arch                : 'x64',
+            additionalNodeLabels: [
+                    openj9:     'ci.project.openj9 && hw.arch.x86 && sw.os.windows'
+            ],
+            buildArgs : [
+                    openj9 : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk"
+            ],
+            test                : 'default',
+            configureArgs       : [
+                    "openj9"      : '--with-jdk-rc-name="IBM Semeru Runtime"'
+            ],
+            additionalFileNameTag: "IBM"
+        ],
+
+        ppc64AixIBM    : [
+            os                  : 'aix',
+            arch                : 'ppc64',
+            additionalNodeLabels: [
+                    openj9:  'hw.arch.ppc64 && sw.os.aix.7_1'
+            ],
+            test                : 'default',
+            additionalFileNameTag: "IBM",
+            cleanWorkspaceAfterBuild: true,
+            buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk"
+        ],
+
+        s390xLinuxIBM    : [
+            os                  : 'linux',
+            arch                : 's390x',
+            test                : [
+                    nightly: [
+                        "sanity.functional",
+                        "extended.functional",
+                        "sanity.openjdk",
+                        "sanity.perf",
+                        "sanity.jck",
+                        "sanity.system",
+                        "special.system"
+                    ],
+                    weekly : [
+                        "extended.openjdk",
+                        "extended.perf",
+                        "extended.jck",
+                        "extended.system",
+                        "special.functional",
+                        "special.jck",
+                        "sanity.external"
+                    ]
+            ],
+            additionalNodeLabels: [
+                    openj9:  'hw.arch.s390x && (sw.os.cent.7 || sw.os.rhel.7)'
+            ],
+            configureArgs       : '--enable-dtrace=auto',
+            additionalFileNameTag: "IBM",
+            buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk"
+        ],
+
+        ppc64leLinuxIBM    : [
+            os                  : 'linux',
+            arch                : 'ppc64le',
+            additionalNodeLabels : 'centos7',
+            test                : [
+                    nightly: [
+                        "sanity.functional",
+                        "extended.functional",
+                        "sanity.openjdk",
+                        "sanity.perf",
+                        "sanity.jck",
+                        "sanity.system",
+                        "special.system"
+                    ],
+                    weekly : [
+                        "extended.openjdk",
+                        "extended.perf",
+                        "extended.jck",
+                        "extended.system",
+                        "special.functional",
+                        "special.jck",
+                        "sanity.external"
+                    ]
+            ],
+            additionalNodeLabels: [
+                    openj9:  'hw.arch.ppc64le && (sw.os.cent.7 || sw.os.rhel.7)'
+            ],
+            configureArgs       : [
+                        "openj9"      : '--enable-dtrace=auto --enable-jitserver'
+            ],
+            additionalFileNameTag: "IBM",
+            buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk"
+        ],
+
+        aarch64LinuxIBM    : [
+            os                  : 'linux',
+            arch                : 'aarch64',
+            dockerImage         : 'adoptopenjdk/centos7_build_image',
+            dockerNode         : 'sw.tool.docker',
+            dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
+            additionalNodeLabels: [
+                    openj9:  'hw.arch.aarch64 && sw.os.linux'
+            ],
+            test                : [
+                    nightly: [
+                        "sanity.functional",
+                        "extended.functional",
+                        "sanity.openjdk",
+                        "sanity.perf",
+                        "sanity.jck",
+                        "sanity.system",
+                        "special.system"
+                    ],
+                    weekly : [
+                        "extended.openjdk",
+                        "extended.perf",
+                        "extended.jck",
+                        "extended.system",
+                        "special.functional",
+                        "special.jck",
+                        "sanity.external"
+                    ]
+            ],
+            configureArgs       : [
+                    "temurin" : '--enable-dtrace=auto',
+                    "openj9" : '--enable-dtrace=auto --without-version-opt ',
+                    "corretto" : '--enable-dtrace=auto',
+                    "dragonwell" : "--enable-dtrace=auto --with-extra-cflags=\"-march=armv8.2-a+crypto\" --with-extra-cxxflags=\"-march=armv8.2-a+crypto\"",
+                    "bisheng" : '--enable-dtrace=auto --with-extra-cflags=-fstack-protector-strong --with-extra-cxxflags=-fstack-protector-strong --with-jvm-variants=server'
+            ],
+            additionalFileNameTag: "IBM",
+            buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk"
+        ],
+
         aarch64MacIBM: [
                 os                  : 'mac',
                 arch                : 'aarch64',
@@ -455,6 +433,28 @@ class Config11 {
                 ],
                 additionalFileNameTag: "IBM",
                 buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk"
+        ],
+
+        x64LinuxCRIU  : [
+            os                  : 'linux',
+            arch                : 'x64',
+            additionalNodeLabels : 'hw.arch.x86 && sw.os.linux && sw.os.cent.7 && ci.role.build.criu',
+            test                : [
+                    nightly: [
+                        "sanity.functional",
+                        "extended.functional",
+                        "special.functional",
+                        "sanity.external"
+                    ],
+                    weekly : []
+            ],
+            additionalTestLabels: [
+                        openj9      : 'ci.project.openj9 && hw.arch.x86 && sw.os.linux && ci.role.test.criu'
+            ],
+            configureArgs       : [
+                    "openj9"      : '--disable-ccache --enable-jitserver --enable-dtrace=auto --with-version-pre=ea --enable-criu-support --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+            ],
+            additionalFileNameTag: "criu"
         ]
   ]
 
