@@ -835,7 +835,7 @@ class Build {
                         context.copyArtifacts(
                             projectName: "${env.JOB_NAME}",
                             selector: context.specific("${env.BUILD_NUMBER}"),      
-                            filter: '**/OpenJDK*jre_*_windows*.zip',
+                            filter: '**/ibm-semeru*-jre_*_windows*.zip',
                             fingerprintArtifacts: true,
                             target: "workspace/target/",
                             flatten: true)
