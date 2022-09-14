@@ -376,6 +376,13 @@ class Build {
                             DYNAMIC_COMPILE = true
                         }
 
+                        def DOCKER_REGISTRY_URL = ""
+                        def DOCKER_REGISTRY_URL_CREDENTIAL_ID = ""
+                        if ("${testType}".contains("external")) {
+                            DOCKER_REGISTRY_URL = "sys-rt-docker-local.artifactory.swg-devops.com"
+                            DOCKER_REGISTRY_URL_CREDENTIAL_ID = artifactoryCredential
+                        }
+
                         def jobParams = getAQATestJobParams(testType)
 
                         def testFlag = ""
@@ -460,7 +467,9 @@ class Build {
                                             context.string(name: 'TEST_FLAG', value: "${testFlag}"),
                                             context.string(name: 'EXTRA_OPTIONS', value: "${extraOptions}"),
                                             context.string(name: 'ACTIVE_NODE_TIMEOUT', value: "${buildConfig.ACTIVE_NODE_TIMEOUT}"),
-                                            context.booleanParam(name: 'DYNAMIC_COMPILE', value: DYNAMIC_COMPILE)],
+                                            context.booleanParam(name: 'DYNAMIC_COMPILE', value: DYNAMIC_COMPILE),
+                                            context.string(name: 'DOCKER_REGISTRY_URL', value: DOCKER_REGISTRY_URL),
+                                            context.string(name: 'DOCKER_REGISTRY_URL_CREDENTIAL_ID', value: DOCKER_REGISTRY_URL_CREDENTIAL_ID)],
                                             wait: true
                             context.node('worker') {
                                 def result = testJob.getResult()
