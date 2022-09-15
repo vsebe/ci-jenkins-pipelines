@@ -757,10 +757,6 @@ class Build {
     private void buildWindowsInstaller(VersionInfo versionData, String filter, String category) {
         def nodeFilter = "sw.os.windows&&ci.role.packaging&&sw.tool.signing"
 
-        if (buildConfig.VARIANT == "openj9") {
-            filter = "**/ibm-semeru*-jdk_*_windows*.zip"
-        }
-
         def buildNumber = versionData.build
 
         if (versionData.major == 8) {
