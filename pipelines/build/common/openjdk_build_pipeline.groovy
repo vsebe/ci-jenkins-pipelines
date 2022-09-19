@@ -1933,11 +1933,7 @@ class Build {
                                 context.timeout(time: buildTimeouts.DOCKER_PULL_TIMEOUT, unit: "HOURS") {
                                     if (buildConfig.DOCKER_CREDENTIAL) {
                                         context.docker.withRegistry(buildConfig.DOCKER_REGISTRY, buildConfig.DOCKER_CREDENTIAL) {
-                                            if (buildConfig.DOCKER_ARGS) {
-                                                context.sh(script: "docker pull ${buildConfig.DOCKER_IMAGE} ${buildConfig.DOCKER_ARGS}")
-                                            } else {
-                                                 context.docker.image(buildConfig.DOCKER_IMAGE).pull()
-                                            }
+                                            context.docker.image(buildConfig.DOCKER_IMAGE).pull()
                                         }
                                     } else {
                                         if (buildConfig.DOCKER_ARGS) {
