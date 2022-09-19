@@ -24,6 +24,7 @@ class Config11 {
             ],
             dockerNode          : 'sw.tool.docker && sw.config.uid1000',
             dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
+            dockerArgs          : '-u jenkins:jenkins',
             test                : 'default',
             configureArgs       : [
                     "openj9"      : '--disable-ccache --enable-jitserver --enable-dtrace=auto --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
