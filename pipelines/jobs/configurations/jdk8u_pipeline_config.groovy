@@ -171,7 +171,32 @@ class Config8 {
                 os  : 'linux',
                 arch: 'ppc64le',
                 additionalNodeLabels : 'centos7',
-                test                 : 'default',
+                test                : [
+                        nightly: [
+                                "sanity.functional",
+                                "extended.functional",
+                                "sanity.openjdk",
+                                "sanity.perf",
+                                "sanity.jck",
+                                "sanity.system",
+                                "special.system"
+                        ],
+                        weekly : [
+                                "extended.openjdk",
+                                "extended.perf",
+                                "extended.jck",
+                                "extended.system",
+                                "special.functional",
+                                "special.jck",
+                                "sanity.external",
+                                "sanity.functional.fips",
+                                "sanity.jck.fips",
+                                "extended.jck.fips",
+                                "special.jck.fips",
+                                "sanity.openjdk.fips",
+                                "extended.openjdk.fips"
+                        ]
+                ],
                 cleanWorkspaceAfterBuild: true,
                 additionalNodeLabels: [
                         openj9:  'hw.arch.ppc64le && (sw.os.cent.7 || sw.os.rhel.7)'
