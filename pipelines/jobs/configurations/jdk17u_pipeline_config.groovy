@@ -181,7 +181,7 @@ class Config17 {
                 ],
                 cleanWorkspaceAfterBuild: true,
                 configureArgs       : [
-                        openj9      : '--enable-dtrace --disable-warnings-as-errors --with-noncompressedrefs --with-version-pre=ea --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+                        openj9      : '--enable-dtrace --disable-warnings-as-errors --with-noncompressedrefs --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ],
                 test                : [
                         temurin : 'default',
@@ -375,7 +375,7 @@ class Config17 {
                 ],
                 cleanWorkspaceAfterBuild: true,
                 configureArgs       : [
-                        openj9      : '--enable-dtrace --disable-warnings-as-errors --with-noncompressedrefs --with-version-pre=ea'
+                        openj9      : '--enable-dtrace --disable-warnings-as-errors --with-noncompressedrefs'
                 ],
                 test                : [
                         openj9 : 'default'
