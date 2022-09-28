@@ -848,8 +848,9 @@ class Builder implements Serializable {
         }
     }
 
+    /*
     Remote Trigger JCK tests for weekly temurin builds
-
+    */
     def remoteTriggerJckTests(String platforms) {
         boolean isTemurin = true
         targetConfigurations
