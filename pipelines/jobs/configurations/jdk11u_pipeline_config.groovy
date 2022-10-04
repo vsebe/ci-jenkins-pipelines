@@ -264,6 +264,7 @@ class Config11 {
                         "special.system"
                     ],
                     weekly : [
+                        "dev.system",
                         "extended.openjdk",
                         "extended.perf",
                         "extended.jck",
