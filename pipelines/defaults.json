@@ -58,8 +58,8 @@
         ],
         "enableTestDynamicParallel" : true,
         "defaultDynamicParas": {
-            "testLists"      : ["sanity.functional", "extended.functional", "sanity.system", "extended.system", "special.system", "sanity.jck", "extended.jck", "sanity.openjdk"],
-            "numMachines"    : ["3", "3", "3", "3", "5", "4", "8", "2"]
+            "testLists"      : ["sanity.functional", "extended.functional", "sanity.system", "extended.system", "special.system", "sanity.jck", "extended.jck", "sanity.openjdk", "dev.system"],
+            "numMachines"    : ["3", "3", "3", "3", "5", "4", "8", "2", "5"]
         }
     },
     "enableInstallers"       : true,
