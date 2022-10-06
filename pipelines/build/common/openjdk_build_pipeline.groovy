@@ -385,15 +385,9 @@ class Build {
                         def jobParams = getAQATestJobParams(testType)
 
                         def testFlag = ""
-                        def extraOptions = ""
                         if (isFipsTestBuild) {
                             jobParams.put('TEST_JOB_NAME', "${jobParams.TEST_JOB_NAME}_fips")
-                            if ("${jobParams.TEST_JOB_NAME}".contains("functional")) {
-                                jobParams.put('BUILD_LIST', "functional/cmdLineTests/fips")
-                            }
                             testFlag = "FIPS"
-                            extraOptions = "-Dsemeru.fips=true"
-
                         }
                         def parallel = 'None'
                         def numMachinesPerTest = ''
@@ -464,7 +458,6 @@ class Build {
                                             context.booleanParam(name: 'GENERATE_JOBS', value: aqaAutoGen),
                                             context.string(name: 'ADOPTOPENJDK_BRANCH', value: aqaBranch),
                                             context.string(name: 'TEST_FLAG', value: "${testFlag}"),
-                                            context.string(name: 'EXTRA_OPTIONS', value: "${extraOptions}"),
                                             context.string(name: 'ACTIVE_NODE_TIMEOUT', value: "${buildConfig.ACTIVE_NODE_TIMEOUT}"),
                                             context.booleanParam(name: 'DYNAMIC_COMPILE', value: DYNAMIC_COMPILE),
                                             context.string(name: 'DOCKER_REGISTRY_URL', value: DOCKER_REGISTRY_URL),
