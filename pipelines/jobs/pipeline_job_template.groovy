@@ -64,6 +64,7 @@ pipelineJob("${BUILD_FOLDER}/${JOB_NAME}") {
 
     properties {
         // Hide top level pipeline access from the public as they contain non Temurin artefacts
+        /*
         authorizationMatrix {
             inheritanceStrategy {
                 // Do not inherit permissions from global configuration
@@ -80,6 +81,7 @@ pipelineJob("${BUILD_FOLDER}/${JOB_NAME}") {
             'hudson.model.Item.Workspace:AdoptOpenJDK*build', 'hudson.model.Item.Workspace:AdoptOpenJDK*build-triage',
             'hudson.model.Run.Update:AdoptOpenJDK*build', 'hudson.model.Run.Update:AdoptOpenJDK*build-triage'])
         }
+        */
         pipelineTriggers {
             triggers {
                 cron {
