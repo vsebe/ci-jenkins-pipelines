@@ -389,7 +389,7 @@ class Config17 {
         x64LinuxCRIU  : [
             os                  : 'linux',
             arch                : 'x64',
-            additionalNodeLabels : 'hw.arch.x86 && sw.os.linux && sw.os.cent.7 && ci.role.build.criu',
+            additionalNodeLabels : 'hw.arch.x86 && sw.os.linux && (sw.os.cent.7||sw.os.rhel.7) && ci.role.build.criu',
             test                : [
                     nightly: [
                         "sanity.functional",
