@@ -1716,6 +1716,9 @@ class Build {
                         // 200 artifacts is >9months for 5 builds/week (more for non-lts releases that run overy-other day)
                         // 300 days is >9months
                         buildInfo.retention maxBuilds: 200, maxDays: 300, deleteBuildArtifacts: true
+                        context.println "buildInfo:$buildInfo"
+                        buildInfo.name = "sys-rt/${context.JOB_NAME}"
+                        context.println "buildInfo:$buildInfo"
 
                         server.upload spec: uploadJSON, buildInfo: buildInfo
                         server.publishBuildInfo buildInfo
