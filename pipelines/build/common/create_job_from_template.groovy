@@ -54,8 +54,7 @@ pipelineJob("$buildFolder/$JOB_NAME") {
     }
     properties {
         // Hide all non Temurin builds from public view
-        /*
-        if (VARIANT != "temurin") {
+        if (JENKINS_URL.contains("adopt") && VARIANT != 'temurin') {
             authorizationMatrix {
                 inheritanceStrategy {
                     // Do not inherit permissions from global configuration
@@ -71,7 +70,6 @@ pipelineJob("$buildFolder/$JOB_NAME") {
                 'hudson.model.Run.Update:AdoptOpenJDK*build', 'hudson.model.Run.Update:AdoptOpenJDK*build-triage'])
             }
         }
-        */
         disableConcurrentBuilds()
         copyArtifactPermission {
             projectNames('*')
