@@ -133,6 +133,6 @@ pipelineJob("$buildFolder/$JOB_NAME") {
             stringParam('CUSTOM_BASEFILE_LOCATION', "$CUSTOM_BASEFILE_LOCATION")
         }
         stringParam('SCM_REPO', "${GIT_URL}", "The URL of the SCM repository hosting the pipeline Groovy scripts.")
-        stringParam('SCM_BRANCH', "${BRANCH}", "The  SCM branch.")
+        stringParam('SCM_BRANCH', "${GIT_BRANCH}", "The  SCM branch.")
     }
 }
