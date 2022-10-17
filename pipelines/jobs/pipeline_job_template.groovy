@@ -126,6 +126,6 @@ pipelineJob("${BUILD_FOLDER}/${JOB_NAME}") {
         textParam('defaultsJson', JsonOutput.prettyPrint(JsonOutput.toJson(defaultsJson)), '<strong>DO NOT ALTER THIS PARAM UNLESS YOU KNOW WHAT YOU ARE DOING!</strong> This passes down the user\'s default constants to the downstream jobs.')
         textParam('adoptDefaultsJson', JsonOutput.prettyPrint(JsonOutput.toJson(adoptDefaultsJson)), '<strong>DO NOT ALTER THIS PARAM UNDER ANY CIRCUMSTANCES!</strong> This passes down adopt\'s default constants to the downstream jobs. NOTE: <code>defaultsJson</code> has priority, the constants contained within this param will only be used as a failsafe.')
         stringParam('SCM_REPO', "${GIT_URL}", "The URL of the SCM repository hosting the pipeline Groovy scripts.")
-        stringParam('SCM_BRANCH', "${GIT_BRANCH}", "The  SCM branch.")
+        stringParam('SCM_BRANCH', "${BRANCH}", "The  SCM branch.")
     }
 }
