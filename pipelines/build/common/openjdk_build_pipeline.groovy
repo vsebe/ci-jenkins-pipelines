@@ -375,6 +375,13 @@ class Build {
                             DYNAMIC_COMPILE = true
                         }
 
+                        def VENDOR_TEST_REPOS = ""
+                        def VENDOR_TEST_BRANCHES = ""
+                        if ("${testType}".contains("functional")) {
+                            VENDOR_TEST_REPOS = "git@github.ibm.com:runtimes/test.git"
+                            VENDOR_TEST_BRANCHES = aqaBranch
+                        }
+
                         def DOCKER_REGISTRY_URL = ""
                         def DOCKER_REGISTRY_URL_CREDENTIAL_ID = ""
                         if ("${testType}".contains("external")) {
@@ -461,7 +468,9 @@ class Build {
                                             context.string(name: 'ACTIVE_NODE_TIMEOUT', value: "${buildConfig.ACTIVE_NODE_TIMEOUT}"),
                                             context.booleanParam(name: 'DYNAMIC_COMPILE', value: DYNAMIC_COMPILE),
                                             context.string(name: 'DOCKER_REGISTRY_URL', value: DOCKER_REGISTRY_URL),
-                                            context.string(name: 'DOCKER_REGISTRY_URL_CREDENTIAL_ID', value: DOCKER_REGISTRY_URL_CREDENTIAL_ID)],
+                                            context.string(name: 'DOCKER_REGISTRY_URL_CREDENTIAL_ID', value: DOCKER_REGISTRY_URL_CREDENTIAL_ID),
+                                            context.string(name: 'VENDOR_TEST_REPOS', value: VENDOR_TEST_REPOS),
+                                            context.string(name: 'VENDOR_TEST_BRANCHES', value: VENDOR_TEST_BRANCHES)],
                                             wait: true
                             context.node('worker') {
                                 def result = testJob.getResult()
