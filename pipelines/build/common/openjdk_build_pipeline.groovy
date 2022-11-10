@@ -377,9 +377,11 @@ class Build {
 
                         def VENDOR_TEST_REPOS = ""
                         def VENDOR_TEST_BRANCHES = ""
+                        def VENDOR_TEST_DIRS = ""
                         if ("${testType}".contains("functional")) {
                             VENDOR_TEST_REPOS = "git@github.ibm.com:runtimes/test.git"
                             VENDOR_TEST_BRANCHES = aqaBranch
+                            VENDOR_TEST_DIRS = "functional"
                         }
 
                         def DOCKER_REGISTRY_URL = ""
@@ -471,7 +473,8 @@ class Build {
                                             context.string(name: 'DOCKER_REGISTRY_URL', value: DOCKER_REGISTRY_URL),
                                             context.string(name: 'DOCKER_REGISTRY_URL_CREDENTIAL_ID', value: DOCKER_REGISTRY_URL_CREDENTIAL_ID),
                                             context.string(name: 'VENDOR_TEST_REPOS', value: VENDOR_TEST_REPOS),
-                                            context.string(name: 'VENDOR_TEST_BRANCHES', value: VENDOR_TEST_BRANCHES)],
+                                            context.string(name: 'VENDOR_TEST_BRANCHES', value: VENDOR_TEST_BRANCHES),
+                                            context.string(name: 'VENDOR_TEST_DIRS', value: VENDOR_TEST_DIRS)],
                                             wait: true
                             context.node('worker') {
                                 def result = testJob.getResult()
