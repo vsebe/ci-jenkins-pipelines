@@ -26,7 +26,7 @@ targetConfigurations = [
 ]
 
 // 1:30 am Tue,Thu
-triggerSchedule_nightly="30 1 * * 2,4"
+triggerSchedule_nightly="30 19 * * 2,4"
 // 12pm Sat
 triggerSchedule_weekly="59 11 * * 6"
 
