@@ -6,7 +6,8 @@
         "pipeline_url"       : "https://github.com/ibmruntimes/ci-jenkins-pipelines.git",
         "pipeline_branch"    : "ibm",
         "installer_url"      : "git@github.ibm.com:runtimes/adoptium-installer.git",
-        "installer_branch"   : "ibm"
+        "installer_branch"   : "ibm",
+        "helper_ref"         : "master"
     },
     "jenkinsDetails"         : {
         "rootUrl"            : "https://hyc-runtimes-jenkins.swg-devops.com/",
@@ -35,7 +36,7 @@
         "downstream"         : "pipelines/build/common/openjdk_build_pipeline.groovy"
     },
     "testDetails"            : {
-        "enableTests"        : false,
+        "enableTests"        : true,
         "nightlyDefault"     : [
             "sanity.functional",
             "extended.functional",
@@ -51,7 +52,9 @@
             "extended.jck",
             "extended.system",
             "special.functional",
-            "special.jck"
+            "special.jck",
+            "dev.openjdk",
+            "dev.system"
         ],
         "disabled" : [
             "sanity.external"

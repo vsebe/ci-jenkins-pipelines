@@ -1,32 +1,32 @@
 targetConfigurations = [
-        "x64Mac"        : [ "openj9" ],
-        "x64Linux"      : [ "openj9" ],
-        "x64Windows"    : [ "openj9" ],
-        "ppc64Aix"      : [ "openj9" ],
-        "ppc64leLinux"  : [ "openj9" ],
-        "s390xLinux"    : [ "openj9" ],
-        "aarch64Linux"  : [ "openj9" ],
-        "aarch64Mac"    : [ "openj9" ],
-        "riscv64Linux"  : [ "openj9" ],
-        "x64MacIBM"        : [ "openj9" ],
-        "x64LinuxIBM"      : [ "openj9" ],
-        "x64WindowsIBM"    : [ "openj9" ],
-        "ppc64AixIBM"      : [ "openj9" ],
-        "ppc64leLinuxIBM"  : [ "openj9" ],
-        "s390xLinuxIBM"    : [ "openj9" ],
-        "aarch64LinuxIBM"  : [ "openj9" ],
-        "aarch64MacIBM"    : [ "openj9" ],
-        "x64LinuxCRIU"     : [ "openj9" ]
+        'x64Mac'        : [ 'openj9' ],
+        'x64Linux'      : [ 'openj9' ],
+        'x64Windows'    : [ 'openj9' ],
+        'ppc64Aix'      : [ 'openj9' ],
+        'ppc64leLinux'  : [ 'openj9' ],
+        's390xLinux'    : [ 'openj9' ],
+        'aarch64Linux'  : [ 'openj9' ],
+        'aarch64Mac'    : [ 'openj9' ],
+        'riscv64Linux'  : [ 'openj9' ],
+        'x64MacIBM'        : [ 'openj9' ],
+        'x64LinuxIBM'      : [ 'openj9' ],
+        'x64WindowsIBM'    : [ 'openj9' ],
+        'ppc64AixIBM'      : [ 'openj9' ],
+        'ppc64leLinuxIBM'  : [ 'openj9' ],
+        's390xLinuxIBM'    : [ 'openj9' ],
+        'aarch64LinuxIBM'  : [ 'openj9' ],
+        'aarch64MacIBM'    : [ 'openj9' ],
+        'x64LinuxCRIU'     : [ 'openj9' ]
 ]
 
 // Weeknights at 9:00pm
-triggerSchedule_nightly="0 18 * * 1-4"
+triggerSchedule_nightly='0 18 * * 1-4'
 // H9:00am Sat
-triggerSchedule_weekly="0 21 * * 5"
+triggerSchedule_weekly='0 21 * * 5'
 
 // scmReferences to use for weekly release build
 weekly_release_scmReferences=[
-        "openj9"         : ""
+        'openj9'         : ''
 ]
 
 return this

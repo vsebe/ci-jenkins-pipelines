@@ -1,5 +1,6 @@
 class Config16 {
-  final Map<String, Map<String, ?>> buildConfigurations = [
+
+    final Map<String, Map<String, ?>> buildConfigurations = [
         x64Mac    : [
                 os                  : 'mac',
                 arch                : 'x64',
@@ -28,8 +29,8 @@ class Config16 {
                         openj9      : '!(sw.os.cent.6||sw.os.rhel.6)'
                 ],
                 configureArgs       : [
-                        "openj9"      : '--enable-dtrace --enable-jitserver --with-vendor-name="International Business Machines Corporation" --with-vendor-version-string="16.0.2.0" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues',
-                        "hotspot"     : '--enable-dtrace'
+                        'openj9'      : '--enable-dtrace --enable-jitserver --with-vendor-name="International Business Machines Corporation" --with-vendor-version-string="16.0.2.0" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues',
+                        'hotspot'     : '--enable-dtrace'
                 ]
         ],
 
@@ -93,8 +94,8 @@ class Config16 {
                         openj9:  'hw.arch.ppc64le && (sw.os.cent.7 || sw.os.rhel.7)'
                 ],
                 configureArgs       : [
-                        "hotspot"     : '--enable-dtrace',
-                        "openj9"      : '--enable-dtrace --enable-jitserver --with-vendor-name="International Business Machines Corporation" --with-vendor-version-string="16.0.2.0" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
+                        'hotspot'     : '--enable-dtrace',
+                        'openj9'      : '--enable-dtrace --enable-jitserver --with-vendor-name="International Business Machines Corporation" --with-vendor-version-string="16.0.2.0" --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-vendor-url=https://www.ibm.com/ --with-vendor-bug-url=https://github.com/eclipse-openj9/openj9/issues --with-vendor-vm-bug-url=https://github.com/eclipse-openj9/openj9/issues'
                 ]
         ],
 

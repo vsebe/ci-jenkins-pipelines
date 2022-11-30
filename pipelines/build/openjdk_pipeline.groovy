@@ -21,17 +21,48 @@ Closure configureBuild = null
 def buildConfigurations = null
 Map<String, ?> DEFAULTS_JSON = null
 
-node ("worker") {
+node('worker') {
+    // Ensure workspace is clean so we don't archive any old failed pipeline artifacts
+    println '[INFO] Cleaning up controller worker workspace prior to running pipelines..'
+    // Fail if unable to clean..
+    cleanWs notFailBuild: false
+
+    if (params.releaseType == 'Release' && params.aqaReference != '' && params.scmReference != '') {
+        def propertyFile = 'testenv.properties'
+        if (params.jdkVersion == '8' && params.targetConfigurations.contains('arm32Linux')) {
+            propertyFile = 'testenv_arm32.properties'
+        }
+        sh("curl -Os https://raw.githubusercontent.com/adoptium/aqa-tests/${params.aqaReference}/testenv/${propertyFile}")
+
+        def buildTag = params.scmReference
+        if (params.scmReference.contains('_adopt')) {
+            buildTag = params.scmReference.substring(0, params.scmReference.length() - 6) // remove _adopt suffix
+        }
+        
+        def list = readFile("${propertyFile}").readLines()
+        for (item in list) {
+            if (item.contains("JDK${params.jdkVersion}_BRANCH")) {
+                def branchInfo = item.split('=')
+                def branch = branchInfo[1]
+                if (branch != buildTag) {
+                    println "Warning: scmReference is ${buildTag}, which is different from ${item} in aqa-tests release branch . Please update aqa-tests release branch!"
+                    currentBuild.result = 'FAILURE'
+                    return
+                }
+                break
+            }
+        }
+    }
     // Load defaultsJson. These are passed down from the build_pipeline_generator and is a JSON object containing user's default constants.
-    if (!params.defaultsJson || defaultsJson == "") {
-        throw new Exception("[ERROR] No User Defaults JSON found! Please ensure the defaultsJson parameter is populated and not altered during parameter declaration.")
+    if (!params.defaultsJson || defaultsJson == '') {
+        throw new Exception('[ERROR] No User Defaults JSON found! Please ensure the defaultsJson parameter is populated and not altered during parameter declaration.')
     } else {
         DEFAULTS_JSON = new JsonSlurper().parseText(defaultsJson) as Map
     }
 
     // Load adoptDefaultsJson. These are passed down from the build_pipeline_generator and is a JSON object containing adopt's default constants.
-    if (!params.adoptDefaultsJson || adoptDefaultsJson == "") {
-        throw new Exception("[ERROR] No Adopt Defaults JSON found! Please ensure the adoptDefaultsJson parameter is populated and not altered during parameter declaration.")
+    if (!params.adoptDefaultsJson || adoptDefaultsJson == '') {
+        throw new Exception('[ERROR] No Adopt Defaults JSON found! Please ensure the adoptDefaultsJson parameter is populated and not altered during parameter declaration.')
     } else {
         ADOPT_DEFAULTS_JSON = new JsonSlurper().parseText(adoptDefaultsJson) as Map
     }
@@ -40,15 +71,16 @@ node ("worker") {
     Changes dir to Adopt's pipeline repo. Use closures as functions aren't accepted inside node blocks
     */
     def checkoutAdoptPipelines = { ->
-      checkout([$class: 'GitSCM',
-        branches: [ [ name: ADOPT_DEFAULTS_JSON["repository"]["pipeline_branch"] ] ],
-        userRemoteConfigs: [ [ url: ADOPT_DEFAULTS_JSON["repository"]["pipeline_url"] ] ]
+        checkout([$class: 'GitSCM',
+        branches: [ [ name: ADOPT_DEFAULTS_JSON['repository']['pipeline_branch'] ] ],
+        userRemoteConfigs: [ [ url: ADOPT_DEFAULTS_JSON['repository']['pipeline_url'] ] ]
       ])
     }
 
     scmVars = checkout scm
 
-    library(identifier: 'openjdk-jenkins-helper@master')
+    String helperRef = DEFAULTS_JSON['repository']['helper_ref']
+    library(identifier: "openjdk-jenkins-helper@${helperRef}")
 
     // Load baseFilePath. This is where build_base_file.groovy is located. It runs the downstream job setup and configuration retrieval services.
     def baseFilePath = (params.baseFilePath) ?: DEFAULTS_JSON['baseFileDirectories']['upstream']
@@ -82,7 +114,7 @@ node ("worker") {
         checkoutAdoptPipelines()
 
         // Reset javaToBuild to original value before trying again. Converts 11u to 11
-        javaToBuild = javaToBuild.replaceAll("u", "")
+        javaToBuild = javaToBuild.replaceAll('u', '')
 
         // Check if pipeline is jdk11 or jdk11u
         configPath =  "${WORKSPACE}/${ADOPT_DEFAULTS_JSON['configDirectories']['build']}/${javaToBuild}_pipeline_config.groovy"
@@ -94,45 +126,54 @@ node ("worker") {
         }
         checkout scm
     }
-
 }
 
 // If a parameter below hasn't been declared above, it is declared in the jenkins job itself
 if (scmVars != null || configureBuild != null || buildConfigurations != null) {
-    configureBuild(
-        javaToBuild,
-        buildConfigurations,
-        targetConfigurations,
-        DEFAULTS_JSON,
-        activeNodeTimeout,
-        dockerExcludes,
-        enableTests,
-        enableTestDynamicParallel,
-        enableInstallers,
-        enableSigner,
-        enableSourceRpm,
-        verifySigner,
-        releaseType,
-        scmReference,
-        aqaReference,
-        aqaAutoGen,
-        overridePublishName,
-        useAdoptBashScripts,
-        additionalConfigureArgs,
-        scmVars,
-        additionalBuildArgs,
-        overrideFileNameVersion,
-        cleanWorkspaceBeforeBuild,
-        cleanWorkspaceAfterBuild,
-        cleanWorkspaceBuildOutputAfterBuild,
-        adoptBuildNumber,
-        propagateFailures,
-        keepTestReportDir,
-        keepReleaseLogs,
-        currentBuild,
-        this,
-        env
-    ).doBuild()
+    try {
+        configureBuild(
+            javaToBuild,
+            buildConfigurations,
+            targetConfigurations,
+            DEFAULTS_JSON,
+            activeNodeTimeout,
+            dockerExcludes,
+            enableTests,
+            enableTestDynamicParallel,
+            enableInstallers,
+            enableSigner,
+            enableSourceRpm,
+            verifySigner,
+            releaseType,
+            scmReference,
+            buildReference,
+            ciReference,
+            helperReference,
+            aqaReference,
+            aqaAutoGen,
+            overridePublishName,
+            useAdoptBashScripts,
+            additionalConfigureArgs,
+            scmVars,
+            additionalBuildArgs,
+            overrideFileNameVersion,
+            cleanWorkspaceBeforeBuild,
+            cleanWorkspaceAfterBuild,
+            cleanWorkspaceBuildOutputAfterBuild,
+            adoptBuildNumber,
+            propagateFailures,
+            keepTestReportDir,
+            keepReleaseLogs,
+            currentBuild,
+            this,
+            env
+        ).doBuild()
+    } finally {
+        node('worker') {
+            println '[INFO] Cleaning up controller worker workspace...'
+            cleanWs notFailBuild: true
+        }
+    }
 } else {
     throw new Exception("[ERROR] One or more setup parameters are null.\nscmVars = ${scmVars}\nconfigureBuild = ${configureBuild}\nbuildConfigurations = ${buildConfigurations}")
 }

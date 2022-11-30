@@ -1,5 +1,6 @@
 class Config8 {
-  final Map<String, Map<String, ?>> buildConfigurations = [
+
+    final Map<String, Map<String, ?>> buildConfigurations = [
         x64Mac        : [
                 os                  : 'mac',
                 arch                : 'x64',
@@ -12,7 +13,7 @@ class Config8 {
                 configureArgs      : '--with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
                 test                 : 'default',
                 buildArgs           : [
-                        "temurin"   : '--create-sbom'
+                        'temurin'   : '--create-sbom'
                 ]
         ],
 
@@ -29,36 +30,36 @@ class Config8 {
                 dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
                 test                : [
                         nightly: [
-                                "sanity.functional",
-                                "extended.functional",
-                                "sanity.openjdk",
-                                "sanity.perf",
-                                "sanity.jck",
-                                "sanity.system",
-                                "special.system"
+                                'sanity.functional',
+                                'extended.functional',
+                                'sanity.openjdk',
+                                'sanity.perf',
+                                'sanity.jck',
+                                'sanity.system',
+                                'special.system'
                         ],
                         weekly : [
-                                "extended.openjdk",
-                                "extended.perf",
-                                "extended.jck",
-                                "extended.system",
-                                "special.functional",
-                                "special.jck",
-                                "sanity.external",
-                                "sanity.functional.fips",
-                                "sanity.jck.fips",
-                                "extended.jck.fips",
-                                "special.jck.fips",
-                                "sanity.openjdk.fips",
-                                "extended.openjdk.fips"
+                                'extended.openjdk',
+                                'extended.perf',
+                                'extended.jck',
+                                'extended.system',
+                                'special.functional',
+                                'special.jck',
+                                'sanity.external',
+                                'sanity.functional.fips',
+                                'sanity.jck.fips',
+                                'extended.jck.fips',
+                                'special.jck.fips',
+                                'sanity.openjdk.fips',
+                                'extended.openjdk.fips'
                         ]
                 ],
                 configureArgs       : [
-                        "openj9"      : '--enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
-                        "dragonwell"  : '--enable-unlimited-crypto --with-jvm-variants=server --with-zlib=system',
+                        'openj9'      : '--enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
+                        'dragonwell'  : '--enable-unlimited-crypto --with-jvm-variants=server --with-zlib=system',
                 ],
                 buildArgs           : [
-                        "temurin"   : '--create-source-archive --create-sbom'
+                        'temurin'   : '--create-source-archive --create-sbom'
                 ]
         ],
 
@@ -69,7 +70,7 @@ class Config8 {
                 test                : 'default',
                 configureArgs       : '--disable-headful',
                 buildArgs           : [
-                        "temurin"   : '--create-sbom'
+                        'temurin'   : '--create-sbom'
                 ]
         ],
 
@@ -80,7 +81,7 @@ class Config8 {
                 test                : 'default',
                 configureArgs       : '--disable-headful',
                 buildArgs           : [
-                        "temurin"   : '--create-sbom'
+                        'temurin'   : '--create-sbom'
                 ]
         ],
 
@@ -96,7 +97,7 @@ class Config8 {
                 configureArgs      : '--with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
                 test                 : 'default',
                 buildArgs           : [
-                        "temurin"   : '--create-sbom'
+                        'temurin'   : '--create-sbom'
                 ]
         ],
 
@@ -124,11 +125,11 @@ class Config8 {
                 ],
                 test                 : 'default',
                 configureArgs: [
-                    "openj9"        : '--disable-ccache --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+                    'openj9'        : '--disable-ccache --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ],
                 cleanWorkspaceAfterBuild: true,
                 buildArgs           : [
-                        "temurin"   : '--create-sbom'
+                        'temurin'   : '--create-sbom'
                 ]
         ],
 
@@ -142,32 +143,32 @@ class Config8 {
                 configureArgs      : '--with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
                 test               : [
                         nightly: [
-                                "sanity.functional",
-                                "extended.functional",
-                                "sanity.openjdk",
-                                "sanity.perf",
-                                "sanity.jck",
-                                "sanity.system",
-                                "special.system"
+                                'sanity.functional',
+                                'extended.functional',
+                                'sanity.openjdk',
+                                'sanity.perf',
+                                'sanity.jck',
+                                'sanity.system',
+                                'special.system'
                         ],
                         weekly : [
-                                "extended.openjdk",
-                                "extended.perf",
-                                "extended.jck",
-                                "extended.system",
-                                "special.functional",
-                                "special.jck",
-                                "sanity.external",
-                                "sanity.functional.fips",
-                                "sanity.jck.fips",
-                                "extended.jck.fips",
-                                "special.jck.fips",
-                                "sanity.openjdk.fips",
-                                "extended.openjdk.fips"
+                                'extended.openjdk',
+                                'extended.perf',
+                                'extended.jck',
+                                'extended.system',
+                                'special.functional',
+                                'special.jck',
+                                'sanity.external',
+                                'sanity.functional.fips',
+                                'sanity.jck.fips',
+                                'extended.jck.fips',
+                                'special.jck.fips',
+                                'sanity.openjdk.fips',
+                                'extended.openjdk.fips'
                         ]
                 ],
                 buildArgs           : [
-                        "temurin"   : '--create-sbom'
+                        'temurin'   : '--create-sbom'
                 ]
         ],
 
@@ -176,7 +177,7 @@ class Config8 {
                 arch: 'sparcv9',
                 test: 'default',
                 buildArgs           : [
-                        "temurin"   : '--create-sbom'
+                        'temurin'   : '--create-sbom'
                 ]
         ],
 
@@ -185,7 +186,7 @@ class Config8 {
                 arch                : 'x64',
                 test                : 'default',
                 buildArgs           : [
-                        "temurin"   : '--create-sbom'
+                        'temurin'   : '--create-sbom'
                 ]
         ],
 
@@ -195,28 +196,28 @@ class Config8 {
                 additionalNodeLabels : 'centos7',
                 test                : [
                         nightly: [
-                                "sanity.functional",
-                                "extended.functional",
-                                "sanity.openjdk",
-                                "sanity.perf",
-                                "sanity.jck",
-                                "sanity.system",
-                                "special.system"
+                                'sanity.functional',
+                                'extended.functional',
+                                'sanity.openjdk',
+                                'sanity.perf',
+                                'sanity.jck',
+                                'sanity.system',
+                                'special.system'
                         ],
                         weekly : [
-                                "extended.openjdk",
-                                "extended.perf",
-                                "extended.jck",
-                                "extended.system",
-                                "special.functional",
-                                "special.jck",
-                                "sanity.external",
-                                "sanity.functional.fips",
-                                "sanity.jck.fips",
-                                "extended.jck.fips",
-                                "special.jck.fips",
-                                "sanity.openjdk.fips",
-                                "extended.openjdk.fips"
+                                'extended.openjdk',
+                                'extended.perf',
+                                'extended.jck',
+                                'extended.system',
+                                'special.functional',
+                                'special.jck',
+                                'sanity.external',
+                                'sanity.functional.fips',
+                                'sanity.jck.fips',
+                                'extended.jck.fips',
+                                'special.jck.fips',
+                                'sanity.openjdk.fips',
+                                'extended.openjdk.fips'
                         ]
                 ],
                 cleanWorkspaceAfterBuild: true,
@@ -224,10 +225,10 @@ class Config8 {
                         openj9:  'hw.arch.ppc64le && (sw.os.cent.7 || sw.os.rhel.7)'
                 ],
                 configureArgs       : [
-                        "openj9"      : '--enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+                        'openj9'      : '--enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ],
                 buildArgs           : [
-                        "temurin"   : '--create-sbom'
+                        'temurin'   : '--create-sbom'
                 ]
         ],
 
@@ -239,7 +240,7 @@ class Config8 {
                 dockerArgs: '--platform linux/arm/v7',
                 test: 'default',
                 buildArgs           : [
-                        "temurin"   : '--create-sbom'
+                        'temurin'   : '--create-sbom'
                 ]
         ],
 
@@ -259,7 +260,7 @@ class Config8 {
                 cleanWorkspaceAfterBuild: true,
                 test                 : 'default',
                 buildArgs           : [
-                        "temurin"   : '--create-sbom'
+                        'temurin'   : '--create-sbom'
                 ]
         ],
   ]

@@ -1,5 +1,6 @@
 class Config19 {
-  final Map<String, Map<String, ?>> buildConfigurations = [
+
+    final Map<String, Map<String, ?>> buildConfigurations = [
         x64Mac    : [
                 os                  : 'mac',
                 arch                : 'x64',
@@ -15,8 +16,8 @@ class Config19 {
                         openj9      : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ],
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image',
-                        "temurin"   : '--create-jre-image --create-sbom'
+                        'openj9'    : '--create-jre-image',
+                        'temurin'   : '--create-jre-image --create-sbom'
                 ]
         ],
 
@@ -37,28 +38,28 @@ class Config19 {
                 dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
                 test                : [
                         nightly: [
-                                "sanity.functional",
-                                "extended.functional",
-                                "sanity.openjdk",
-                                "sanity.perf",
-                                "sanity.jck",
-                                "sanity.system",
-                                "special.system"
+                                'sanity.functional',
+                                'extended.functional',
+                                'sanity.openjdk',
+                                'sanity.perf',
+                                'sanity.jck',
+                                'sanity.system',
+                                'special.system'
                         ],
                         weekly : [
-                                "extended.openjdk",
-                                "extended.perf",
-                                "extended.jck",
-                                "extended.system",
-                                "special.functional",
-                                "special.jck",
-                                "sanity.external",
-                                "sanity.functional.fips",
-                                "sanity.jck.fips",
-                                "extended.jck.fips",
-                                "special.jck.fips",
-                                "sanity.openjdk.fips",
-                                "extended.openjdk.fips"
+                                'extended.openjdk',
+                                'extended.perf',
+                                'extended.jck',
+                                'extended.system',
+                                'special.functional',
+                                'special.jck',
+                                'sanity.external',
+                                'sanity.functional.fips',
+                                'sanity.jck.fips',
+                                'extended.jck.fips',
+                                'special.jck.fips',
+                                'sanity.openjdk.fips',
+                                'extended.openjdk.fips'
                         ]
                 ],
                 cleanWorkspaceAfterBuild: true,
@@ -71,8 +72,8 @@ class Config19 {
                         temurin     : '--enable-dtrace'
                 ],
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image',
-                        "temurin"   : '--create-source-archive --create-jre-image --create-sbom'
+                        'openj9'    : '--create-jre-image',
+                        'temurin'   : '--create-source-archive --create-jre-image --create-sbom'
                 ]
         ],
 
@@ -83,7 +84,7 @@ class Config19 {
                 test                : 'default',
                 configureArgs       : '--enable-headless-only=yes',
                 buildArgs           : [
-                        "temurin"   : '--create-jre-image --create-sbom'
+                        'temurin'   : '--create-jre-image --create-sbom'
                 ]
         ],
 
@@ -94,7 +95,7 @@ class Config19 {
                 test                : 'default',
                 configureArgs       : '--enable-headless-only=yes',
                 buildArgs           : [
-                        "temurin"   : '--create-jre-image --create-sbom'
+                        'temurin'   : '--create-jre-image --create-sbom'
                 ]
         ],
 
@@ -112,8 +113,8 @@ class Config19 {
                         openj9      :'--with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-jdk-rc-name="IBM Semeru Runtime"'
                 ],
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image',
-                        "temurin"   : '--create-jre-image --create-sbom'
+                        'openj9'    : '--create-jre-image',
+                        'temurin'   : '--create-jre-image --create-sbom'
                 ]
         ],
 
@@ -124,9 +125,8 @@ class Config19 {
                 additionalNodeLabels: 'win2016&&vs2019',
                 test                : false,
                 buildArgs       : [
-                        "temurin"   : '--create-jre-image --create-sbom --cross-compile'
+                        'temurin'   : '--create-jre-image --create-sbom --cross-compile'
                 ]
-
         ],
 
         x32Windows: [
@@ -135,7 +135,7 @@ class Config19 {
                 additionalNodeLabels: 'win2012&&vs2019',
                 test                : 'default',
                 buildArgs           : [
-                        "temurin"   : '--jvm-variant client,server --create-jre-image --create-sbom'
+                        'temurin'   : '--jvm-variant client,server --create-jre-image --create-sbom'
                 ]
         ],
 
@@ -153,8 +153,8 @@ class Config19 {
                 ],
                 cleanWorkspaceAfterBuild: true,
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image',
-                        "temurin"   : '--create-jre-image --create-sbom'
+                        'openj9'    : '--create-jre-image',
+                        'temurin'   : '--create-jre-image --create-sbom'
                 ],
                 additionalTestLabels: [
                         temurin      : 'aix720'
@@ -173,8 +173,8 @@ class Config19 {
                         openj9      : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ],
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image',
-                        "temurin"   : '--create-jre-image --create-sbom'
+                        'openj9'    : '--create-jre-image',
+                        'temurin'   : '--create-jre-image --create-sbom'
                 ]
         ],
 
@@ -190,8 +190,8 @@ class Config19 {
                         openj9      : '--enable-dtrace --enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ],
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image',
-                        "temurin"   : '--create-jre-image --create-sbom'
+                        'openj9'    : '--create-jre-image',
+                        'temurin'   : '--create-jre-image --create-sbom'
                 ]
         ],
 
@@ -211,8 +211,8 @@ class Config19 {
                         openj9      : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ],
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image',
-                        "temurin"   : '--create-jre-image --create-sbom'
+                        'openj9'    : '--create-jre-image',
+                        'temurin'   : '--create-jre-image --create-sbom'
                 ]
         ],
 
@@ -233,8 +233,8 @@ class Config19 {
                         openj9 : 'default'
                 ],
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image',
-                        "temurin"   : '--create-jre-image --create-sbom'
+                        'openj9'    : '--create-jre-image',
+                        'temurin'   : '--create-jre-image --create-sbom'
                 ]
         ],
 
@@ -247,14 +247,16 @@ class Config19 {
                 test                : 'default',
                 configureArgs       : '--enable-dtrace',
                 buildArgs           : [
-                        "temurin"   : '--create-jre-image --create-sbom'
+                        'temurin'   : '--create-jre-image --create-sbom'
                 ]
         ],
         riscv64Linux      :  [
                 os                   : 'linux',
                 arch                 : 'riscv64',
-                configureArgs        : '--enable-dtrace --with-native-debug-symbols=none',
-                buildArgs            : '-r https://github.com/openjdk/riscv-port -b riscv-port --custom-cacerts false --disable-adopt-branch-safety --create-sbom',
+                configureArgs        : '--enable-dtrace',
+                buildArgs           : [
+                        'temurin'   : '--create-jre-image --create-sbom'
+                ],
                 test                : [
                         nightly: ['sanity.openjdk'],
                         weekly : ['sanity.openjdk', 'sanity.system', 'extended.system', 'sanity.perf']

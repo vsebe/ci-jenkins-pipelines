@@ -1,5 +1,6 @@
 class Config17 {
-  final Map<String, Map<String, ?>> buildConfigurations = [
+
+    final Map<String, Map<String, ?>> buildConfigurations = [
         x64Mac    : [
                 os                  : 'mac',
                 arch                : 'x64',
@@ -10,8 +11,8 @@ class Config17 {
                 test                : 'default',
                 cleanWorkspaceAfterBuild: true,
                 buildArgs           : [
-                        "openj9"      : '--create-jre-image',
-                        "temurin"     : '--create-jre-image --create-sbom'
+                        'openj9'      : '--create-jre-image',
+                        'temurin'     : '--create-jre-image --create-sbom'
                 ],
                 configureArgs       : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
         ],
@@ -35,12 +36,12 @@ class Config17 {
                         openj9      : '!(sw.os.cent.6||sw.os.rhel.6)'
                 ],
                 configureArgs       : [
-                        "openj9"      : '--enable-dtrace --enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
-                        "temurin"     : '--enable-dtrace'
+                        'openj9'      : '--enable-dtrace --enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
+                        'temurin'     : '--enable-dtrace'
                 ],
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image',
-                        "temurin"   : '--create-source-archive --create-jre-image --create-sbom'
+                        'openj9'    : '--create-jre-image',
+                        'temurin'   : '--create-source-archive --create-jre-image --create-sbom'
                 ]
         ],
 
@@ -51,7 +52,7 @@ class Config17 {
                 test                : 'default',
                 configureArgs       : '--enable-headless-only=yes',
                 buildArgs           : [
-                        "temurin"   : '--create-jre-image --create-sbom'
+                        'temurin'   : '--create-jre-image --create-sbom'
                 ]
         ],
 
@@ -62,7 +63,7 @@ class Config17 {
                 test                : 'default',
                 configureArgs       : '--enable-headless-only=yes',
                 buildArgs           : [
-                        "temurin"   : '--create-jre-image --create-sbom'
+                        'temurin'   : '--create-jre-image --create-sbom'
                 ]
         ],
 
@@ -75,8 +76,8 @@ class Config17 {
                 ],
                 cleanWorkspaceAfterBuild: true,
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image',
-                        "temurin"   : '--create-jre-image --create-sbom'
+                        'openj9'    : '--create-jre-image',
+                        'temurin'   : '--create-jre-image --create-sbom'
                 ],
                 configureArgs: '--with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-jdk-rc-name="IBM Semeru Runtime"',
                 test                : 'default'
@@ -89,7 +90,7 @@ class Config17 {
                 additionalNodeLabels: 'win2016&&vs2019',
                 test                : false,
                 buildArgs       : [
-                        "temurin"   : '--create-jre-image --create-sbom --cross-compile'
+                        'temurin'   : '--create-jre-image --create-sbom --cross-compile'
                 ]
         ],
 
@@ -99,7 +100,7 @@ class Config17 {
                 additionalNodeLabels: 'win2012&&vs2019',
                 test                : 'default',
                 buildArgs           : [
-                        "temurin"   : '--jvm-variant client,server --create-jre-image --create-sbom'
+                        'temurin'   : '--jvm-variant client,server --create-jre-image --create-sbom'
                 ]
         ],
 
@@ -112,8 +113,8 @@ class Config17 {
                 ],
                 test                : 'default',
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image',
-                        "temurin"   : '--create-jre-image --create-sbom'
+                        'openj9'    : '--create-jre-image',
+                        'temurin'   : '--create-jre-image --create-sbom'
                 ],
                 configureArgs : [
                         openj9: '--disable-ccache --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
@@ -130,8 +131,8 @@ class Config17 {
                         openj9:  'hw.arch.s390x && (sw.os.cent.7 || sw.os.rhel.7)'
                 ],
                 buildArgs           : [
-                        "openj9"      : '--create-jre-image',
-                        "temurin"   : '--create-jre-image --create-sbom'
+                        'openj9'      : '--create-jre-image',
+                        'temurin'   : '--create-jre-image --create-sbom'
                 ],
                 configureArgs       : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
         ],
@@ -146,12 +147,12 @@ class Config17 {
                         openj9:  'hw.arch.ppc64le && (sw.os.cent.7 || sw.os.rhel.7)'
                 ],
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image',
-                        "temurin"   : '--create-jre-image'
+                        'openj9'    : '--create-jre-image',
+                        'temurin'   : '--create-jre-image'
                 ],
                 configureArgs       : [
-                        "temurin"     : '--enable-dtrace',
-                        "openj9"      : '--enable-dtrace --enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+                        'temurin'     : '--enable-dtrace',
+                        'openj9'      : '--enable-dtrace --enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ]
         ],
 
@@ -166,8 +167,8 @@ class Config17 {
                         openj9:  'hw.arch.aarch64 && sw.os.linux'
                 ],
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image',
-                        "temurin"   : '--create-jre-image --create-sbom'
+                        'openj9'    : '--create-jre-image',
+                        'temurin'   : '--create-jre-image --create-sbom'
                 ],
                 configureArgs       : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
         ],
@@ -188,8 +189,8 @@ class Config17 {
                         openj9 : 'default'
                 ],
                 buildArgs           : [
-                        "openj9"    : '--create-jre-image',
-                        "temurin"   : '--create-jre-image --create-sbom'
+                        'openj9'    : '--create-jre-image',
+                        'temurin'   : '--create-jre-image --create-sbom'
                 ]
         ],
 
@@ -202,7 +203,7 @@ class Config17 {
                 test                : 'default',
                 configureArgs       : '--enable-dtrace',
                 buildArgs           : [
-                        "temurin"   : '--create-jre-image --create-sbom'
+                        'temurin'   : '--create-jre-image --create-sbom'
                 ]
         ],
 
@@ -213,10 +214,10 @@ class Config17 {
                 test                : 'default',
                 cleanWorkspaceAfterBuild: true,
                 configureArgs       : [
-                        "openj9"      : '--enable-dtrace'
+                        'openj9'      : '--enable-dtrace'
                 ],
-                additionalFileNameTag: "IBM",
-                buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image"
+                additionalFileNameTag: 'IBM',
+                buildArgs : '--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image'
         ],
 
         x64LinuxIBM  : [
@@ -225,44 +226,44 @@ class Config17 {
                 additionalNodeLabels : 'ci.project.openj9 && hw.arch.x86 && sw.os.linux',
                 dockerImage         : 'adoptopenjdk/centos7_build_image',
                 dockerFile: [
-                        "openj9"  : 'pipelines/build/dockerFiles/cuda.dockerfile'
+                        'openj9'  : 'pipelines/build/dockerFiles/cuda.dockerfile'
                 ],
                 dockerNode          : 'sw.tool.docker && sw.config.uid1000',
                 dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
                 test                : [
                         nightly: [
-                                "sanity.functional",
-                                "extended.functional",
-                                "sanity.openjdk",
-                                "sanity.perf",
-                                "sanity.jck",
-                                "sanity.system",
-                                "special.system"
+                                'sanity.functional',
+                                'extended.functional',
+                                'sanity.openjdk',
+                                'sanity.perf',
+                                'sanity.jck',
+                                'sanity.system',
+                                'special.system'
                         ],
                         weekly : [
-                                "extended.openjdk",
-                                "extended.perf",
-                                "extended.jck",
-                                "extended.system",
-                                "special.functional",
-                                "special.jck",
-                                "sanity.external",
-                                "sanity.functional.fips",
-                                "sanity.jck.fips",
-                                "extended.jck.fips",
-                                "special.jck.fips",
-                                "sanity.openjdk.fips",
-                                "extended.openjdk.fips"
+                                'extended.openjdk',
+                                'extended.perf',
+                                'extended.jck',
+                                'extended.system',
+                                'special.functional',
+                                'special.jck',
+                                'sanity.external',
+                                'sanity.functional.fips',
+                                'sanity.jck.fips',
+                                'extended.jck.fips',
+                                'special.jck.fips',
+                                'sanity.openjdk.fips',
+                                'extended.openjdk.fips'
                         ]
                 ],
                 additionalTestLabels: [
                         openj9      : '!(centos6||rhel6)'
                 ],
                 configureArgs       : [
-                        "openj9"      : '--enable-jitserver --enable-dtrace'
+                        'openj9'      : '--enable-jitserver --enable-dtrace'
                 ],
-                additionalFileNameTag: "IBM",
-                buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image"
+                additionalFileNameTag: 'IBM',
+                buildArgs : '--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image'
         ],
 
         x64WindowsIBM: [
@@ -272,13 +273,13 @@ class Config17 {
                         openj9:     'ci.project.openj9 && hw.arch.x86 && sw.os.windows'
                 ],
                 buildArgs : [
-                        "openj9" : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image"
+                        'openj9' : '--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image'
                 ],
                 test                : 'default',
                 configureArgs       : [
-                        "openj9"      : '--with-jdk-rc-name="IBM Semeru Runtime"'
+                        'openj9'      : '--with-jdk-rc-name="IBM Semeru Runtime"'
                 ],
-                additionalFileNameTag: "IBM"
+                additionalFileNameTag: 'IBM'
         ],
 
         ppc64AixIBM    : [
@@ -289,10 +290,10 @@ class Config17 {
                 ],
                 test                : 'default',
                 configureArgs       : [
-                        "openj9"      : '--disable-ccache'
+                        'openj9'      : '--disable-ccache'
                 ],
-                additionalFileNameTag: "IBM",
-                buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image"
+                additionalFileNameTag: 'IBM',
+                buildArgs : '--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image'
         ],
 
         s390xLinuxIBM    : [
@@ -300,36 +301,36 @@ class Config17 {
                 arch                : 's390x',
                 test                : [
                         nightly: [
-                                "sanity.functional",
-                                "extended.functional",
-                                "sanity.openjdk",
-                                "sanity.perf",
-                                "sanity.jck",
-                                "sanity.system",
-                                "special.system"
+                                'sanity.functional',
+                                'extended.functional',
+                                'sanity.openjdk',
+                                'sanity.perf',
+                                'sanity.jck',
+                                'sanity.system',
+                                'special.system'
                         ],
                         weekly : [
-                                "extended.openjdk",
-                                "extended.perf",
-                                "extended.jck",
-                                "extended.system",
-                                "special.functional",
-                                "special.jck",
-                                "sanity.external",
-                                "sanity.functional.fips",
-                                "sanity.jck.fips",
-                                "extended.jck.fips",
-                                "special.jck.fips",
-                                "sanity.openjdk.fips",
-                                "extended.openjdk.fips"
+                                'extended.openjdk',
+                                'extended.perf',
+                                'extended.jck',
+                                'extended.system',
+                                'special.functional',
+                                'special.jck',
+                                'sanity.external',
+                                'sanity.functional.fips',
+                                'sanity.jck.fips',
+                                'extended.jck.fips',
+                                'special.jck.fips',
+                                'sanity.openjdk.fips',
+                                'extended.openjdk.fips'
                         ]
                 ],
                 additionalNodeLabels: [
                         openj9:  'hw.arch.s390x && (sw.os.cent.7 || sw.os.rhel.7)'
                 ],
                 configureArgs       : '--enable-dtrace',
-                additionalFileNameTag: "IBM",
-                buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image"
+                additionalFileNameTag: 'IBM',
+                buildArgs : '--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image'
         ],
 
         ppc64leLinuxIBM    : [
@@ -338,38 +339,38 @@ class Config17 {
                 additionalNodeLabels : 'centos7',
                 test                : [
                         nightly: [
-                                "sanity.functional",
-                                "extended.functional",
-                                "sanity.openjdk",
-                                "sanity.perf",
-                                "sanity.jck",
-                                "sanity.system",
-                                "special.system"
+                                'sanity.functional',
+                                'extended.functional',
+                                'sanity.openjdk',
+                                'sanity.perf',
+                                'sanity.jck',
+                                'sanity.system',
+                                'special.system'
                         ],
                         weekly : [
-                                "extended.openjdk",
-                                "extended.perf",
-                                "extended.jck",
-                                "extended.system",
-                                "special.functional",
-                                "special.jck",
-                                "sanity.external",
-                                "sanity.functional.fips",
-                                "sanity.jck.fips",
-                                "extended.jck.fips",
-                                "special.jck.fips",
-                                "sanity.openjdk.fips",
-                                "extended.openjdk.fips"
+                                'extended.openjdk',
+                                'extended.perf',
+                                'extended.jck',
+                                'extended.system',
+                                'special.functional',
+                                'special.jck',
+                                'sanity.external',
+                                'sanity.functional.fips',
+                                'sanity.jck.fips',
+                                'extended.jck.fips',
+                                'special.jck.fips',
+                                'sanity.openjdk.fips',
+                                'extended.openjdk.fips'
                         ]
                 ],
                 additionalNodeLabels: [
                         openj9:  'hw.arch.ppc64le && (sw.os.cent.7 || sw.os.rhel.7)'
                 ],
                 configureArgs       : [
-                        "openj9"      : '--enable-dtrace --enable-jitserver'
+                        'openj9'      : '--enable-dtrace --enable-jitserver'
                 ],
-                additionalFileNameTag: "IBM",
-                buildArgs : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image"
+                additionalFileNameTag: 'IBM',
+                buildArgs : '--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image'
         ],
 
         aarch64LinuxIBM    : [
@@ -385,9 +386,9 @@ class Config17 {
                 configureArgs       : [
                         openj9      : '--enable-dtrace'
                 ],
-                additionalFileNameTag: "IBM",
+                additionalFileNameTag: 'IBM',
                 buildArgs : [
-                        "openj9"    : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image"
+                        'openj9'    : '--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image'
                 ]
         ],
 
@@ -405,9 +406,9 @@ class Config17 {
                 test                : [
                         openj9 : 'default'
                 ],
-                additionalFileNameTag: "IBM",
+                additionalFileNameTag: 'IBM',
                 buildArgs : [
-                        "openj9"    : "--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image"
+                        'openj9'    : '--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image'
                 ]
         ],
 
@@ -417,10 +418,10 @@ class Config17 {
             additionalNodeLabels : 'hw.arch.x86 && sw.os.linux && (sw.os.cent.7||sw.os.rhel.7) && ci.role.build.criu',
             test                : [
                     nightly: [
-                        "sanity.functional",
-                        "extended.functional",
-                        "special.functional",
-                        "sanity.external"
+                        'sanity.functional',
+                        'extended.functional',
+                        'special.functional',
+                        'sanity.external'
                     ],
                     weekly : []
             ],
@@ -428,11 +429,11 @@ class Config17 {
                         openj9  : 'ci.project.openj9 && hw.arch.x86 && sw.os.linux && ci.role.test.criu'
             ],
             configureArgs       : [
-                    "openj9"    : '--disable-ccache --enable-criu-support --enable-dtrace --enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-version-pre=ea'
+                    'openj9'    : '--disable-ccache --enable-criu-support --enable-dtrace --enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-version-pre=ea'
             ],
-            additionalFileNameTag: "criu",
+            additionalFileNameTag: 'criu',
             buildArgs           : [
-                "openj9"    : '--create-jre-image'
+                'openj9'    : '--create-jre-image'
             ]
         ]
   ]
