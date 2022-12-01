@@ -658,7 +658,8 @@ class Build {
                             target: 'workspace/target/',
                             flatten: true)
 
-                    context.sh 'for file in $(ls workspace/target/*.tar.gz workspace/target/*.zip); do sha256sum "$file" > $file.sha256.txt ; done'
+                    def extension = (config.TARGET_OS == "windows") ? "zip" : "tar.gz"
+                    context.sh "cd target/${config.TARGET_OS}/${config.ARCHITECTURE}/${config.VARIANT}/ && for file in \$(ls *.${extension}); do sha256sum \"\$file\" > \$file.sha256.txt ; done"
 
                     writeMetadata(versionInfo, false)
                     context.archiveArtifacts artifacts: 'workspace/target/*'
@@ -933,7 +934,8 @@ class Build {
                     context.sh 'rm -f workspace/target/* || true'
                     if (buildConfig.TARGET_OS == 'mac' || buildConfig.TARGET_OS == 'windows') {
                         signInstallerJob(versionData);
-                        context.sh 'for file in $(ls workspace/target/*.tar.gz workspace/target/*.pkg workspace/target/*.msi); do sha256sum "$file" > $file.sha256.txt ; done'
+                        def extension = (config.TARGET_OS == "windows") ? "zip" : "tar.gz"
+                        context.sh "cd target/${config.TARGET_OS}/${config.ARCHITECTURE}/${config.VARIANT}/ && for file in \$(ls *.${extension}); do sha256sum \"\$file\" > \$file.sha256.txt ; done"
                         writeMetadata(versionData, false)
                         context.archiveArtifacts artifacts: 'workspace/target/*'
 
