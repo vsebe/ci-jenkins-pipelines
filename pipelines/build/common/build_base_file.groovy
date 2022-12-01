@@ -1008,7 +1008,8 @@ class Builder implements Serializable {
                                             throw new Exception("[ERROR] Copy artifact timeout (${pipelineTimeouts.COPY_ARTIFACTS_TIMEOUT} HOURS) for ${downstreamJobName} has been reached. Exiting...")
                                         }
                                         // Checksum
-                                        context.sh 'for file in $(ls target/*/*/*/*.tar.gz target/*/*/*/*.zip); do sha256sum "$file" > $file.sha256.txt ; done'
+                                        def extension = (config.TARGET_OS == "windows") ? "zip" : "tar.gz"
+                                        context.sh "cd target/${config.TARGET_OS}/${config.ARCHITECTURE}/${config.VARIANT}/ && for file in \$(ls *.${extension}); do sha256sum \"\$file\" > \$file.sha256.txt ; done"
                                         // Archive in Jenkins
                                         try {
                                             context.timeout(time: pipelineTimeouts.ARCHIVE_ARTIFACTS_TIMEOUT, unit: 'HOURS') {
