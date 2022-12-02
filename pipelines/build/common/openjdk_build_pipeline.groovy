@@ -659,7 +659,7 @@ class Build {
                             flatten: true)
 
                     def extension = (buildConfig.TARGET_OS == "windows") ? "zip" : "tar.gz"
-                    context.sh "cd target/${buildConfig.TARGET_OS}/${buildConfig.ARCHITECTURE}/${buildConfig.VARIANT}/ && for file in \$(ls *.${extension}); do sha256sum \"\$file\" > \$file.sha256.txt ; done"
+                    context.sh "cd workspace/target/ && for file in \$(ls *.${extension}); do sha256sum \"\$file\" > \$file.sha256.txt ; done"
 
                     writeMetadata(versionInfo, false)
                     context.archiveArtifacts artifacts: 'workspace/target/*'
