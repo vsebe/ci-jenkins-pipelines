@@ -309,8 +309,8 @@ class Build {
                             propagate: false,
                             parameters: [
                                     context.string(name: 'SDK_RESOURCE', value: 'customized'),
-                                    context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${env.BUILD_NUMBER}"),
-                                    context.string(name: 'UPSTREAM_JOB_NAME', value: "${env.JOB_NAME}"),
+                                    context.string(name: 'CUSTOMIZED_SDK_URL', value: artifactsUrls),
+                                    context.string(name: 'CUSTOMIZED_SDK_URL_CREDENTIAL_ID', value: artifactoryCredential),
                                     context.string(name: 'JDK_VERSION', value: "${jobParams.JDK_VERSIONS}"),
                                     context.string(name: 'LABEL_ADDITION', value: additionalTestLabel),
                                     context.booleanParam(name: 'KEEP_REPORTDIR', value: buildConfig.KEEP_TEST_REPORTDIR),
