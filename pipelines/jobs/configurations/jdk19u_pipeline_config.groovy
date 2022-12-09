@@ -147,9 +147,14 @@ class Config19 {
                         openj9      : 'hw.arch.ppc64 && sw.os.aix.7_1'
                 ],
                 test                : 'default',
+<<<<<<< HEAD
                 bootJDK             : '18',
                 configureArgs       : [
                         openj9      : '--disable-ccache --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+=======
+                additionalTestLabels: [
+                        temurin      : 'sw.os.aix.7_2'
+>>>>>>> upstream/master
                 ],
                 cleanWorkspaceAfterBuild: true,
                 buildArgs           : [
@@ -181,6 +186,9 @@ class Config19 {
         ppc64leLinux    : [
                 os                  : 'linux',
                 arch                : 'ppc64le',
+                dockerImage         : 'adoptopenjdk/centos7_build_image',
+                dockerNode         : 'sw.tool.docker',
+                dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
                 test                : 'default',
                 cleanWorkspaceAfterBuild: true,
                 additionalNodeLabels: 'hw.arch.ppc64le && (sw.os.cent.7 || sw.os.rhel.7)',

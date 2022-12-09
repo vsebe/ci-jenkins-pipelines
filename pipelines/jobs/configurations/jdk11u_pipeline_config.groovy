@@ -133,6 +133,9 @@ class Config11 {
         ppc64leLinux    : [
             os                  : 'linux',
             arch                : 'ppc64le',
+            dockerImage         : 'adoptopenjdk/centos7_build_image',
+            dockerNode         : 'sw.tool.docker',
+            dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
             additionalNodeLabels : 'centos7',
             test                : 'default',
             additionalNodeLabels: [
@@ -344,6 +347,9 @@ class Config11 {
         ppc64leLinuxIBM    : [
             os                  : 'linux',
             arch                : 'ppc64le',
+            dockerImage         : 'adoptopenjdk/centos7_build_image',
+            dockerNode         : 'sw.tool.docker',
+            dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
             additionalNodeLabels : 'centos7',
             test                : [
                     nightly: [

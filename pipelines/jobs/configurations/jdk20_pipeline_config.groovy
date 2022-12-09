@@ -114,7 +114,7 @@ class Config20 {
                 ],
                 test                : 'default',
                 additionalTestLabels: [
-                        temurin      : 'aix720'
+                        temurin      : 'sw.os.aix.7_2'
                 ],
                 cleanWorkspaceAfterBuild: true,
                 buildArgs           : [
@@ -135,7 +135,9 @@ class Config20 {
         ppc64leLinux    : [
                 os                  : 'linux',
                 arch                : 'ppc64le',
-                additionalNodeLabels: 'centos7',
+                dockerImage         : 'adoptopenjdk/centos7_build_image',
+                dockerNode         : 'sw.tool.docker',
+                dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
                 test                : 'default',
                 configureArgs       : [
                         'temurin'     : '--enable-dtrace',
@@ -189,7 +191,6 @@ class Config20 {
                         'temurin'   : '--create-jre-image --create-sbom'
                 ],
                 test                : [
-                        nightly: ['sanity.openjdk'],
                         weekly : ['sanity.openjdk', 'sanity.system', 'extended.system', 'sanity.perf']
                 ]
         ]
