@@ -147,14 +147,12 @@ class Config19 {
                         openj9      : 'hw.arch.ppc64 && sw.os.aix.7_1'
                 ],
                 test                : 'default',
-<<<<<<< HEAD
                 bootJDK             : '18',
                 configureArgs       : [
                         openj9      : '--disable-ccache --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
-=======
+                ],
                 additionalTestLabels: [
                         temurin      : 'sw.os.aix.7_2'
->>>>>>> upstream/master
                 ],
                 cleanWorkspaceAfterBuild: true,
                 buildArgs           : [
