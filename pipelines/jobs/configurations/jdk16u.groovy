@@ -31,6 +31,7 @@ triggerSchedule_weekly='0 9 * * 6'
 weekly_release_scmReferences=[
         'openj9'         : ''
 ]
+disableJob = true
 
 disableJob = true
 
