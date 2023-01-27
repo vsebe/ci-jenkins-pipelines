@@ -16,7 +16,8 @@ targetConfigurations = [
         's390xLinuxIBM'    : [ 'openj9' ],
         'aarch64LinuxIBM'  : [ 'openj9' ],
         'aarch64MacIBM'    : [ 'openj9' ],
-        'x64LinuxCRIU'     : [ 'openj9' ]
+        'x64LinuxCRIU'     : [ 'openj9' ],
+        's390xLinuxCRIU'   : [ 'openj9' ]
 ]
 
 // Weeknights at 9:00pm
