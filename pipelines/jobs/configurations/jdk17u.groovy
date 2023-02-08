@@ -49,6 +49,9 @@ targetConfigurations = [
         ],
         'x64LinuxCRIU' : [
                 'openj9'
+        ],
+        's390xLinuxCRIU' : [
+                'openj9'
         ]
 
 ]

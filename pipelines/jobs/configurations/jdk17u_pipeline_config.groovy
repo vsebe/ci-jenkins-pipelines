@@ -433,6 +433,31 @@ class Config17 {
             buildArgs           : [
                 'openj9'    : '--create-jre-image'
             ]
+        ],
+
+        s390xLinuxCRIU    : [
+                os                  : 'linux',
+                arch                : 's390x',
+                test                : 'default',
+                cleanWorkspaceAfterBuild: true,
+                additionalNodeLabels: [
+                        openj9:  'hw.arch.s390x && (sw.os.cent.7 || sw.os.rhel.7)'
+                ],
+                test                : [
+                    nightly: [
+                        'sanity.functional',
+                        'extended.functional',
+                        'special.functional',
+                        'sanity.external'
+                    ],
+                    weekly : []
+            ],
+                additionalFileNameTag: 'criu',
+                buildArgs           : [
+                        'openj9'      : '--create-jre-image',
+                        'temurin'   : '--create-jre-image --create-sbom'
+                ],
+                configureArgs       : '--enable-dtrace --enable-criu-support --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
         ]
   ]
 
