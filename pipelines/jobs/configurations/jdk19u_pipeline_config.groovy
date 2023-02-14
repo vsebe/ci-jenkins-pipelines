@@ -204,7 +204,7 @@ class Config19 {
                 additionalNodeLabels: [
                         openj9      : 'hw.arch.aarch64 && sw.os.linux'
                 ],
-                dockerImage         : 'adoptopenjdk/centos7_build_image',
+                dockerImage         : 'adoptopenjdk/centos7_build_image@sha256:8947557de41e8b5fb0b0e067144b30f7771b182f0f571c12afad846aed6bc6be',
                 dockerNode          : 'sw.tool.docker',
                 dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
                 test                : 'default',
