@@ -394,7 +394,14 @@ class Build {
                             } else {
                                 additionalTestLabel += '&&sw.tool.docker'
                             }
+                        } else if (testType  == 'dev.external') {
+                            if (additionalTestLabel == '') {
+                                additionalTestLabel = 'sw.tool.podman'
+                            } else {
+                                additionalTestLabel += '&&sw.tool.podman'
+                            }
                         }
+
                         def jobParams = getAQATestJobParams(testType)
 
                         def testFlag = ''
