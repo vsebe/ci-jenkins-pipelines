@@ -298,7 +298,28 @@ class Config11 {
             additionalNodeLabels: [
                     openj9:  'hw.arch.ppc64 && sw.os.aix.7_2'
             ],
-            test                : 'default',
+            test                : [
+                    nightly: [
+                        'sanity.functional',
+                        'extended.functional',
+                        'sanity.openjdk',
+                        'sanity.perf',
+                        'sanity.jck',
+                        'sanity.system',
+                        'special.system'
+                    ],
+                    weekly : [
+                        'extended.openjdk',
+                        'extended.perf',
+                        'extended.jck',
+                        'extended.system',
+                        'special.functional',
+                        'special.jck',
+                        'dev.openjdk',
+                        'dev.system',
+                        'dev.jck'
+                    ]
+            ],
             additionalFileNameTag: 'IBM',
             cleanWorkspaceAfterBuild: true,
             buildArgs : '--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk'
