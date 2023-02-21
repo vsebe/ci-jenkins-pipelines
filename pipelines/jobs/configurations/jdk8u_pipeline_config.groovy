@@ -158,13 +158,7 @@ class Config8 {
                                 'extended.system',
                                 'special.functional',
                                 'special.jck',
-                                'sanity.external',
-                                'sanity.functional.fips',
-                                'sanity.jck.fips',
-                                'extended.jck.fips',
-                                'special.jck.fips',
-                                'sanity.openjdk.fips',
-                                'extended.openjdk.fips'
+                                'sanity.external'
                         ]
                 ],
                 buildArgs           : [
@@ -210,13 +204,7 @@ class Config8 {
                                 'extended.system',
                                 'special.functional',
                                 'special.jck',
-                                'sanity.external',
-                                'sanity.functional.fips',
-                                'sanity.jck.fips',
-                                'extended.jck.fips',
-                                'special.jck.fips',
-                                'sanity.openjdk.fips',
-                                'extended.openjdk.fips'
+                                'sanity.external'
                         ]
                 ],
                 cleanWorkspaceAfterBuild: true,
