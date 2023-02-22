@@ -94,7 +94,7 @@ class Config11 {
             os                  : 'aix',
             arch                : 'ppc64',
             additionalNodeLabels: [
-                    openj9:  'hw.arch.ppc64 && sw.os.aix.7_1',
+                    openj9:  'hw.arch.ppc64 && sw.os.aix.7_2',
                     temurin: 'xlc16&&aix710',
             ],
             test                : 'default',
@@ -296,7 +296,7 @@ class Config11 {
             os                  : 'aix',
             arch                : 'ppc64',
             additionalNodeLabels: [
-                    openj9:  'hw.arch.ppc64 && sw.os.aix.7_1'
+                    openj9:  'hw.arch.ppc64 && sw.os.aix.7_2'
             ],
             test                : 'default',
             additionalFileNameTag: 'IBM',

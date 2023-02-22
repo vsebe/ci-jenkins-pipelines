@@ -144,7 +144,7 @@ class Config19 {
                 arch                : 'ppc64',
                 additionalNodeLabels: [
                         temurin     : 'xlc16&&aix720',
-                        openj9      : 'hw.arch.ppc64 && sw.os.aix.7_1'
+                        openj9      : 'hw.arch.ppc64 && sw.os.aix.7_2'
                 ],
                 test                : 'default',
                 bootJDK             : '18',

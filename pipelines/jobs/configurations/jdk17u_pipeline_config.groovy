@@ -109,7 +109,7 @@ class Config17 {
                 arch                : 'ppc64',
                 additionalNodeLabels: [
                         temurin: 'xlc16&&aix710',
-                        openj9:  'hw.arch.ppc64 && sw.os.aix.7_1'
+                        openj9:  'hw.arch.ppc64 && sw.os.aix.7_2'
                 ],
                 test                : 'default',
                 buildArgs           : [
@@ -285,7 +285,7 @@ class Config17 {
                 os                  : 'aix',
                 arch                : 'ppc64',
                 additionalNodeLabels: [
-                        openj9:  'hw.arch.ppc64 && sw.os.aix.7_1'
+                        openj9:  'hw.arch.ppc64 && sw.os.aix.7_2'
                 ],
                 test                : 'default',
                 configureArgs       : [
