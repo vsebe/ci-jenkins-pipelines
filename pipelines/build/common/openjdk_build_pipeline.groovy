@@ -1805,7 +1805,7 @@ class Build {
                         def uploadFiles = [files : uploadSpec]
                         def uploadJSON = JsonOutput.toJson(uploadFiles)
 
-                        def server = context.Artifactory.server "na.artifactory.swg-devops"
+                        def server = context.Artifactory.server "na-public.artifactory.swg-devops"
 
                         def buildInfo = context.Artifactory.newBuildInfo()
                         // 200 artifacts is >9months for 5 builds/week (more for non-lts releases that run overy-other day)
