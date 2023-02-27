@@ -521,6 +521,75 @@ class Build {
         return testStages
     }
 
+    def runUploadTestImage() {
+        List testList = buildConfig.TEST_LIST
+        def jobName = "CRIU_Image_Upload"
+        def uploadJobs = [:]
+        def runUploadImage = false
+        def jobCommonParams = getCommonTestJobParams()
+        int version = jobCommonParams['JDK_VERSIONS'] as Integer
+        def testPlatform = jobCommonParams['ARCH_OS_LIST']
+        if ( testPlatform == "x86-64_linux" && (version == 11 || version == 17)) {
+            testList.each { testType ->
+                if (testType  == 'dev.external') {
+                    runUploadImage = true
+                }
+            }
+        }
+        try {
+            // only trigger CRIU_Image_Upload if the pipeline contains xlinux dev.external test build and the job exists
+            if (runUploadImage && JobHelper.jobIsRunnable(jobName as String)) {
+                def aqaBranch = 'master'
+                if (buildConfig.SCM_REF && buildConfig.AQA_REF) {
+                    aqaBranch = buildConfig.AQA_REF
+                }
+                def target = "testList TESTLIST=disabled.criu_pingPerf_testCreateRestoreImageAndPushToRegistry"
+                def jobParamsList = [
+                    'x86-64_linux' : [
+                        ['LABEL_ADDITION' : 'sw.tool.podman&&sw.os.ubuntu.22&&hw.arch.x86.broadwell'],
+                        ['LABEL_ADDITION' : 'sw.tool.podman&&sw.os.rhel.8&&hw.arch.x86.broadwell'],
+                        ['LABEL_ADDITION' : 'sw.tool.podman&&sw.os.rhel.8&&hw.arch.x86.amd'],
+                        ['LABEL_ADDITION' : 'sw.tool.podman&&sw.os.rhel.8&&hw.arch.x86.skylake']
+                    ]
+                ]
+
+                if (jobParamsList[testPlatform] != null) {
+                    for (int i = 0; i < jobParamsList[testPlatform].size(); i++) {
+                        def jobParams = jobParamsList[testPlatform][i]
+                        uploadJobs["${testPlatform}_${jobParams.LABEL_ADDITION}_${i}"] = {
+                            context.catchError {
+                                context.build job: jobName,
+                                propagate: false,
+                                parameters: [
+                                    context.string(name: 'SDK_RESOURCE', value: 'customized'),
+                                    context.string(name: 'CUSTOMIZED_SDK_URL', value: artifactsUrls),
+                                    context.string(name: 'CUSTOMIZED_SDK_URL_CREDENTIAL_ID', value: artifactoryCredential),
+                                    context.string(name: 'ADOPTOPENJDK_BRANCH', value: aqaBranch),
+                                    context.string(name: 'PLATFORM', value: testPlatform),
+                                    context.string(name: 'LABEL_ADDITION', value: jobParams.LABEL_ADDITION),
+                                    context.string(name: 'TARGET', value: "${target}"),
+                                    context.string(name: 'ACTIVE_NODE_TIMEOUT', value: "${buildConfig.ACTIVE_NODE_TIMEOUT}"),
+                                    context.booleanParam(name: 'DYNAMIC_COMPILE', value: true),
+                                    context.string(name: 'DOCKER_REGISTRY_URL', value: "sys-rt-docker-local.artifactory.swg-devops.com"),
+                                    context.string(name: 'DOCKER_REGISTRY_URL_CREDENTIAL_ID', value: artifactoryCredential)]
+                                wait: true
+                            }
+                        }
+                    }
+                } else {
+                    context.println "Cannot find ${testPlatform}. Skip triggering ${jobName}"
+                } 
+            } else {
+                context.println "Pipeline does not contain any required external tests build or ${jobName} doesn't exist. Skip triggering ${jobName}"
+            }
+        } catch (Exception e) {
+            context.println "Failed to execute ${jobName}: ${e.message}"
+        }
+        if (runUploadImage && uploadJobs) {
+            context.parallel uploadJobs
+        }
+    }
+
     // Temurin remote jck trigger
     def remoteTriggerJckTests(String platform, String jdkFileName) {
         def jdkVersion = getJavaVersionNumber()
@@ -2172,6 +2241,7 @@ class Build {
                         }
 
                         if (buildConfig.TEST_LIST.size() > 0) {
+                            runUploadTestImage()
                             def testStages = runAQATests()
                             context.parallel testStages
                         }
