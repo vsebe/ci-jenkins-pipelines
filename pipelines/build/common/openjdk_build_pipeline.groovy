@@ -395,11 +395,10 @@ class Build {
                                 additionalTestLabel += '&&sw.tool.docker'
                             }
                         } else if (testType  == 'dev.external') {
-                            if (additionalTestLabel == '') {
-                                additionalTestLabel = 'sw.tool.podman'
-                            } else {
-                                additionalTestLabel += '&&sw.tool.podman'
+                            if (additionalTestLabel != '') {
+                                additionalTestLabel += '&&'
                             }
+                            additionalTestLabel += 'sw.tool.podman&&(sw.os.ubuntu.22||sw.os.rhel.8)'
                         }
 
                         def jobParams = getAQATestJobParams(testType)
