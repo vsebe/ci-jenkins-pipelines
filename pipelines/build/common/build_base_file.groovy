@@ -666,19 +666,40 @@ class Builder implements Serializable {
         return "jdk${number}"
     }
 
+
+    /*
+    Returns the downstream build job's type by checking job folder's path
+    can be "evaluation" or "release" or null (in this case it is for the nightly or pr-tester)
+    */
+    def getBuildJobType() {
+        if (currentBuild.fullProjectName.contains("evaluation")){
+            return "evaluation"
+        } else if (currentBuild.fullProjectName.contains("release")) {
+            return "release"
+        }
+        return
+    }
+
     /*
     Returns the job name of the target downstream job
     */
     def getJobName(displayName) {
-        return "${javaToBuild}-${displayName}"
+        // if getBuildJobType return null, it is nightly or pr-tester
+        def buildJobType = getBuildJobType() ? getBuildJobType() + "-" : ""
+        return "${javaToBuild}-${buildJobType}${displayName}"
     }
 
     /*
-    Returns the jenkins folder of where it's assumed the downstream build jobs have been regenerated
+    Returns the jenkins folder of where we assume the downstream build jobs have been regenerated
+    e.g: 
+    nightly:    build-scripts/jobs/jdk11u/jdk11u-linux-aarch64-temurin
+    evaluation:  build-scripts/jobs/evaluation/jobs/jdk17u/jdk17u-evaluation-mac-x64-openj9
+    release:    build-scripts/jobs/release/jobs/jdk20/jdk20-release-aix-ppc64-temurin
     */
     def getJobFolder() {
         def parentDir = currentBuild.fullProjectName.substring(0, currentBuild.fullProjectName.lastIndexOf('/'))
-        return parentDir + '/jobs/' + javaToBuild
+        def buildJobType = getBuildJobType() ? "/jobs/" + getBuildJobType() : ""
+        return parentDir + buildJobType + '/jobs/' + javaToBuild
     }
 
     /*
@@ -733,6 +754,7 @@ class Builder implements Serializable {
     }
 
     /*
+<<<<<<< HEAD
     Create SRPM for Linux platforms
     */
     def packageSourceBinaries(variant, tag, linuxTargets, installerUrl, installerBranch) { 
@@ -850,8 +872,8 @@ class Builder implements Serializable {
     }
 
     /*
-    Main function. This is what is executed remotely via the openjdkxx-pipeline and pr tester jobs
-    Running in the openjdkX-pipeline
+    Main function. This is what is executed remotely via the [release-|evaluation-]openjdkxx-pipeline and pr-tester jobs
+    Running in the *openjdkX-pipeline
     */
     @SuppressWarnings('unused')
     def doBuild() {
@@ -926,11 +948,13 @@ class Builder implements Serializable {
                 jobs[configuration.key] = {
                     IndividualBuildConfig config = configuration.value
 
-                    // jdk11u-linux-x64-hotspot
+                    // jdk20-linux-x64-temurin
                     def jobTopName = getJobName(configuration.key)
                     def jobFolder = getJobFolder()
-
-                    // i.e jdk11u/job/jdk11u-linux-x64-hotspot
+                    /*
+                        build-scripts/jobs/jdk20/jdk20-linux-x64-temurin for nightly
+                        build-scripts/evaluation/jobs/jdk20/jdk20-evaluation-linux-aarch64-hotspot for evaluation
+                    */
                     def downstreamJobName = "${jobFolder}/${jobTopName}"
                     context.echo 'build name ' + downstreamJobName
 
@@ -941,21 +965,38 @@ class Builder implements Serializable {
 
                             // set downstream job parameters
                             // add BUILD_CONFIGURATION
-                            def downstreamJobParams = config.toBuildParams()
+                            def buildJobParams = config.toBuildParams()
 
-                            // add other parameters
-                            // pass user set values from the upstream job to the downstream job 
-                            // it allows customization without job regeneration (for developer builds)
-                            downstreamJobParams.add(['$class': 'TextParameterValue', name: 'USER_REMOTE_CONFIGS', value: userRemoteConfigs])
-                            downstreamJobParams.add(['$class': 'TextParameterValue', name: 'DEFAULTS_JSON', value: JsonOutput.prettyPrint(JsonOutput.toJson(DEFAULTS_JSON))])
-                            downstreamJobParams.add(context.string(name: 'SCM_REPO', value: (env.SCM_REPO) ?: DEFAULTS_JSON['repository']['pipeline_url']))
-                            downstreamJobParams.add(context.string(name: 'SCM_BRANCH', value: (env.SCM_BRANCH) ?: DEFAULTS_JSON['repository']['pipeline_branch']))
+                            // Adoptium and Semeru did very similar changes here but never coordinated. Attempt to have both pieces of code live together.
+                            if (config.VARIANT.equals('openj9') {
+                                // add other parameters
+                                // pass user set values from the upstream job to the downstream job 
+                                // it allows customization without job regeneration (for developer builds)
+                                buildJobParams.add(['$class': 'TextParameterValue', name: 'USER_REMOTE_CONFIGS', value: userRemoteConfigs])
+                                buildJobParams.add(['$class': 'TextParameterValue', name: 'DEFAULTS_JSON', value: JsonOutput.prettyPrint(JsonOutput.toJson(DEFAULTS_JSON))])
+                                buildJobParams.add(context.string(name: 'SCM_REPO', value: (env.SCM_REPO) ?: DEFAULTS_JSON['repository']['pipeline_url']))
+                                buildJobParams.add(context.string(name: 'SCM_BRANCH', value: (env.SCM_BRANCH) ?: DEFAULTS_JSON['repository']['pipeline_branch']))
 
+                                
+                            } else {
+                                // Pass down constructed USER_REMOTE_CONFIGS if useAdoptShellScripts is false
+                                // But not for pr-tester as it generates target jobs with required remoteConfigs
+                                if (!useAdoptShellScripts && !env.JOB_NAME.contains('pr-tester')) {
+                                    def user_ci_branch = ciReference ?: DEFAULTS_JSON["repository"]["pipeline_branch"]
+                                    def user_ci_url    = DEFAULTS_JSON["repository"]["pipeline_url"]
+                                    Map<String, ?> USER_REMOTE_CONFIGS = ["branch": user_ci_branch, "remotes": ["url": user_ci_url]]
+                                    buildJobParams.add(['$class': 'TextParameterValue', name: 'USER_REMOTE_CONFIGS', value: JsonOutput.prettyPrint(JsonOutput.toJson(USER_REMOTE_CONFIGS)) ])
+                                }
+
+                                // Pass down DEFAULTS_JSON
+                                buildJobParams.add(['$class': 'TextParameterValue', name: 'DEFAULTS_JSON', value: JsonOutput.prettyPrint(JsonOutput.toJson(DEFAULTS_JSON)) ])
+                            }
+                            
                             //TODO: remove parameters
-                            context.echo "with parameters: ${downstreamJobParams}"
+                            context.echo "with parameters: ${buildJobParams}"
 
                             // Triggering downstream job ${downstreamJobName}
-                            def downstreamJob = context.build job: downstreamJobName, propagate: false, parameters: downstreamJobParams
+                            def downstreamJob = context.build job: downstreamJobName, propagate: false, parameters: buildJobParams
 
                             if (downstreamJob.getResult() == 'SUCCESS') {
                                 // copy artifacts from build

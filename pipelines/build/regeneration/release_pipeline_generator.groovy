@@ -2,8 +2,12 @@ import java.nio.file.NoSuchFileException
 import groovy.json.JsonSlurper
 import groovy.json.JsonOutput
 
+/* 
+file used as jenkinsfile to generator official release pipeline
+*/
+
 // ensure releaseVersions is updated before create releaseTag
-def releaseVersions = [8,11,17,19]
+def releaseVersions = [8,11,17,20]
 
 
 // Regenerate release-openjdkX-pipeline per each jdk version listed in releaseVersions
@@ -61,7 +65,7 @@ node('worker') {
             println "RELEASE_CONFIG_PATH = ${releaseConfigPath}"
             println "JOB_TEMPLATE_PATH = ${jobTemplatePath}"
             println "ENABLE_PIPELINE_SCHEDULE = false"
-            println "USE_ADOPT_SHELL_SCRIPTS = false"
+            println "USE_ADOPT_SHELL_SCRIPTS = true"
 
             releaseVersions.each({ javaVersion ->
                 def config = [
@@ -73,7 +77,7 @@ node('worker') {
                     JAVA_VERSION                : javaVersion,
                     JOB_NAME                    : "release-openjdk${javaVersion}-pipeline",
                     SCRIPT                      : "${scriptFolderPath}/openjdk_pipeline.groovy",
-                    adoptScripts                : false
+                    adoptScripts                : true // USE_ADOPT_SHELL_SCRIPTS
                 ]
 
                 def target
@@ -94,7 +98,7 @@ node('worker') {
                 config.put('defaultsJson', DEFAULTS_JSON)
                 config.put('adoptDefaultsJson', ADOPT_DEFAULTS_JSON)
 
-                if(${javaVersion} >= "11") { // for jdk11+, need extra config args to pass down
+                if(javaVersion >= 11) { // for jdk11+, need extra config args to pass down
                     config.put('additionalConfigureArgs', "--without-version-pre --without-version-opt")
                 }
 
@@ -132,6 +136,9 @@ node('worker') {
         def releaseBuildJob = build job: jobName, propagate: false, wait: true, parameters: [['$class': 'StringParameterValue', name: 'REPOSITORY_BRANCH', value: params.releaseTag]]
         if (releaseBuildJob.getResult() == 'SUCCESS') {
             println "[SUCCESS] jdk${javaVersion} release downstream build jobs are created"
+        } else {
+            println "[FAILURE] Failed to create jdk${javaVersion} release downstream build jobs"
+            currentBuild.result = 'FAILURE'
         }
     })
 }

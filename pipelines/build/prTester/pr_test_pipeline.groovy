@@ -52,7 +52,8 @@ class PullRequestTestPipeline implements Serializable {
                 CHECKOUT_CREDENTIALS: '',
                 adoptScripts        : true,
                 enableTests         : false,
-                enableTestDynamicParallel : false
+                enableTestDynamicParallel : false,
+                releaseType         : "pr-tester"
         ]
     }
 
@@ -108,6 +109,7 @@ class PullRequestTestPipeline implements Serializable {
                     buildConfigurations,
                     testConfigurations,
                     DEFAULTS_JSON,
+                    ADOPT_DEFAULTS_JSON,
                     excludedBuilds,
                     900,
                     currentBuild,
@@ -118,11 +120,10 @@ class PullRequestTestPipeline implements Serializable {
                     DEFAULTS_JSON['templateDirectories']['downstream'],
                     DEFAULTS_JSON['baseFileDirectories']['downstream'],
                     DEFAULTS_JSON['scriptDirectories']['downstream'],
-                    'https://ci.adoptopenjdk.net/job/build-scripts-pr-tester/job/build-test',
+                    'https://ci.adoptium.net/job/build-scripts-pr-tester/job/build-test',
                     null,
                     null,
-                    true,
-                    false
+                    "pr-tester"
                 ).regenerate()
 
                 context.println "[SUCCESS] Regeneration on ${javaVersion} all done!"
@@ -132,7 +133,7 @@ class PullRequestTestPipeline implements Serializable {
                 run tests                   run all version from  $javaVersions
                 run tests quick             run jdk17
                 run tests quick 8           run jdk8
-                run tests quick 11,17,19    run jdk11, 17 and 19
+                run tests quick 11,17,20    run jdk11, 17 and 20
             */
             String[] commentsList = context.params.ghprbCommentBody.trim().split('run tests quick')
             switch (commentsList.size()) {
@@ -149,7 +150,7 @@ class PullRequestTestPipeline implements Serializable {
             // Calling build-test/openjdkX-pipeline against PR
             javaVersions.each({ javaVersion ->
                 jobs["PR test JDK${javaVersion}"] = {
-                    context.stage("Building pr-test Java ${javaVersion}") {
+                    context.stage("Building pr-tester Java ${javaVersion}") {
                         try {
                             context.build job: "${BUILD_FOLDER}/openjdk${javaVersion}-pipeline",
                                 propagate: true,
@@ -160,7 +161,7 @@ class PullRequestTestPipeline implements Serializable {
                                     context.booleanParam(name: 'enableTestDynamicParallel', value: false), // not needed unless we enable test
                                     context.booleanParam(name: 'enableInstallers', value: false), // never need this enabled in pr-test
                                     context.booleanParam(name: 'useAdoptBashScripts', value: false), // should not use defaultsJson but adoptDefaultsJson
-                                    context.booleanParam(name: 'keepReleaseLogs', value: false) // never need this enabled in pr-test
+                                    context.booleanParam(name: 'keepReleaseLogs', value: false) // never need this enabled in pr-tester
                                 ]
                         } catch (err) {
                             context.println "[ERROR] JDK ${actualJavaVersion} PIPELINE FAILED\n$err"
@@ -206,7 +207,7 @@ Map<String, ?> defaultTestConfigurations = [
     ]
 ]
 
-List<Integer> defaultJavaVersions = [8, 11, 17, 19]
+List<Integer> defaultJavaVersions = [8, 11, 17, 20]
 
 return {
     String branch,

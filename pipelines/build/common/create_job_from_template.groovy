@@ -30,6 +30,11 @@ if (!binding.hasVariable('GIT_BRANCH')) {
 
 isLightweight = false
 
+//TODO: need more logic to handle when it is a tag in format of "refs/tags/<tagName>"
+if (binding.hasVariable('CHECKOUT_AS_TAG')) {
+    GIT_BRANCH = "refs/heads/"+GIT_BRANCH
+}
+
 folder(buildFolder) {
     description 'Automatically generated build jobs.'
 }

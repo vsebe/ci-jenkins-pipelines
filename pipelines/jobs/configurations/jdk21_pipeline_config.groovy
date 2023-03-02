@@ -1,4 +1,4 @@
-class Config20 {
+class Config21 {
 
     final Map<String, Map<String, ?>> buildConfigurations = [
         x64Mac    : [
@@ -22,32 +22,7 @@ class Config20 {
                 dockerFile: [
                         openj9      : 'pipelines/build/dockerFiles/cuda.dockerfile'
                 ],
-                test                : [
-                        nightly: [
-                                "sanity.functional",
-                                "extended.functional",
-                                "sanity.openjdk",
-                                "sanity.perf",
-                                "sanity.jck",
-                                "sanity.system",
-                                "special.system"
-                        ],
-                        weekly : [
-                                "extended.openjdk",
-                                "extended.perf",
-                                "extended.jck",
-                                "extended.system",
-                                "special.functional",
-                                "special.jck",
-                                "sanity.external",
-                                "sanity.functional.fips",
-                                "sanity.jck.fips",
-                                "extended.jck.fips",
-                                "special.jck.fips",
-                                "sanity.openjdk.fips",
-                                "extended.openjdk.fips"
-                        ]
-                ],
+                test                : 'default',
                 additionalTestLabels: [
                         openj9      : '!(centos6||rhel6)'
                 ],
@@ -122,6 +97,7 @@ class Config20 {
         ppc64leLinux    : [
                 os                  : 'linux',
                 arch                : 'ppc64le',
+                dockerImage         : 'adoptopenjdk/centos7_build_image',
                 test                : 'default',
                 configureArgs       : [
                         'temurin'     : '--enable-dtrace',
@@ -191,5 +167,5 @@ class Config20 {
 
 }
 
-Config20 config = new Config20()
+Config21 config = new Config21()
 return config.buildConfigurations

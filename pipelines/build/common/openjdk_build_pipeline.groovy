@@ -151,15 +151,12 @@ class Build {
         jobParams.put('BUILD_LIST', 'functional/buildAndPackage')
         def useAdoptShellScripts = Boolean.valueOf(buildConfig.USE_ADOPT_SHELL_SCRIPTS)
         def vendorTestRepos = ((String)ADOPT_DEFAULTS_JSON['repository']['build_url']) - ('.git')
-        def vendorTestBranches = ADOPT_DEFAULTS_JSON['repository']['build_branch']
         def vendorTestDirs = ADOPT_DEFAULTS_JSON['repository']['test_dirs']
         if (!useAdoptShellScripts) {
             vendorTestRepos = ((String)DEFAULTS_JSON['repository']['build_url']) - ('.git')
-            vendorTestBranches = buildConfig.BUILD_REF ?: DEFAULTS_JSON['repository']['build_branch']  // use BUILD_CONFIGURATION's branch if exists
             vendorTestDirs = DEFAULTS_JSON['repository']['test_dirs']
         }
         jobParams.put('VENDOR_TEST_REPOS', vendorTestRepos)
-        jobParams.put('VENDOR_TEST_BRANCHES', vendorTestBranches)
         jobParams.put('VENDOR_TEST_DIRS', vendorTestDirs)
         return jobParams
     }
@@ -288,7 +285,12 @@ class Build {
     */
     def runSmokeTests() {
         def additionalTestLabel = buildConfig.ADDITIONAL_TEST_LABEL
+        def useAdoptShellScripts = Boolean.valueOf(buildConfig.USE_ADOPT_SHELL_SCRIPTS)
+        def vendorTestBranches = useAdoptShellScripts ? ADOPT_DEFAULTS_JSON['repository']['build_branch'] : DEFAULTS_JSON['repository']['build_branch']
 
+        // Use BUILD_REF override if specified
+        vendorTestBranches = buildConfig.BUILD_REF ?: vendorTestBranches
+        
         try {
             context.println 'Running smoke test'
             context.stage('smoke test') {
@@ -304,6 +306,7 @@ class Build {
                         context.jobDsl targets: templatePath, ignoreExisting: false, additionalParameters: jobParams
                     }
                 }
+
                 context.catchError {
                     context.build job: jobName,
                             propagate: false,
@@ -316,6 +319,7 @@ class Build {
                                     context.booleanParam(name: 'KEEP_REPORTDIR', value: buildConfig.KEEP_TEST_REPORTDIR),
                                     context.string(name: 'ACTIVE_NODE_TIMEOUT', value: "${buildConfig.ACTIVE_NODE_TIMEOUT}"),
                                     context.booleanParam(name: 'DYNAMIC_COMPILE', value: true),
+                                    context.string(name: 'VENDOR_TEST_BRANCHES', value: vendorTestBranches),
                                     context.string(name: 'TIME_LIMIT', value: '1')
                             ]
                 }
@@ -529,7 +533,10 @@ class Build {
         context.echo "sdkUrl is ${sdkUrl}"
         def remoteTargets = [:]
         def additionalTestLabel = buildConfig.ADDITIONAL_TEST_LABEL
-
+        def setupJCKRun = false
+        if (buildconfig.SCM_REF && buildconfig.AQA_REF && sdkUrl.contains("release")) {
+            setupJCKRun = true
+        }
         // Determine from the platform the Jck jtx exclude platform
         def excludePlat
         def excludeRoot = "/home"
@@ -582,7 +589,8 @@ class Build {
                                                                 context.MapParameter(name: 'PLATFORMS', value: "${platform}"),
                                                                 context.MapParameter(name: 'PIPELINE_DISPLAY_NAME', value: "${displayName}"),
                                                                 context.MapParameter(name: 'APPLICATION_OPTIONS', value: "${appOptions}"),
-                                                                context.MapParameter(name: 'LABEL_ADDITION', value: additionalTestLabel)]),
+                                                                context.MapParameter(name: 'LABEL_ADDITION', value: additionalTestLabel),
+                                                                context.MapParameter(name: 'SETUP_JCK_RUN', value: setupJCKRun)]),
                         remoteJenkinsName: 'temurin-compliance',
                         shouldNotFailBuild: true,
                         token: 'RemoteTrigger',
@@ -1286,9 +1294,6 @@ class Build {
                     dependency_version["${dep}"] = ''
                 }
             }
-
-            // Dump docker image SHA1 to workspace, consumed by build.sh sbom stage
-            context.writeFile file: 'workspace/target/metadata/docker.txt', text: dockerImageDigest
         }
 
         return new MetaData(
@@ -1358,8 +1363,7 @@ class Build {
             }
         */
 
-        MetaData data = initialWrite ? formMetadata(version, true) : formMetadata(version, false)
-
+        MetaData data = formMetadata(version, initialWrite)
         Boolean metaWrittenOut = false
         listArchives().each({ file ->
             def type = 'jdk'
@@ -1551,6 +1555,16 @@ class Build {
     }
 
     /*
+     Display the current git repo information
+     */
+    def printGitRepoInfo() {
+        context.println 'Checked out repo:'
+        context.sh(script: 'git status')
+        context.println 'Checked out HEAD commit SHA:'
+        context.sh(script: 'git rev-parse HEAD')
+    }
+
+    /*
     Executed on a build node, the function checks out the repository and executes the build via ./make-adopt-build-farm.sh
     Once the build completes, it will calculate its version output, commit the first metadata writeout, and archive the build results.
     Running in downstream job jdk-*-*-* build stage, called by build()
@@ -1564,21 +1578,21 @@ class Build {
     ) {
         return context.stage('build') {
             // Create the repo handler with the user's defaults to ensure a temurin-build checkout is not null
-            def repoHandler = new RepoHandler(USER_REMOTE_CONFIGS)
+            // Pass actual ADOPT_DEFAULTS_JSON, and optional buildConfig CI and BUILD branch/tag overrides,
+            // so that RepoHandler checks out the desired repo correctly
+            def repoHandler = new RepoHandler(USER_REMOTE_CONFIGS, ADOPT_DEFAULTS_JSON, buildConfig.CI_REF, buildConfig.BUILD_REF)
             repoHandler.setUserDefaultsJson(context, DEFAULTS_JSON['defaultsUrl'])
 
-            /*
-                if BUILD_REF, CI_REF are set in BUILD_CONFIGURATION, overwrite branch value in DEFAULTS_JSON
-                so we can re-use the same logic down: get config either from DEFAULT_JSON or ADPOT_DEFULAT_JSON(enable useAdoptShellScripts)
-            */
-            DEFAULTS_JSON['repository']['build_branch'] = buildConfig.BUILD_REF ?: DEFAULTS_JSON['repository']['build_branch']
-            DEFAULTS_JSON['repository']['pipeline_branch'] = buildConfig.CI_REF ?: DEFAULTS_JSON['repository']['pipeline_branch']
-            DEFAULTS_JSON['repository']['helper_ref'] = buildConfig.HELPER_REF ?: DEFAULTS_JSON['repository']['helper_ref']
-
-            context.println 'Print out current value for DEFAULTS_JSON ' +
-                            'might be different from jenkins parameter DEFAULTS_JSON ' +
-                            'if some fields are overwritten by BUILD_CONFIGURATION '
+            context.println 'USER_REMOTE_CONFIGS: '
+            context.println JsonOutput.toJson(USER_REMOTE_CONFIGS)
+            context.println 'DEFAULTS_JSON: '
             context.println JsonOutput.toJson(DEFAULTS_JSON)
+            context.println 'ADOPT_DEFAULTS_JSON: '
+            context.println JsonOutput.toJson(ADOPT_DEFAULTS_JSON)
+            context.println 'Optional branch/tag/commitSHA overrides:'
+            context.println '    buildConfig.CI_REF: ' + buildConfig.CI_REF
+            context.println '    buildConfig.BUILD_REF: ' + buildConfig.BUILD_REF
+            context.println '    buildConfig.HELPER_REF: ' + buildConfig.HELPER_REF
 
             if (cleanWorkspace) {
                 try {
@@ -1618,9 +1632,12 @@ class Build {
                         repoHandler.setUserDefaultsJson(context, DEFAULTS_JSON)
                         repoHandler.checkoutUserPipelines(context)
                     }
+
                     // Perform a git clean outside of checkout to avoid the Jenkins enforced 10 minute timeout
                     // https://github.com/adoptium/infrastucture/issues/1553
                     context.sh(script: 'git clean -fdx')
+
+                    printGitRepoInfo()
                 }
             } catch (FlowInterruptedException e) {
                 throw new Exception("[ERROR] Node checkout workspace timeout (${buildTimeouts.NODE_CHECKOUT_TIMEOUT} HOURS) has been reached. Exiting...")
@@ -1631,12 +1648,15 @@ class Build {
                 List<String> envVars = buildConfig.toEnvVars()
                 envVars.add("FILENAME=${filename}" as String)
 
+                // Use BUILD_REF override if specified
+                def adoptBranch = buildConfig.BUILD_REF ?: ADOPT_DEFAULTS_JSON['repository']['build_branch']
+
                 // Add platform config path so it can be used if the user doesn't have one
                 def splitAdoptUrl = ((String)ADOPT_DEFAULTS_JSON['repository']['build_url']) - ('.git').split('/')
                 // e.g. https://github.com/adoptium/temurin-build.git will produce adoptium/temurin-build
                 String userOrgRepo = "${splitAdoptUrl[splitAdoptUrl.size() - 2]}/${splitAdoptUrl[splitAdoptUrl.size() - 1]}"
                 // e.g. adoptium/temurin-build/master/build-farm/platform-specific-configurations
-                envVars.add("ADOPT_PLATFORM_CONFIG_LOCATION=${userOrgRepo}/${ADOPT_DEFAULTS_JSON['repository']['build_branch']}/${ADOPT_DEFAULTS_JSON['configDirectories']['platform']}" as String)
+                envVars.add("ADOPT_PLATFORM_CONFIG_LOCATION=${userOrgRepo}/${adoptBranch}/${ADOPT_DEFAULTS_JSON['configDirectories']['platform']}" as String)
 
                 // Execute build
                 context.withEnv(envVars) {
@@ -1649,6 +1669,7 @@ class Build {
                             if (useAdoptShellScripts) {
                                 context.println '[CHECKOUT] Checking out to adoptium/temurin-build...'
                                 repoHandler.checkoutAdoptBuild(context)
+                                printGitRepoInfo()
                                 if (buildConfig.TARGET_OS == 'mac' && buildConfig.JAVA_TO_BUILD != 'jdk8u') {
                                     def macSignBuildArgs
                                     if (env.BUILD_ARGS != null && !env.BUILD_ARGS.isEmpty()) {
@@ -1679,6 +1700,7 @@ class Build {
                                         context.sh "rm -rf ${macos_base_path}/* || true"
 
                                         repoHandler.checkoutAdoptBuild(context)
+                                        printGitRepoInfo()
 
                                         // Copy pre assembled binary ready for JMODs to be codesigned
                                         context.unstash 'jmods'
@@ -1740,11 +1762,13 @@ class Build {
                                     repoHandler.setUserDefaultsJson(context, DEFAULTS_JSON)
                                     repoHandler.checkoutUserPipelines(context)
                                 }
+                                printGitRepoInfo()
                             } else {
                                 context.println "[CHECKOUT] Checking out to the user's temurin-build..."
 
                                 repoHandler.setUserDefaultsJson(context, DEFAULTS_JSON)
                                 repoHandler.checkoutUserBuild(context)
+                                printGitRepoInfo()
                                 if (env.JOB_NAME.contains('IBM') || env.JOB_NAME.contains('criu')) {
                                     context.sshagent(['83181e25-eea4-4f55-8b3e-e79615733226']) {
                                         context.sh(script: "./${DEFAULTS_JSON['scriptDirectories']['buildfarm']}")
@@ -1752,8 +1776,10 @@ class Build {
                                 } else {
                                     context.sh(script: "./${DEFAULTS_JSON['scriptDirectories']['buildfarm']}")
                                 }
+
                                 context.println '[CHECKOUT] Reverting pre-build user temurin-build checkout...'
                                 repoHandler.checkoutUserPipelines(context)
+                                printGitRepoInfo()
                             }
                         }
                     } catch (FlowInterruptedException e) {
@@ -1925,8 +1951,8 @@ class Build {
         }
     }
 
-    /*
-        this function should only be used in pr-test
+    /* 
+        this function should only be used in pr-tester
     */
     def updateGithubCommitStatus(STATE, MESSAGE) {
         // workaround https://issues.jenkins-ci.org/browse/JENKINS-38674
@@ -2063,7 +2089,7 @@ class Build {
                             if (buildConfig.DOCKER_FILE) {
                                 try {
                                     context.timeout(time: buildTimeouts.DOCKER_CHECKOUT_TIMEOUT, unit: 'HOURS') {
-                                        def repoHandler = new RepoHandler(USER_REMOTE_CONFIGS)
+                                        def repoHandler = new RepoHandler(USER_REMOTE_CONFIGS, ADOPT_DEFAULTS_JSON, buildConfig.CI_REF, buildConfig.BUILD_REF)
                                         repoHandler.setUserDefaultsJson(context, DEFAULTS_JSON)
                                         if (useAdoptShellScripts) {
                                             repoHandler.checkoutAdoptPipelines(context)
@@ -2074,12 +2100,14 @@ class Build {
                                         // Perform a git clean outside of checkout to avoid the Jenkins enforced 10 minute timeout
                                         // https://github.com/adoptium/infrastucture/issues/1553
                                         context.sh(script: 'git clean -fdx')
+
+                                        printGitRepoInfo()
                                     }
                                 } catch (FlowInterruptedException e) {
                                     throw new Exception("[ERROR] Controller docker file scm checkout timeout (${buildTimeouts.DOCKER_CHECKOUT_TIMEOUT} HOURS) has been reached. Exiting...")
                                 }
 
-                                context.docker.build('build-image', "--build-arg image=${buildConfig.DOCKER_IMAGE} -f ${buildConfig.DOCKER_FILE} .").inside(buildConfig.DOCKER_ARGS) {
+                                context.docker.build("build-image", "--build-arg image=${buildConfig.DOCKER_IMAGE} -f ${buildConfig.DOCKER_FILE} .").inside(buildConfig.DOCKER_ARGS) {
                                     buildScripts(
                                         cleanWorkspace,
                                         cleanWorkspaceAfter,
@@ -2089,7 +2117,9 @@ class Build {
                                     )
                                 }
                             } else {
-                                context.docker.image(buildConfig.DOCKER_IMAGE).inside(buildConfig.DOCKER_ARGS) {
+                                dockerImageDigest = dockerImageDigest.replaceAll("\\[", "").replaceAll("\\]", "")
+                                String dockerRunArg="-e \"BUILDIMAGESHA=$dockerImageDigest\""
+                                context.docker.image(buildConfig.DOCKER_IMAGE).inside(buildConfig.DOCKER_ARGS+" "+dockerRunArg) {
                                     buildScripts(
                                         cleanWorkspace,
                                         cleanWorkspaceAfter,

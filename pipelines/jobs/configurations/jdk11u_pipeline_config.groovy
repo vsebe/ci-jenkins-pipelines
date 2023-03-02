@@ -220,6 +220,17 @@ class Config11 {
                 ]
         ],
 
+        aarch64Windows: [
+                os                  : 'windows',
+                arch                : 'aarch64',
+                crossCompile        : 'x64',
+                additionalNodeLabels: 'win2016&&vs2019',
+                test                : false,
+                buildArgs       : [
+                        'temurin'   : '--jvm-variant client,server --create-sbom --cross-compile'
+                ]
+        ],
+
         x64MacIBM    : [
             os                  : 'mac',
             arch                : 'x64',
