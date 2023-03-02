@@ -968,7 +968,7 @@ class Builder implements Serializable {
                             def buildJobParams = config.toBuildParams()
 
                             // Adoptium and Semeru did very similar changes here but never coordinated. Attempt to have both pieces of code live together.
-                            if (config.VARIANT.equals('openj9') {
+                            if (config.VARIANT.equals('openj9')) {
                                 // add other parameters
                                 // pass user set values from the upstream job to the downstream job 
                                 // it allows customization without job regeneration (for developer builds)
