@@ -1769,7 +1769,7 @@ class Build {
                                 repoHandler.setUserDefaultsJson(context, DEFAULTS_JSON)
                                 repoHandler.checkoutUserBuild(context)
                                 printGitRepoInfo()
-                                if (env.JOB_NAME.contains('IBM') || env.JOB_NAME.contains('criu')) {
+                                if (buildConfig.VARIANT == "openj9") {
                                     context.sshagent(['83181e25-eea4-4f55-8b3e-e79615733226']) {
                                         context.sh(script: "./${DEFAULTS_JSON['scriptDirectories']['buildfarm']}")
                                     }
