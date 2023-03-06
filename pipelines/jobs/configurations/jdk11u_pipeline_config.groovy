@@ -27,7 +27,7 @@ class Config11 {
             dockerCredential    : '9f50c848-8764-440d-b95a-1d295c21713e',
             test                : 'default',
             configureArgs       : [
-                    'openj9'      : '--disable-ccache --enable-jitserver --enable-dtrace=auto --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
+                    'openj9'      : '--disable-ccache --enable-dtrace=auto --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
                     'temurin'     : '--enable-dtrace=auto',
                     'corretto'    : '--enable-dtrace=auto',
                     'SapMachine'  : '--enable-dtrace=auto',
@@ -139,7 +139,7 @@ class Config11 {
             ],
             configureArgs       : [
                     'temurin'     : '--enable-dtrace=auto',
-                    'openj9'      : '--enable-dtrace=auto --enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+                    'openj9'      : '--enable-dtrace=auto --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
             ],
             buildArgs           : [
                     'temurin'   : '--create-sbom'
@@ -281,7 +281,7 @@ class Config11 {
                     ]
             ],
             configureArgs       : [
-                    'openj9'      : '--disable-ccache --enable-jitserver --enable-dtrace=auto'
+                    'openj9'      : '--disable-ccache --enable-dtrace=auto'
             ],
             additionalFileNameTag: 'IBM',
             buildArgs : '--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk'
@@ -394,7 +394,7 @@ class Config11 {
                     openj9:  'hw.arch.ppc64le && (sw.os.cent.7 || sw.os.rhel.7)'
             ],
             configureArgs       : [
-                        'openj9'      : '--enable-dtrace=auto --enable-jitserver'
+                        'openj9'      : '--enable-dtrace=auto '
             ],
             additionalFileNameTag: 'IBM',
             buildArgs : '--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk'
@@ -474,7 +474,7 @@ class Config11 {
                         openj9      : 'ci.project.openj9 && hw.arch.x86 && sw.os.linux && ci.role.test.criu'
             ],
             configureArgs       : [
-                    'openj9'      : '--disable-ccache --enable-jitserver --enable-dtrace=auto --with-version-pre=ea --enable-criu-support --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+                    'openj9'      : '--disable-ccache --enable-dtrace=auto --with-version-pre=ea --enable-criu-support --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
             ],
             additionalFileNameTag: 'criu'
         ],

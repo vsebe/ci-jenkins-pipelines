@@ -36,7 +36,7 @@ class Config17 {
                         openj9      : '!(sw.os.cent.6||sw.os.rhel.6)'
                 ],
                 configureArgs       : [
-                        'openj9'      : '--enable-dtrace --enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
+                        'openj9'      : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
                         'temurin'     : '--enable-dtrace'
                 ],
                 buildArgs           : [
@@ -151,7 +151,7 @@ class Config17 {
                 ],
                 configureArgs       : [
                         'temurin'     : '--enable-dtrace',
-                        'openj9'      : '--enable-dtrace --enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+                        'openj9'      : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ]
         ],
 
@@ -271,7 +271,7 @@ class Config17 {
                         openj9      : '!(centos6||rhel6)'
                 ],
                 configureArgs       : [
-                        'openj9'      : '--enable-jitserver --enable-dtrace'
+                        'openj9'      : '--enable-dtrace'
                 ],
                 additionalFileNameTag: 'IBM',
                 buildArgs : '--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image'
@@ -365,7 +365,7 @@ class Config17 {
                         openj9:  'hw.arch.ppc64le && (sw.os.cent.7 || sw.os.rhel.7)'
                 ],
                 configureArgs       : [
-                        'openj9'      : '--enable-dtrace --enable-jitserver'
+                        'openj9'      : '--enable-dtrace'
                 ],
                 additionalFileNameTag: 'IBM',
                 buildArgs : '--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk17 -b ibm_sdk --create-jre-image'
@@ -427,7 +427,7 @@ class Config17 {
                         openj9  : 'ci.project.openj9 && hw.arch.x86 && sw.os.linux && ci.role.test.criu'
             ],
             configureArgs       : [
-                    'openj9'    : '--disable-ccache --enable-criu-support --enable-dtrace --enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-version-pre=ea'
+                    'openj9'    : '--disable-ccache --enable-criu-support --enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition" --with-version-pre=ea'
             ],
             additionalFileNameTag: 'criu',
             buildArgs           : [

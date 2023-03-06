@@ -55,7 +55,7 @@ class Config8 {
                         ]
                 ],
                 configureArgs       : [
-                        'openj9'      : '--enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
+                        'openj9'      : '--with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
                         'dragonwell'  : '--enable-unlimited-crypto --with-jvm-variants=server --with-zlib=system',
                 ],
                 buildArgs           : [
@@ -212,7 +212,7 @@ class Config8 {
                         openj9:  'hw.arch.ppc64le && (sw.os.cent.7 || sw.os.rhel.7)'
                 ],
                 configureArgs       : [
-                        'openj9'      : '--enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+                        'openj9'      : '--with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ],
                 buildArgs           : [
                         'temurin'   : '--create-sbom'

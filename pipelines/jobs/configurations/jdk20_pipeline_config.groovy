@@ -52,7 +52,7 @@ class Config20 {
                         openj9      : '!(centos6||rhel6)'
                 ],
                 configureArgs       : [
-                        'openj9'    : '--enable-dtrace --enable-jitserver',
+                        'openj9'    : '--enable-dtrace',
                         'temurin'   : '--enable-dtrace'
                 ],
                 buildArgs           : [
@@ -125,7 +125,7 @@ class Config20 {
                 test                : 'default',
                 configureArgs       : [
                         'temurin'     : '--enable-dtrace',
-                        'openj9'      : '--enable-dtrace --enable-jitserver'
+                        'openj9'      : '--enable-dtrace'
                 ],
                 buildArgs           : [
                         'temurin'   : '--create-jre-image --create-sbom'
