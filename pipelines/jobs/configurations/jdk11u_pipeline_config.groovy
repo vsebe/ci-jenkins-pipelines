@@ -479,6 +479,28 @@ class Config11 {
             additionalFileNameTag: 'criu'
         ],
 
+        ppc64leLinuxCRIU    : [
+            os                  : 'linux',
+            arch                : 'ppc64le',
+            test                : [
+                    nightly: [
+                        'sanity.functional',
+                        'extended.functional',
+                        'special.functional',
+                        'sanity.external'
+                    ],
+                    weekly : []
+            ],
+            additionalNodeLabels: [
+                    openj9:  'hw.arch.ppc64le && (sw.os.cent.7 || sw.os.rhel.7)'
+            ],
+            configureArgs       : [
+                    'temurin'     : '--enable-dtrace=auto',
+                    'openj9'      : '--enable-dtrace=auto --with-version-pre=ea --enable-criu-support --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+            ],
+            additionalFileNameTag: 'criu'
+        ],
+
         s390xLinuxCRIU    : [
             os                  : 'linux',
             arch                : 's390x',
@@ -495,9 +517,6 @@ class Config11 {
                     openj9:  'hw.arch.s390x && (sw.os.cent.7 || sw.os.rhel.7)'
             ],
             configureArgs       : '--enable-dtrace=auto  --with-version-pre=ea --enable-criu-support --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
-            buildArgs           : [
-                    'temurin'   : '--create-sbom'
-            ],
             additionalFileNameTag: 'criu'
         ]
   ]

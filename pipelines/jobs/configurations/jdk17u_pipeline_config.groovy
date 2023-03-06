@@ -435,6 +435,31 @@ class Config17 {
             ]
         ],
 
+        ppc64leLinuxCRIU    : [
+                os                  : 'linux',
+                arch                : 'ppc64le',
+                test                : [
+                    nightly: [
+                        'sanity.functional',
+                        'extended.functional',
+                        'special.functional',
+                        'sanity.external'
+                    ],
+                    weekly : []
+                ],
+                cleanWorkspaceAfterBuild: true,
+                additionalNodeLabels: [
+                        openj9:  'hw.arch.ppc64le && (sw.os.cent.7 || sw.os.rhel.7)'
+                ],
+                additionalFileNameTag: 'criu',
+                buildArgs           : [
+                        'openj9'    : '--create-jre-image'
+                ],
+                configureArgs       : [
+                        'openj9'      : '--enable-dtrace --enable-criu-support --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+                ]
+        ],
+
         s390xLinuxCRIU    : [
                 os                  : 'linux',
                 arch                : 's390x',
@@ -451,11 +476,10 @@ class Config17 {
                         'sanity.external'
                     ],
                     weekly : []
-            ],
+                ],
                 additionalFileNameTag: 'criu',
                 buildArgs           : [
-                        'openj9'      : '--create-jre-image',
-                        'temurin'   : '--create-jre-image --create-sbom'
+                        'openj9'      : '--create-jre-image'
                 ],
                 configureArgs       : '--enable-dtrace --enable-criu-support --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
         ]
