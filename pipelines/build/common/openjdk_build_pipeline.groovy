@@ -391,6 +391,7 @@ class Build {
                         }
 
                         def additionalTestLabel = buildConfig.ADDITIONAL_TEST_LABEL
+                        def relatedNodeLabel = ''
                         if (testType  == 'dev.openjdk') {
                             context.println "${testType} need extra label sw.tool.docker"
                             if (additionalTestLabel == '') {
@@ -403,6 +404,14 @@ class Build {
                                 additionalTestLabel += '&&'
                             }
                             additionalTestLabel += 'sw.tool.podman&&(sw.os.ubuntu.22||sw.os.rhel.8)'
+                        } else if (testType  == 'dev.jck') {
+                            if (buildConfig.TARGET_OS == "aix") {
+	                            if (additionalTestLabel != '') {
+	                                additionalTestLabel += '&&'
+	                            }  
+	                            additionalTestLabel += 'ci.geo.raleigh&&sw.tool.jckshare'
+	                            relatedNodeLabel = 'ci.geo.raleigh&&sw.tool.jckrefserver'
+	                        }
                         }
 
                         def jobParams = getAQATestJobParams(testType)
@@ -489,7 +498,8 @@ class Build {
                                             context.string(name: 'DOCKER_REGISTRY_URL_CREDENTIAL_ID', value: DOCKER_REGISTRY_URL_CREDENTIAL_ID),
                                             context.string(name: 'VENDOR_TEST_REPOS', value: VENDOR_TEST_REPOS),
                                             context.string(name: 'VENDOR_TEST_BRANCHES', value: VENDOR_TEST_BRANCHES),
-                                            context.string(name: 'VENDOR_TEST_DIRS', value: VENDOR_TEST_DIRS)],
+                                            context.string(name: 'VENDOR_TEST_DIRS', value: VENDOR_TEST_DIRS),
+                                            context.string(name: 'RELATED_NODES', value: relatedNodeLabel)],
                                             wait: true
                             context.node('worker') {
                                 def result = testJob.getResult()
