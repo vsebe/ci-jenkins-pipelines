@@ -55,11 +55,16 @@ class Config19 {
                                 'special.jck',
                                 'sanity.external',
                                 'sanity.functional.fips',
+                                'extended.functional.fips',
+                                'special.functional.fips',
                                 'sanity.jck.fips',
                                 'extended.jck.fips',
                                 'special.jck.fips',
                                 'sanity.openjdk.fips',
-                                'extended.openjdk.fips'
+                                'extended.openjdk.fips',
+                                'sanity.system.fips',
+                                'extended.system.fips',
+                                'special.system.fips'
                         ]
                 ],
                 cleanWorkspaceAfterBuild: true,
