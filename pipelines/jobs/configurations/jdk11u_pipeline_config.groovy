@@ -486,8 +486,7 @@ class Config11 {
                     nightly: [
                         'sanity.functional',
                         'extended.functional',
-                        'special.functional',
-                        'sanity.external'
+                        'special.functional'
                     ],
                     weekly : []
             ],
@@ -508,8 +507,7 @@ class Config11 {
                     nightly: [
                         'sanity.functional',
                         'extended.functional',
-                        'special.functional',
-                        'sanity.external'
+                        'special.functional'
                     ],
                     weekly : []
             ],
