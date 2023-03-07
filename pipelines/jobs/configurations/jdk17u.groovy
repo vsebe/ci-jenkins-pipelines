@@ -47,9 +47,6 @@ targetConfigurations = [
         'aarch64MacIBM': [
                 'openj9'
         ],
-        'x64LinuxCRIU' : [
-                'openj9'
-        ],
         'ppc64leLinuxCRIU' : [
                 'openj9'
         ],
