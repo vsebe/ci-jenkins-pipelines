@@ -125,6 +125,7 @@ class Config17 {
         s390xLinux    : [
                 os                  : 'linux',
                 arch                : 's390x',
+                dockerImage         : 'rhel7_build_image',
                 test                : 'default',
                 cleanWorkspaceAfterBuild: true,
                 additionalNodeLabels: [
