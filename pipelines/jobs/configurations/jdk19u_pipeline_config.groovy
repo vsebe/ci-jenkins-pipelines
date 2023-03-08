@@ -73,7 +73,7 @@ class Config19 {
                 ],
                 bootJDK             : '18',
                 configureArgs       : [
-                        openj9      : '--enable-dtrace --enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
+                        openj9      : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"',
                         temurin     : '--enable-dtrace'
                 ],
                 buildArgs           : [
@@ -195,7 +195,7 @@ class Config19 {
                 bootJDK             : '18',
                 configureArgs       : [
                         temurin     : '--enable-dtrace',
-                        openj9      : '--enable-dtrace --enable-jitserver --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+                        openj9      : '--enable-dtrace --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ],
                 buildArgs           : [
                         'openj9'    : '--create-jre-image',
