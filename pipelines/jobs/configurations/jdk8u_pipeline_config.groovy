@@ -166,7 +166,6 @@ class Config8 {
                                 'sanity.external'
                         ]
                 ],
-                dockerImage         : 'rhel7_build_image',
                 buildArgs           : [
                         'temurin'   : '--create-sbom'
                 ]
