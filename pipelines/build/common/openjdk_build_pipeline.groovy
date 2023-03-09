@@ -309,7 +309,7 @@ class Build {
 
                 context.catchError {
                     context.build job: jobName,
-                            propagate: false,
+                            propagate: true,
                             parameters: [
                                     context.string(name: 'SDK_RESOURCE', value: 'customized'),
                                     context.string(name: 'CUSTOMIZED_SDK_URL', value: artifactsUrls),
@@ -473,7 +473,7 @@ class Build {
                         }
                         context.catchError {
                             def testJob = context.build job: jobName,
-                                    propagate: false,
+                                    propagate: true,
                                     parameters: [
                                             //context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${env.BUILD_NUMBER}"),
                                             //context.string(name: 'UPSTREAM_JOB_NAME', value: "${env.JOB_NAME}"),
