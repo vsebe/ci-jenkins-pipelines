@@ -139,7 +139,7 @@ class Config11 {
             ],
             configureArgs       : [
                     'temurin'     : '--enable-dtrace=auto',
-                    'openj9'      : '--enable-dtrace=auto --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
+                    'openj9'      : '--enable-dtrace=auto --enable-criu-support --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
             ],
             buildArgs           : [
                     'temurin'   : '--create-sbom'
@@ -399,7 +399,7 @@ class Config11 {
                     openj9:  'hw.arch.ppc64le && (sw.os.cent.7 || sw.os.rhel.7)'
             ],
             configureArgs       : [
-                        'openj9'      : '--enable-dtrace=auto '
+                        'openj9'      : '--enable-dtrace=auto --enable-criu-support'
             ],
             additionalFileNameTag: 'IBM',
             buildArgs : '--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk'
