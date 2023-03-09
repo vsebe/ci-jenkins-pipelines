@@ -557,7 +557,7 @@ class Build {
                 if (buildConfig.SCM_REF && buildConfig.AQA_REF) {
                     aqaBranch = buildConfig.AQA_REF
                 }
-                def target = "testList TESTLIST=disabled.criu_pingPerf_testCreateRestoreImageAndPushToRegistry"
+                def target = "testList TESTLIST=disabled.criu_pingPerf_testCreateRestoreImageAndPushToRegistry,disabled.criu-portable-checkpoint_test,disabled.criu-ubi-portable-checkpoint_test"
                 def jobParamsList = [
                     'x86-64_linux' : [
                         ['LABEL_ADDITION' : 'sw.tool.podman&&sw.os.ubuntu.22&&hw.arch.x86.broadwell'],
