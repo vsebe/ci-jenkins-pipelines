@@ -235,7 +235,26 @@ class Config11 {
             os                  : 'mac',
             arch                : 'x64',
             additionalNodeLabels : 'ci.project.openj9 && hw.arch.x86 && sw.os.osx.10_15',
-            test                : 'default',
+            test                : [
+                    nightly: [
+                        'sanity.functional',
+                        'extended.functional',
+                        'sanity.openjdk',
+                        'sanity.perf',
+                        'sanity.jck',
+                        'sanity.system',
+                        'special.system'
+                    ],
+                    weekly : [
+                        'extended.openjdk',
+                        'extended.perf',
+                        'extended.jck',
+                        'extended.system',
+                        'special.functional',
+                        'special.jck',
+                        'dev.jck'
+                    ]
+            ],
             configureArgs       : [
                     'openj9'      : '--enable-dtrace=auto '
             ],
@@ -282,7 +301,8 @@ class Config11 {
                         'extended.openjdk.fips',
                         'sanity.system.fips',
                         'extended.system.fips',
-                        'special.system.fips'
+                        'special.system.fips',
+                        'dev.jck'
                     ]
             ],
             configureArgs       : [
@@ -301,7 +321,26 @@ class Config11 {
             buildArgs : [
                     openj9 : '--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk'
             ],
-            test                : 'default',
+            test                : [
+                    nightly: [
+                        'sanity.functional',
+                        'extended.functional',
+                        'sanity.openjdk',
+                        'sanity.perf',
+                        'sanity.jck',
+                        'sanity.system',
+                        'special.system'
+                    ],
+                    weekly : [
+                        'extended.openjdk',
+                        'extended.perf',
+                        'extended.jck',
+                        'extended.system',
+                        'special.functional',
+                        'special.jck',
+                        'dev.jck'
+                    ]
+            ],
             configureArgs       : [
                     'openj9'      : '--with-jdk-rc-name="IBM Semeru Runtime"'
             ],
@@ -331,8 +370,6 @@ class Config11 {
                         'extended.system',
                         'special.functional',
                         'special.jck',
-                        'dev.openjdk',
-                        'dev.system',
                         'dev.jck'
                     ]
             ],
@@ -431,7 +468,8 @@ class Config11 {
                         'extended.system',
                         'special.functional',
                         'special.jck',
-                        'sanity.external'
+                        'sanity.external',
+                        'dev.jck'
                     ]
             ],
             configureArgs       : [
@@ -456,7 +494,24 @@ class Config11 {
                         openj9      : '--enable-dtrace --disable-warnings-as-errors --with-noncompressedrefs'
                 ],
                 test                : [
-                        openj9 : 'default'
+                    nightly: [
+                        'sanity.functional',
+                        'extended.functional',
+                        'sanity.openjdk',
+                        'sanity.perf',
+                        'sanity.jck',
+                        'sanity.system',
+                        'special.system'
+                    ],
+                    weekly : [
+                        'extended.openjdk',
+                        'extended.perf',
+                        'extended.jck',
+                        'extended.system',
+                        'special.functional',
+                        'special.jck',
+                        'dev.jck'
+                    ]
                 ],
                 additionalFileNameTag: 'IBM',
                 buildArgs : '--ssh --disable-adopt-branch-safety -r git@github.ibm.com:runtimes/openj9-openjdk-jdk11 -b ibm_sdk'

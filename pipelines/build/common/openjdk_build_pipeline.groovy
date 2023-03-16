@@ -392,6 +392,7 @@ class Build {
 
                         def additionalTestLabel = buildConfig.ADDITIONAL_TEST_LABEL
                         def relatedNodeLabel = ''
+                        def additionalArtifactsRequired = ''
                         if (testType  == 'dev.openjdk') {
                             context.println "${testType} need extra label sw.tool.docker"
                             if (additionalTestLabel == '') {
@@ -412,6 +413,7 @@ class Build {
 	                            additionalTestLabel += 'ci.geo.raleigh&&sw.tool.jckshare'
 	                            relatedNodeLabel = 'ci.geo.raleigh&&sw.tool.jckrefserver'
 	                        }
+	                        additionalArtifactsRequired = 'RI_JDK'
                         }
 
                         def jobParams = getAQATestJobParams(testType)
@@ -499,7 +501,8 @@ class Build {
                                             context.string(name: 'VENDOR_TEST_REPOS', value: VENDOR_TEST_REPOS),
                                             context.string(name: 'VENDOR_TEST_BRANCHES', value: VENDOR_TEST_BRANCHES),
                                             context.string(name: 'VENDOR_TEST_DIRS', value: VENDOR_TEST_DIRS),
-                                            context.string(name: 'RELATED_NODES', value: relatedNodeLabel)],
+                                            context.string(name: 'RELATED_NODES', value: relatedNodeLabel), 
+                                            context.string(name: 'ADDITIONAL_ARTIFACTS_REQUIRED', value: additionalArtifactsRequired)],
                                             wait: true
                             context.node('worker') {
                                 def result = testJob.getResult()
