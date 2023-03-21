@@ -403,7 +403,7 @@ class Build {
                             if (additionalTestLabel != '') {
                                 additionalTestLabel += '&&'
                             }
-                            additionalTestLabel += 'sw.tool.podman&&(sw.os.ubuntu.22||sw.os.rhel.8)'
+                            additionalTestLabel += 'sw.tool.podman&&sw.tool.container.criu&&(sw.os.ubuntu.22||sw.os.rhel.8)'
                         } else if (testType  == 'dev.jck') {
                             if (buildConfig.TARGET_OS == "aix") {
 	                            if (additionalTestLabel != '') {
@@ -560,10 +560,11 @@ class Build {
                 def target = "testList TESTLIST=disabled.criu_pingPerf_testCreateRestoreImageAndPushToRegistry,disabled.criu-portable-checkpoint_test,disabled.criu-ubi-portable-checkpoint_test"
                 def jobParamsList = [
                     'x86-64_linux' : [
-                        ['LABEL_ADDITION' : 'sw.tool.podman&&sw.os.ubuntu.22&&hw.arch.x86.broadwell'],
-                        ['LABEL_ADDITION' : 'sw.tool.podman&&sw.os.rhel.8&&hw.arch.x86.broadwell'],
-                        ['LABEL_ADDITION' : 'sw.tool.podman&&sw.os.rhel.8&&hw.arch.x86.amd'],
-                        ['LABEL_ADDITION' : 'sw.tool.podman&&sw.os.rhel.8&&hw.arch.x86.skylake']
+                        ['LABEL_ADDITION' : 'sw.tool.podman&&sw.tool.container.criu&&sw.os.ubuntu.22&&hw.arch.x86.broadwell'],
+                        ['LABEL_ADDITION' : 'sw.tool.podman&&sw.tool.container.criu&&sw.os.ubuntu.22&&hw.arch.x86.amd'],
+                        ['LABEL_ADDITION' : 'sw.tool.podman&&sw.tool.container.criu&&sw.os.rhel.8&&hw.arch.x86.broadwell'],
+                        ['LABEL_ADDITION' : 'sw.tool.podman&&sw.tool.container.criu&&sw.os.rhel.8&&hw.arch.x86.amd'],
+                        ['LABEL_ADDITION' : 'sw.tool.podman&&sw.tool.container.criu&&sw.os.rhel.8&&hw.arch.x86.skylake']
                     ]
                 ]
 
