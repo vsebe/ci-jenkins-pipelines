@@ -862,12 +862,14 @@ class Build {
 
         if (buildConfig.VARIANT == "openj9") {
             filter = "**/*-j*_${buildConfig.ARCHITECTURE}_${buildConfig.TARGET_OS}_*.tar.gz"
-            nodeFilter = "sw.os.${buildConfig.TARGET_OS}&&ci.role.packaging&&sw.tool.rpm&&sw.tool.signing"
+            nodeFilter = "sw.os.${buildConfig.TARGET_OS}&&ci.role.packaging&&sw.tool.rpm"
 
             def enableSigner = Boolean.valueOf(buildConfig.ENABLE_SIGNER)
             if (buildConfig.TARGET_OS == "aix") {
                 // sign tool not available on AIX nodes
                 enableSigner = false
+            } else {
+                nodeFilter += "&&sw.tool.signing"
             }
 
             def version = ''
