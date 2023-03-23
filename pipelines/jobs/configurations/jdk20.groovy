@@ -1,49 +1,38 @@
 targetConfigurations = [
         'x64Mac'      : [
-                'temurin'
+                'openj9'
         ],
         'x64Linux'    : [
-                'temurin'
-        ],
-        'x64AlpineLinux' : [
-                'temurin'
+                'openj9'
         ],
         'x64Windows'  : [
-                'temurin'
+                'openj9'
         ],
         'ppc64Aix'    : [
-                'temurin'
+                'openj9'
         ],
         'ppc64leLinux': [
-                'temurin'
+                'openj9'
         ],
         's390xLinux'  : [
-                'temurin'
+                'openj9'
         ],
         'aarch64Linux': [
-                'hotspot',
-                'temurin'
+                'openj9'
         ],
         'aarch64Mac': [
-                'temurin'
-        ],
-        'arm32Linux'  : [
-                'temurin'
+                'openj9'
         ]
 ]
 
-// 03:30 Wed, Fri
-triggerSchedule_nightly = 'TZ=UTC\n30 03 * * 3,5'
-// 23:30 Sat
-triggerSchedule_weekly = 'TZ=UTC\n30 23 * * 6'
+// Weekly 7:30 pm Wed
+triggerSchedule_nightly = '30 19 * * 3'
+// 11:00 am Sat
+triggerSchedule_weekly = '0 11 * * 6'
 
 // scmReferences to use for weekly release build
 weekly_release_scmReferences = [
-        'hotspot'        : '',
-        'temurin'        : '',
-        'openj9'         : '',
-        'corretto'       : '',
-        'dragonwell'     : ''
+        'openj9'        : ''
 ]
 
 return this
