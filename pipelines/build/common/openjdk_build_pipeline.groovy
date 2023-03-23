@@ -68,7 +68,8 @@ class Build {
     String dockerImageDigest = ''
     Map<String,String> dependency_version = new HashMap<String,String>()
     String crossCompileVersionPath = ''
-    String artifactsUrls = ''
+    String jdkUrl = ''
+    String testimageUrl = ''
     String artifactoryCredential = ''
     String artifactoryBaseUrl = ''
     Map variantVersion = [:]
@@ -321,7 +322,7 @@ class Build {
                             propagate: true,
                             parameters: [
                                     context.string(name: 'SDK_RESOURCE', value: 'customized'),
-                                    context.string(name: 'CUSTOMIZED_SDK_URL', value: artifactsUrls),
+                                    context.string(name: 'CUSTOMIZED_SDK_URL', value: jdkUrl),
                                     context.string(name: 'CUSTOMIZED_SDK_URL_CREDENTIAL_ID', value: artifactoryCredential),
                                     context.string(name: 'JDK_VERSION', value: "${jobParams.JDK_VERSIONS}"),
                                     context.string(name: 'LABEL_ADDITION', value: additionalTestLabel),
@@ -360,9 +361,9 @@ class Build {
         }
 
         def aqaAutoGen = buildConfig.AQA_AUTO_GEN ?: false
-
         testList.each { testType ->
             // For each requested test, i.e 'sanity.openjdk', 'sanity.system', 'sanity.perf', 'sanity.external', call test job
+            def customizedSdkUrl = jdkUrl
             try {
                 testStages["${testType}"] = {
                     context.println "Running test: ${testType}"
@@ -373,7 +374,11 @@ class Build {
                             isFipsTestBuild = true
                         }
                         def keep_test_reportdir = buildConfig.KEEP_TEST_REPORTDIR
-                        if (("${testType}".contains('openjdk')) || ("${testType}".contains('jck'))) {
+                        if (("${testType}".contains('openjdk'))) {
+                            // Keep test reportdir always for JUnit targets
+                            keep_test_reportdir = true
+                            customizedSdkUrl += " " + testimageUrl
+                        } else if ("${testType}".contains('jck')) {
                             // Keep test reportdir always for JUnit targets
                             keep_test_reportdir = true
                         }
@@ -390,6 +395,7 @@ class Build {
                             VENDOR_TEST_REPOS = 'git@github.ibm.com:runtimes/test.git'
                             VENDOR_TEST_BRANCHES = aqaBranch
                             VENDOR_TEST_DIRS = 'functional'
+                            customizedSdkUrl += " " + testimageUrl
                         }
 
                         def DOCKER_REGISTRY_URL = ''
@@ -489,7 +495,7 @@ class Build {
                                             //context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${env.BUILD_NUMBER}"),
                                             //context.string(name: 'UPSTREAM_JOB_NAME', value: "${env.JOB_NAME}"),
                                             context.string(name: 'SDK_RESOURCE', value: 'customized'),
-                                            context.string(name: 'CUSTOMIZED_SDK_URL', value: artifactsUrls),
+                                            context.string(name: 'CUSTOMIZED_SDK_URL', value: customizedSdkUrl),
                                             context.string(name: 'CUSTOMIZED_SDK_URL_CREDENTIAL_ID', value: artifactoryCredential),
                                             context.string(name: 'RELEASE_TAG', value: "${buildConfig.SCM_REF}"),
                                             context.string(name: 'JDK_REPO', value: jdkRepo),
@@ -588,7 +594,7 @@ class Build {
                                 propagate: false,
                                 parameters: [
                                     context.string(name: 'SDK_RESOURCE', value: 'customized'),
-                                    context.string(name: 'CUSTOMIZED_SDK_URL', value: artifactsUrls),
+                                    context.string(name: 'CUSTOMIZED_SDK_URL', value: jdkUrl),
                                     context.string(name: 'CUSTOMIZED_SDK_URL_CREDENTIAL_ID', value: artifactoryCredential),
                                     context.string(name: 'ADOPTOPENJDK_BRANCH', value: aqaBranch),
                                     context.string(name: 'PLATFORM', value: testPlatform),
@@ -1959,7 +1965,11 @@ class Build {
                                 if ((artifact.getRemotePath().contains(".tar.gz") || artifact.getRemotePath().contains(".zip")) && !artifact.getRemotePath().contains(".json")) {
                                     def artifactUrl = artifactoryBaseUrl + '/' + artifact.getRemotePath()
                                     def artifactName = artifactUrl.substring(artifactUrl.lastIndexOf("/") + 1);
-                                    artifactsUrls += " " + artifactUrl
+                                    if (artifactUrl.contains("-jdk_")) {
+                                        jdkUrl = artifactUrl
+                                    } else if (artifactUrl.contains("-testimage_")) {
+                                        testimageUrl = artifactUrl
+                                    }
                                     context.currentBuild.description += "<br><a href=${artifactUrl}>${artifactName}</a>"
                                 }
                             }
