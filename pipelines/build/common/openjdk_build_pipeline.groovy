@@ -425,8 +425,8 @@ class Build {
 	                            if (additionalTestLabel != '') {
 	                                additionalTestLabel += '&&'
 	                            }  
-	                            additionalTestLabel += 'ci.geo.raleigh&&sw.tool.jckshare'
-	                            relatedNodeLabel = 'ci.geo.raleigh&&sw.tool.jckrefserver'
+	                            additionalTestLabel += 'ci.geo.rtp&&sw.tool.jckshare'
+	                            relatedNodeLabel = 'ci.geo.rtp&&sw.tool.jckrefserver'
 	                        }
 	                        additionalArtifactsRequired = 'RI_JDK'
                         }
