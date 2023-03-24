@@ -35,6 +35,11 @@ if (binding.hasVariable('CHECKOUT_AS_TAG')) {
     GIT_BRANCH = "refs/heads/"+GIT_BRANCH
 }
 
+gitRefSpec = ''
+if (binding.hasVariable('PR_BUILDER')) {
+	gitRefSpec = '+refs/pull/*:refs/remotes/origin/pr/* +refs/heads/master:refs/remotes/origin/master +refs/heads/*:refs/remotes/origin/*'
+}
+
 folder(buildFolder) {
     description 'Automatically generated build jobs.'
 }
@@ -47,7 +52,7 @@ pipelineJob("$buildFolder/$JOB_NAME") {
                 git {
                     remote {
                         url('$SCM_REPO')
-                        refspec(' +refs/pull/*:refs/remotes/origin/pr/* +refs/heads/master:refs/remotes/origin/master +refs/heads/*:refs/remotes/origin/*')
+                        refspec(gitRefSpec)
                         credentials("${CHECKOUT_CREDENTIALS}")
                     }
                     branch('$SCM_BRANCH')
