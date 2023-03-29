@@ -837,8 +837,6 @@ class Build {
             filter = "**/ibm-semeru*-j*_mac_*.tar.gz"
         }
 
-        def nodeFilter = "${buildConfig.TARGET_OS}&&macos10.14&&xcode10"
-
         // Execute installer job
         def installerJob = context.build job: 'build-scripts/release/create_installer_mac',
                 propagate: true,
@@ -847,8 +845,7 @@ class Build {
                         context.string(name: 'UPSTREAM_JOB_NAME', value: "${env.JOB_NAME}"),
                         context.string(name: 'FILTER', value: "${filter}"),
                         context.string(name: 'FULL_VERSION', value: "${versionData.version}"),
-                        context.string(name: 'MAJOR_VERSION', value: "${versionData.major}"),
-                        ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "${nodeFilter}"]
+                        context.string(name: 'MAJOR_VERSION', value: "${versionData.major}")
                 ]
 
         context.copyArtifacts(
@@ -1121,8 +1118,6 @@ class Build {
             default: break
         }
 
-        def nodeFilter = 'eclipse-codesign'
-
         // Execute sign installer job
 
         if (buildConfig.TARGET_OS == 'aix') {
@@ -1186,8 +1181,7 @@ class Build {
             def params = [
                   context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${env.BUILD_NUMBER}"),
                   context.string(name: 'UPSTREAM_JOB_NAME', value: "${env.JOB_NAME}"),
-                  context.string(name: 'UPSTREAM_DIR', value: 'workspace/target'),
-                  ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: 'gpgsign']
+                  context.string(name: 'UPSTREAM_DIR', value: 'workspace/target')
            ]
 
             def signSHAsJob = context.build job: 'build-scripts/release/sign_temurin_gpg',
