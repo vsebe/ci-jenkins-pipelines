@@ -70,7 +70,7 @@
     },
     "enableInstallers"       : true,
     "enableSourceRpm"        : true,
-    "enableSigner"           : true,
+    "enableSigner"           : false,
     "verifySigner"           : true,
     "importLibraryScript"    : "pipelines/build/common/import_lib.groovy",
     "defaultsUrl"            : "https://raw.githubusercontent.com/ibmruntimes/ci-jenkins-pipelines/ibm/pipelines/defaults.json"
