@@ -95,9 +95,12 @@ class Config11 {
             arch                : 'ppc64',
             additionalNodeLabels: [
                     openj9:  'hw.arch.ppc64 && sw.os.aix.7_2',
-                    temurin: 'xlc16&&aix710',
+                    temurin: 'xlc13&&aix720',
             ],
             test                : 'default',
+            additionalTestLabels: [
+                    temurin: 'sw.os.aix.7_2'
+            ],
             cleanWorkspaceAfterBuild: true,
             configureArgs       : [
                     'openj9'      : '--with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'

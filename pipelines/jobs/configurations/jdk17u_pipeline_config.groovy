@@ -108,10 +108,13 @@ class Config17 {
                 os                  : 'aix',
                 arch                : 'ppc64',
                 additionalNodeLabels: [
-                        temurin: 'xlc16&&aix710',
+                        temurin: 'xlc13&&aix720',
                         openj9:  'hw.arch.ppc64 && sw.os.aix.7_2'
                 ],
                 test                : 'default',
+                additionalTestLabels:  [
+                        temurin: 'sw.os.aix.7_2'
+                ],
                 buildArgs           : [
                         'openj9'    : '--create-jre-image',
                         'temurin'   : '--create-jre-image --create-sbom'

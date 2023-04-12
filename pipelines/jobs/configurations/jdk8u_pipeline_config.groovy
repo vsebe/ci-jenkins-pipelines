@@ -125,10 +125,13 @@ class Config8 {
                 os  : 'aix',
                 arch: 'ppc64',
                 additionalNodeLabels: [
-                        temurin: 'xlc13&&aix710',
+                        temurin: 'xlc13&&aix720',
                         openj9:  'hw.arch.ppc64 && sw.os.aix.7_2'
                 ],
                 test                 : 'default',
+                additionalTestLabels : [
+                        temurin: 'sw.os.aix.7_2'
+                ],
                 configureArgs: [
                     'openj9'        : '--disable-ccache --with-product-name="IBM Semeru Runtime" --with-product-suffix="Open Edition"'
                 ],
