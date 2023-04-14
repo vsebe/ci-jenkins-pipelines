@@ -499,10 +499,10 @@ class Build {
                                 }
                             }
                         }
-                        context.catchError {
-                            def testJob = context.build job: jobName,
-                                    propagate: true,
-                                    parameters: [
+
+                        def testJob = context.build job: jobName,
+                                        propagate: false,
+                                        parameters: [
                                             //context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${env.BUILD_NUMBER}"),
                                             //context.string(name: 'UPSTREAM_JOB_NAME', value: "${env.JOB_NAME}"),
                                             context.string(name: 'SDK_RESOURCE', value: 'customized'),
@@ -530,30 +530,25 @@ class Build {
                                             context.string(name: 'RELATED_NODES', value: relatedNodeLabel), 
                                             context.string(name: 'ADDITIONAL_ARTIFACTS_REQUIRED', value: additionalArtifactsRequired)],
                                             wait: true
-                            context.node('worker') {
-                                def result = testJob.getResult()
-                                context.echo " ${jobName} result is ${result}"
-                                if (result == 'SUCCESS' || result == 'UNSTABLE') {
-                                    context.sh 'rm -f workspace/target/AQAvitTaps/*.tap'
-                                    try {
-                                        context.timeout(time: 2, unit: 'HOURS') {
-                                            context.copyArtifacts(
-                                                projectName:jobName,
-                                                selector:context.specific("${testJob.getNumber()}"),
-                                                filter: "**/${jobName}*.tap",
-                                                target: 'workspace/target/AQAvitTaps/',
-                                                fingerprintArtifacts: true,
-                                                flatten: true
-                                            )
-                                        }
-                                    } catch (Exception e) {
-                                        context.echo "Cannot run copyArtifacts from job ${jobName}. Exception: ${e.message}. Skipping copyArtifacts..."
-                                    }
-                                    context.archiveArtifacts artifacts: 'workspace/target/AQAvitTaps/*.tap', fingerprint: true
-                                } else {
-                                    context.echo "Warning: ${jobName} result is ${result}, no tap file is archived"
+                        currentBuild.result = testJob.getResult()
+                        context.node('worker') {
+                            //Copy Taps files from downstream test jobs if files available.
+                            context.sh 'rm -f workspace/target/AQAvitTaps/*.tap'
+                            try {
+                                context.timeout(time: 2, unit: 'HOURS') {
+                                    context.copyArtifacts(
+                                        projectName:jobName,
+                                        selector:context.specific("${testJob.getNumber()}"),
+                                        filter: "**/${jobName}*.tap",
+                                        target: 'workspace/target/AQAvitTaps/',
+                                        fingerprintArtifacts: true,
+                                        flatten: true
+                                    )
                                 }
+                            } catch (Exception e) {
+                                context.echo "Cannot run copyArtifacts from job ${jobName}. Exception: ${e.message}. Skipping copyArtifacts..."
                             }
+                            context.archiveArtifacts allowEmptyArchive: true, artifacts: 'workspace/target/AQAvitTaps/*.tap', fingerprint: true
                         }
                     }
                 }
